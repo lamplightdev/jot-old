@@ -1,0 +1,19 @@
+
+<main>
+  <section>
+
+    <div class='section__content' id='view'>
+
+      {{> (lookup . 'content') }}
+
+    </div>
+
+  </section>
+</main>
+
+
+{{#if user}}
+<a href='/auth/signout'>sign out</a>
+{{else}}
+<a href='/auth/google'>sign in</a>
+{{/if}}

@@ -1,0 +1,15 @@
+{
+    "node": true,
+    "browser": true,
+    "browserify": true,
+    "esnext": true,
+    "bitwise": true,
+    "eqeqeq": true,
+    "curly": true,
+    "noarg": true,
+    "undef": true,
+    "unused": "vars",
+    "strict": true,
+    "mocha": true,
+    "predef": ["Jot"]
+}
