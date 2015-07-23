@@ -11,5 +11,5 @@
     "unused": "vars",
     "strict": true,
     "mocha": true,
-    "predef": ["Jot"]
+    "predef": ["JotApp"]
 }

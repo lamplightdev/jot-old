@@ -1,0 +1,11 @@
+<div class='jots'>
+{{#each jots}}
+  <div>
+    {{fields.content}} - {{id}}
+    <form class='form-note-delete form-note-delete-{{id}}' data-id='{{id}}' method='post' action='/notes/{{id}}'>
+      <input type='hidden' name='action' value='delete'>
+      <button type='submit'>delete</button>
+    </form>
+  </div>
+{{/each}}
+</div>

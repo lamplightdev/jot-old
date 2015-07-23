@@ -34,6 +34,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(DB, [{
         key: "init",
         value: function init(options) {
+          var _this = this;
 
           options = options || {
             protocol: null,
@@ -67,45 +68,52 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           this._remoteCouch += '/' + options.dbName;
 
           if (typeof PouchDB !== 'undefined') {
-            //browser
-            PouchDB.debug.disable();
-            this._db = new PouchDB(options.dbName, {
-              auto_compaction: true
-            });
+            (function () {
+              //browser
+              PouchDB.debug.disable();
+              _this._db = new PouchDB(options.dbName, {
+                auto_compaction: true
+              });
 
-            var opts = { live: true, retry: true };
+              var opts = { live: true, retry: true };
 
-            this._db.replicate.to(this._remoteCouch, opts).on('change', function (info) {
-              console.log('browser replicate to change');
-            }).on('paused', function () {
-              console.log('browser replicate to paused');
-            }).on('active', function () {
-              console.log('browser replicate to active');
-            }).on('denied', function (info) {
-              console.log('browser replicate to denied', info);
-            }).on('complete', function (info) {
-              console.log('browser replicate to complete');
-            }).on('error', function (err) {
-              console.log('browser replicate to error', err);
-            });
+              _this._db.replicate.to(_this._remoteCouch, opts).on('change', function (info) {
+                console.log('browser replicate to change');
+              }).on('paused', function () {
+                console.log('browser replicate to paused');
+              }).on('active', function () {
+                console.log('browser replicate to active');
+              }).on('denied', function (info) {
+                console.log('browser replicate to denied', info);
+              }).on('complete', function (info) {
+                console.log('browser replicate to complete');
+              }).on('error', function (err) {
+                console.log('browser replicate to error', err);
+              });
 
-            this._db.replicate.from(this._remoteCouch, opts).on('change', function (info) {
-              console.log('browser replicate from change', info);
-            }).on('paused', function () {
-              console.log('browser replicate from paused');
+              var changes = [];
 
-              //PubSub.publish('notify', {
-              //  title: 'Remote db synced'
-              //});
-            }).on('active', function () {
-              console.log('browser replicate from active');
-            }).on('denied', function (info) {
-              console.log('browser replicate from denied', info);
-            }).on('complete', function (info) {
-              console.log('browser replicate from complete', info);
-            }).on('error', function (err) {
-              console.log('browser replicate from error', err);
-            });
+              _this._db.replicate.from(_this._remoteCouch, opts).on('change', function (info) {
+                console.log('browser replicate from change', info);
+                changes = changes.concat(info.docs);
+              }).on('paused', function () {
+                console.log('browser replicate from paused');
+
+                PubSub.publish('update', {
+                  changes: changes
+                });
+
+                changes = [];
+              }).on('active', function () {
+                console.log('browser replicate from active');
+              }).on('denied', function (info) {
+                console.log('browser replicate from denied', info);
+              }).on('complete', function (info) {
+                console.log('browser replicate from complete', info);
+              }).on('error', function (err) {
+                console.log('browser replicate from error', err);
+              });
+            })();
           } else {
             var _PouchDB = require('pouchdb');
             //PouchDB.plugin(require('pouchdb-find'));
@@ -135,7 +143,165 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return db.db;
       }
     };
-  }, { "../utility/pubsub": 18, "pouchdb": 2 }], 2: [function (require, module, exports) {}, {}], 3: [function (require, module, exports) {
+  }, { "../utility/pubsub": 19, "pouchdb": 3 }], 2: [function (require, module, exports) {
+    var Jot = (function () {
+      function Jot(members) {
+        _classCallCheck(this, Jot);
+
+        this._db = require('../db/db')();
+
+        this._id = members._id || null;
+        this._rev = members._rev || null;
+
+        this._fields = members.fields || {};
+      }
+
+      _createClass(Jot, [{
+        key: "isNew",
+        value: function isNew() {
+          return !this.id;
+        }
+      }, {
+        key: "getSlug",
+        value: function getSlug() {
+          var _this2 = this;
+
+          if (!this.isNew()) {
+            Promise.resolve(this.id);
+          } else {
+            var _ret2 = (function () {
+              var slug = 'jot-';
+
+              var padding = 5; //the length of the number, e.g. '5' will start at 00000, 00001, etc.
+
+              return {
+                v: _this2._db.allDocs({
+                  startkey: slug + "￿",
+                  endKey: slug,
+                  descending: true,
+                  limit: 1
+                }).then(function (result) {
+                  console.log(result);
+                  if (result.rows.length > 0) {
+                    var lastDoc = result.rows[result.rows.length - 1];
+                    var lastNum = parseInt(lastDoc.id.substring(slug.length), 10);
+
+                    return slug + ('0'.repeat(padding) + (lastNum + 1)).slice(-padding);
+                  } else {
+                    return slug + '0'.repeat(padding);
+                  }
+                })
+              };
+            })();
+
+            if (typeof _ret2 === "object") return _ret2.v;
+          }
+        }
+      }, {
+        key: "save",
+        value: function save() {
+          var _this3 = this;
+
+          return this.getSlug().then(function (slug) {
+            var params = {
+              _id: slug,
+              fields: _this3.fields
+            };
+
+            if (!_this3.isNew()) {
+              params._rev = _this3.rev;
+            }
+
+            return _this3._db.put(params).then(function (response) {
+              if (response.ok) {
+                _this3.id = response.id;
+                _this3.rev = response.rev;
+
+                return true;
+              } else {
+                return false;
+              }
+            });
+          });
+        }
+      }, {
+        key: "id",
+        get: function get() {
+          return this._id;
+        },
+        set: function set(id) {
+          this._id = id;
+
+          return this;
+        }
+      }, {
+        key: "rev",
+        get: function get() {
+          return this._rev;
+        },
+        set: function set(rev) {
+          this._rev = rev;
+
+          return this;
+        }
+      }, {
+        key: "fields",
+        set: function set(fields) {
+          this._fields = fields;
+
+          return this;
+        },
+        get: function get() {
+          return this._fields;
+        }
+      }], [{
+        key: "loadAll",
+        value: function loadAll() {
+          var _this4 = this;
+
+          var db = require('../db/db')();
+
+          return db.allDocs({
+            include_docs: true,
+            descending: true,
+            limit: 10
+          }).then(function (result) {
+            var jots = [];
+
+            result.rows.forEach(function (row) {
+              jots.push(new _this4(row.doc));
+            });
+
+            return jots;
+          });
+        }
+      }, {
+        key: "load",
+        value: function load(id) {
+          var _this5 = this;
+
+          var db = require('../db/db')();
+
+          return db.get(id).then(function (doc) {
+            return new _this5(doc);
+          });
+        }
+      }, {
+        key: "remove",
+        value: function remove(id) {
+          var db = require('../db/db')();
+
+          return db.get(id).then(function (doc) {
+            return db.remove(doc);
+          });
+        }
+      }]);
+
+      return Jot;
+    })();
+
+    module.exports = Jot;
+  }, { "../db/db": 1 }], 3: [function (require, module, exports) {}, {}], 4: [function (require, module, exports) {
     // shim for using process in browser
 
     var process = module.exports = {};
@@ -230,7 +396,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     process.umask = function () {
       return 0;
     };
-  }, {}], 4: [function (require, module, exports) {
+  }, {}], 5: [function (require, module, exports) {
     /*!
     
      handlebars v3.0.3
@@ -1100,7 +1266,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       /******/]);
     });
     ;
-  }, {}], 5: [function (require, module, exports) {
+  }, {}], 6: [function (require, module, exports) {
     (function (process) {
       /* globals require, module */
 
@@ -1722,7 +1888,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       page.sameOrigin = sameOrigin;
     }).call(this, require('_process'));
-  }, { "_process": 3, "path-to-regexp": 6 }], 6: [function (require, module, exports) {
+  }, { "_process": 4, "path-to-regexp": 7 }], 7: [function (require, module, exports) {
     var isArray = require('isarray');
 
     /**
@@ -1924,19 +2090,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       return attachKeys(new RegExp('^' + route, flags(options)), keys);
     }
-  }, { "isarray": 7 }], 7: [function (require, module, exports) {
+  }, { "isarray": 8 }], 8: [function (require, module, exports) {
     module.exports = Array.isArray || function (arr) {
       return Object.prototype.toString.call(arr) == '[object Array]';
     };
-  }, {}], 8: [function (require, module, exports) {
+  }, {}], 9: [function (require, module, exports) {
     'use strict';
 
     require('../../db/db')({
-      protocol: Jot.server.protocol,
-      domain: Jot.server.domain,
-      username: Jot.user.credentials.key,
-      password: Jot.user.credentials.password,
-      dbName: 'jot-' + Jot.user._id
+      protocol: JotApp.server.protocol,
+      domain: JotApp.server.domain,
+      username: JotApp.user.credentials.key,
+      password: JotApp.user.credentials.password,
+      dbName: 'jot-' + JotApp.user._id
     });
 
     var router = require('../../routers/path');
@@ -1953,10 +2119,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var _iteratorError = undefined;
 
     try {
-      for (var _iterator = Object.keys(Jot.templates)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      for (var _iterator = Object.keys(JotApp.templates)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
         var key = _step.value;
 
-        Handlebars.registerPartial(key, Handlebars.template(Jot.templates[key]));
+        Handlebars.registerPartial(key, Handlebars.template(JotApp.templates[key]));
       }
     } catch (err) {
       _didIteratorError = true;
@@ -1982,9 +2148,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var routesAuth = new RoutesAuth(router, '/auth');
 
     var routesNotes = new RoutesNotes(router, '/notes', {
-      item: Jot.templates.note,
-      itemadd: Jot.templates['note-add'],
-      items: Jot.templates.notes
+      item: JotApp.templates.note,
+      itemadd: JotApp.templates['note-add'],
+      items: JotApp.templates.notes
     });
 
     routesHome.registerRoutes();
@@ -1992,7 +2158,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     routesNotes.registerRoutes();
 
     router.activate();
-  }, { "../../db/db": 1, "../../routers/path": 9, "../../routes/client/auth": 11, "../../routes/client/home": 12, "../../routes/client/notes": 13, "../../templates/helpers": 17, "handlebars/dist/handlebars.runtime": 4 }], 9: [function (require, module, exports) {
+  }, { "../../db/db": 1, "../../routers/path": 10, "../../routes/client/auth": 12, "../../routes/client/home": 13, "../../routes/client/notes": 14, "../../templates/helpers": 18, "handlebars/dist/handlebars.runtime": 5 }], 10: [function (require, module, exports) {
     'use strict';
 
     var page = require('page');
@@ -2028,7 +2194,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       };
     })();
-  }, { "page": 5 }], 10: [function (require, module, exports) {
+  }, { "page": 6 }], 11: [function (require, module, exports) {
     'use strict';
 
     var Routes = require('./routes');
@@ -2072,7 +2238,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })(Routes);
 
     module.exports = AuthRoutes;
-  }, { "./routes": 16 }], 11: [function (require, module, exports) {
+  }, { "./routes": 17 }], 12: [function (require, module, exports) {
     var AuthRoutes = require('../auth');
 
     var AuthRouter = (function () {
@@ -2090,7 +2256,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(AuthRouter, [{
         key: "registerRoutes",
         value: function registerRoutes() {
-          var _this = this;
+          var _this6 = this;
 
           this.routes.registerRoute('signout', function (ctx, next) {
             return Promise.resolve().then(function () {
@@ -2098,8 +2264,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 params: {},
 
                 resolve: function resolve() {
-                  _this._db.destroy().then(function () {
-                    _this._router.stop(ctx.canonicalPath);
+                  _this6._db.destroy().then(function () {
+                    _this6._router.stop(ctx.canonicalPath);
                   });
                 },
 
@@ -2116,7 +2282,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = AuthRouter;
-  }, { "../../db/db": 1, "../auth": 10 }], 12: [function (require, module, exports) {
+  }, { "../../db/db": 1, "../auth": 11 }], 13: [function (require, module, exports) {
     var HomeRoutes = require('../home');
     var HomeView = require('../../views/home');
     var PubSub = require('../../utility/pubsub');
@@ -2135,7 +2301,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(HomeRouter, [{
         key: "registerRoutes",
         value: function registerRoutes() {
-          var _this2 = this;
+          var _this7 = this;
 
           this.routes.registerRoute('home', function (ctx, next) {
             return Promise.resolve().then(function () {
@@ -2143,7 +2309,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 params: {},
 
                 resolve: function resolve(events) {
-                  _this2.homeView.render(false, {});
+                  _this7.homeView.render(false, {});
 
                   PubSub.publish('routeChanged', {
                     name: 'Home'
@@ -2163,10 +2329,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = HomeRouter;
-  }, { "../../utility/pubsub": 18, "../../views/home": 19, "../home": 14 }], 13: [function (require, module, exports) {
+  }, { "../../utility/pubsub": 19, "../../views/home": 20, "../home": 15 }], 14: [function (require, module, exports) {
     var NotesRoutes = require('../notes');
     var NotesView = require('../../views/notes');
     var PubSub = require('../../utility/pubsub');
+
+    var Jot = require('../../models/jot');
 
     var NotesRouter = (function () {
       function NotesRouter(router) {
@@ -2182,15 +2350,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(NotesRouter, [{
         key: "registerRoutes",
         value: function registerRoutes() {
-          var _this3 = this;
+          var _this8 = this;
 
           this.routes.registerRoute('all', function (ctx, next) {
-            return Promise.resolve().then(function () {
+            return Jot.loadAll().then(function (jots) {
+              console.log(jots);
               return {
                 params: {},
 
                 resolve: function resolve(events) {
-                  _this3.notesView.render(false, {});
+                  _this8.notesView.render(false, {
+                    jots: jots
+                  });
 
                   /*
                   PubSub.publish('routeChanged', {
@@ -2212,7 +2383,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = NotesRouter;
-  }, { "../../utility/pubsub": 18, "../../views/notes": 21, "../notes": 15 }], 14: [function (require, module, exports) {
+  }, { "../../models/jot": 2, "../../utility/pubsub": 19, "../../views/notes": 22, "../notes": 16 }], 15: [function (require, module, exports) {
     'use strict';
 
     var Routes = require('./routes');
@@ -2240,10 +2411,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })(Routes);
 
     module.exports = HomeRoutes;
-  }, { "./routes": 16 }], 15: [function (require, module, exports) {
+  }, { "./routes": 17 }], 16: [function (require, module, exports) {
     'use strict';
 
     var Routes = require('./routes');
+
+    var Jot = require('../models/jot');
 
     var NotesRoutes = (function (_Routes3) {
       _inherits(NotesRoutes, _Routes3);
@@ -2262,13 +2435,35 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             return Promise.resolve();
           }
         };
+
+        this._routes.save = {
+          _path: '/',
+          _method: ['post'],
+          _action: function _action(params) {
+            return new Jot({
+              fields: {
+                content: params.content
+              }
+            }).save();
+          }
+        };
+
+        this._routes["delete"] = {
+          _path: '/:id',
+          _method: ['post'],
+          _action: function _action(params) {
+            Jot.remove(params.id).then(function (result) {
+              return true;
+            });
+          }
+        };
       }
 
       return NotesRoutes;
     })(Routes);
 
     module.exports = NotesRoutes;
-  }, { "./routes": 16 }], 16: [function (require, module, exports) {
+  }, { "../models/jot": 2, "./routes": 17 }], 17: [function (require, module, exports) {
     var Routes = (function () {
       function Routes(router) {
         var prefix = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
@@ -2284,11 +2479,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _createClass(Routes, [{
         key: "registerRoute",
         value: function registerRoute(name, config) {
-          var _this4 = this;
+          var _this9 = this;
 
           var route = this._routes[name];
           route._method.forEach(function (method) {
-            _this4._router[method](_this4._prefix + route._path, function () {
+            _this9._router[method](_this9._prefix + route._path, function () {
               config.apply(undefined, arguments).then(function (result) {
                 return route._action(result.params).then(result.resolve)["catch"](result.reject);
               });
@@ -2301,7 +2496,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = Routes;
-  }, {}], 17: [function (require, module, exports) {
+  }, {}], 18: [function (require, module, exports) {
     'use strict';
 
     exports.ifIn = ifIn;
@@ -2313,7 +2508,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       return options.inverse(this);
     }
-  }, {}], 18: [function (require, module, exports) {
+  }, {}], 19: [function (require, module, exports) {
     var PubSub = (function () {
       //based on pubsub implementation at http://addyosmani.com/resources/essentialjsdesignpatterns/book/#observerpatternjavascript
 
@@ -2394,7 +2589,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = new PubSub();
-  }, {}], 19: [function (require, module, exports) {
+  }, {}], 20: [function (require, module, exports) {
     'use strict';
 
     var MainView = require('./main');
@@ -2416,7 +2611,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           console.log('render');
 
           if (!preRendered) {
-            var template = Handlebars.template(Jot.templates.home);
+            var template = Handlebars.template(JotApp.templates.home);
             var view = document.getElementById('view');
             view.innerHTML = template(params);
           }
@@ -2432,7 +2627,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })(MainView);
 
     module.exports = ViewHome;
-  }, { "./main": 20, "handlebars/dist/handlebars.runtime": 4 }], 20: [function (require, module, exports) {
+  }, { "./main": 21, "handlebars/dist/handlebars.runtime": 5 }], 21: [function (require, module, exports) {
     var View = require('./view');
 
     var MainView = (function (_View) {
@@ -2448,20 +2643,38 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })(View);
 
     module.exports = MainView;
-  }, { "./view": 22 }], 21: [function (require, module, exports) {
+  }, { "./view": 23 }], 22: [function (require, module, exports) {
     'use strict';
 
     var MainView = require('./main');
 
     var Handlebars = require('handlebars/dist/handlebars.runtime');
 
+    var Jot = require('../models/jot');
+
+    var PubSub = require('../utility/pubsub');
+
     var ViewNotes = (function (_MainView2) {
       _inherits(ViewNotes, _MainView2);
 
-      function ViewNotes() {
+      function ViewNotes(template) {
+        var _this10 = this;
+
         _classCallCheck(this, ViewNotes);
 
-        _get(Object.getPrototypeOf(ViewNotes.prototype), "constructor", this).apply(this, arguments);
+        _get(Object.getPrototypeOf(ViewNotes.prototype), "constructor", this).call(this, template);
+
+        PubSub.subscribe('update', function (topic, args) {
+          console.log(args);
+
+          if (args.changes && args.changes.length) {
+            Jot.loadAll().then(function (jots) {
+              _this10.renderPartial('jots', false, {
+                jots: jots
+              });
+            });
+          }
+        });
       }
 
       _createClass(ViewNotes, [{
@@ -2470,23 +2683,116 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           console.log('render');
 
           if (!preRendered) {
-            var template = Handlebars.template(Jot.templates.notes);
+            var template = Handlebars.template(JotApp.templates.notes);
             var view = document.getElementById('view');
             view.innerHTML = template(params);
+
+            var contentField = this._el.querySelector('#form-note-add').elements.content;
+            contentField.focus();
           }
 
           this.initEvents();
         }
       }, {
+        key: "renderPartial",
+        value: function renderPartial(name, preRendered, params) {
+          console.log('render partial');
+
+          if (!preRendered) {
+            var template = Handlebars.template(JotApp.templates.jots);
+            var view = this._el.querySelector('.jots');
+            view.outerHTML = template(params);
+
+            this.initDeleteForms();
+          }
+        }
+      }, {
         key: "initEvents",
-        value: function initEvents() {}
+        value: function initEvents() {
+          this.initAddForm();
+          this.initDeleteForms();
+        }
+      }, {
+        key: "initAddForm",
+        value: function initAddForm() {
+          var _this11 = this;
+
+          var addForm = this._el.querySelector('#form-note-add');
+
+          addForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var contentField = addForm.elements.content;
+            var content = contentField.value;
+
+            new Jot({
+              fields: {
+                content: content
+              }
+            }).save().then(function () {
+              Jot.loadAll().then(function (jots) {
+                _this11.renderPartial('jots', false, {
+                  jots: jots
+                });
+              });
+            });
+          });
+        }
+      }, {
+        key: "initDeleteForms",
+        value: function initDeleteForms() {
+          var _this12 = this;
+
+          var deleteForms = this._el.querySelectorAll('.form-note-delete');
+
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
+
+          try {
+            var _loop = function () {
+              var form = _step2.value;
+
+              form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                var id = form.dataset.id;
+
+                Jot.remove(id).then(function () {
+                  Jot.loadAll().then(function (jots) {
+                    _this12.renderPartial('jots', false, {
+                      jots: jots
+                    });
+                  });
+                });
+              });
+            };
+
+            for (var _iterator2 = deleteForms[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              _loop();
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+                _iterator2["return"]();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
+          }
+        }
       }]);
 
       return ViewNotes;
     })(MainView);
 
     module.exports = ViewNotes;
-  }, { "./main": 20, "handlebars/dist/handlebars.runtime": 4 }], 22: [function (require, module, exports) {
+  }, { "../models/jot": 2, "../utility/pubsub": 19, "./main": 21, "handlebars/dist/handlebars.runtime": 5 }], 23: [function (require, module, exports) {
     'use strict';
 
     var Handlebars = require('handlebars/dist/handlebars.runtime');
@@ -2543,7 +2849,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = View;
-  }, { "handlebars/dist/handlebars.runtime": 4 }] }, {}, [8]);
+  }, { "handlebars/dist/handlebars.runtime": 5 }] }, {}, [9]);
 /******/
 /************************************************************************/
 /******/

@@ -143,9 +143,7 @@ class CloudantClient {
 
       const dbName = 'jot-' + userDoc._id;
       const security = {
-        cloudant: {
-          [key]: ['_reader', '_writer']
-        }
+        [key]: ['_reader', '_writer']
       };
 
       const userDB = this.cloudant.db.use(dbName);

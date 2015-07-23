@@ -1,11 +1,11 @@
 'use strict';
 
 require('../../db/db')({
-  protocol: Jot.server.protocol,
-  domain: Jot.server.domain,
-  username: Jot.user.credentials.key,
-  password: Jot.user.credentials.password,
-  dbName: 'jot-' + Jot.user._id
+  protocol: JotApp.server.protocol,
+  domain: JotApp.server.domain,
+  username: JotApp.user.credentials.key,
+  password: JotApp.user.credentials.password,
+  dbName: 'jot-' + JotApp.user._id
 });
 
 const router = require('../../routers/path');
@@ -17,8 +17,8 @@ const RoutesAuth = require('../../routes/client/auth');
 const Handlebars = require('handlebars/dist/handlebars.runtime');
 const helpers = require('../../templates/helpers');
 
-for (let key of Object.keys(Jot.templates)) {
-  Handlebars.registerPartial(key, Handlebars.template(Jot.templates[key]));
+for (let key of Object.keys(JotApp.templates)) {
+  Handlebars.registerPartial(key, Handlebars.template(JotApp.templates[key]));
 }
 
 for (let helper in helpers) {
@@ -30,9 +30,9 @@ const routesHome = new RoutesHome(router, '/');
 const routesAuth = new RoutesAuth(router, '/auth');
 
 const routesNotes = new RoutesNotes(router, '/notes', {
-  item: Jot.templates.note,
-  itemadd: Jot.templates['note-add'],
-  items: Jot.templates.notes
+  item: JotApp.templates.note,
+  itemadd: JotApp.templates['note-add'],
+  items: JotApp.templates.notes
 });
 
 routesHome.registerRoutes();

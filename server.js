@@ -18,7 +18,7 @@ const RoutesAuth = require('./routes/server/auth');
 
 const app = express();
 expressState.extend(app);
-app.set('state namespace', 'Jot');
+app.set('state namespace', 'JotApp');
 
 app.set('views', path.join(__dirname, 'templates'));
 app.engine('handlebars', exphbs({
@@ -71,21 +71,26 @@ auth.Google();
 app.use((req, res, next) => {
   app.expose(req.user, 'user');
   app.expose({
-    protocol: 'https', //process.env.EVENTDASH_CLOUDANT_HOST_PROTOCOL,
-    domain: 'lamplightdev.cloudant.com' //process.env.EVENTDASH_CLOUDANT_HOST_NAME,
+    protocol: 'https', //process.env.JOT_CLOUDANT_HOST_PROTOCOL,
+    domain: 'lamplightdev.cloudant.com' //process.env.JOT_CLOUDANT_HOST_NAME,
   }, 'server');
 
   if (req.user) {
     const db = require('./db/db');
     db({
-      protocol: 'https', //process.env.EVENTDASH_CLOUDANT_HOST_PROTOCOL,
-      domain: 'lamplightdev.cloudant.com', //process.env.EVENTDASH_CLOUDANT_HOST_NAME,
+      protocol: 'https', //process.env.JOT_CLOUDANT_HOST_PROTOCOL,
+      domain: 'lamplightdev.cloudant.com', //process.env.JOT_CLOUDANT_HOST_NAME,
       username: req.user.credentials.key,
       password: req.user.credentials.password,
-      dbName: 'jot-google-' + req.user._id
+      dbName: 'jot-' + req.user._id
     });
   }
 
+  next();
+});
+
+app.use((req, res, next) => {
+  res.locals.user = req.user;
   next();
 });
 

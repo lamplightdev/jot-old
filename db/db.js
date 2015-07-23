@@ -67,14 +67,19 @@ class DB {
         console.log('browser replicate to error', err);
       });
 
+      let changes = [];
+
       this._db.replicate.from(this._remoteCouch, opts).on('change', info => {
         console.log('browser replicate from change', info);
+        changes = changes.concat(info.docs);
       }).on('paused', () => {
         console.log('browser replicate from paused');
 
-        //PubSub.publish('notify', {
-        //  title: 'Remote db synced'
-        //});
+        PubSub.publish('update', {
+          changes
+        });
+
+        changes = [];
 
       }).on('active', () => {
         console.log('browser replicate from active');

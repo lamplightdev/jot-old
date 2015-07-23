@@ -9,7 +9,7 @@ class ViewHome extends MainView {
     console.log('render');
 
     if (!preRendered) {
-      var template = Handlebars.template(Jot.templates.home);
+      var template = Handlebars.template(JotApp.templates.home);
       const view = document.getElementById('view');
       view.innerHTML = template(params);
     }

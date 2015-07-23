@@ -2,8 +2,8 @@ const AuthRoutes = require('../auth');
 const passport = require('passport');
 
 const cloudantClient = require('../../db/cloudant-client')(
-  process.env.EVENTDASH_CLOUDANT_ACCOUNT,
-  process.env.EVENTDASH_CLOUDANT_PASSWORD
+  process.env.JOT_CLOUDANT_ACCOUNT,
+  process.env.JOT_CLOUDANT_PASSWORD
 );
 
 class AuthRouter {

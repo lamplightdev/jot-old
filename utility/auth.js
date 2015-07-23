@@ -16,11 +16,11 @@ function serialization() {
 function Google() {
   try {
     passport.use(new GoogleStrategy({
-        clientID: process.env.EVENTDASH_GOOGLE_ID,
-        clientSecret: process.env.EVENTDASH_GOOGLE_SECRET,
-        callbackURL: process.env.EVENTDASH_HOST_PROTOCOL +
+        clientID: process.env.JOT_GOOGLE_ID,
+        clientSecret: process.env.JOT_GOOGLE_SECRET,
+        callbackURL: process.env.JOT_HOST_PROTOCOL +
          '://' +
-         process.env.EVENTDASH_HOST_NAME +
+         process.env.JOT_HOST_NAME +
          '/auth/google/callback'
       },
 
