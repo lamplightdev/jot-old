@@ -1,46 +1,25 @@
-<div class="layout-transparent mdl-layout mdl-js-layout">
-  <header class="mdl-layout__header mdl-layout__header--transparent">
-    <div class="mdl-layout__header-row">
-      <!-- Title -->
-      <span class="mdl-layout-title">Title</span>
-      <!-- Add spacer, to align navigation to the right -->
-      <div class="mdl-layout-spacer"></div>
-      <!-- Navigation -->
-      <nav class="mdl-navigation">
-        <a class="mdl-navigation__link" href="">Link</a>
-        <a class="mdl-navigation__link" href="">Link</a>
-        <a class="mdl-navigation__link" href="">Link</a>
-        <a class="mdl-navigation__link" href="">Link</a>
-      </nav>
+<header id='header' class='md-fixed-header'>
+  {{>titlebar}}
+</header>
+
+<main>
+  <section>
+
+    <div class='section__content' id='view'>
+
+      {{> (lookup . 'content') }}
+
     </div>
-  </header>
-  <div class="mdl-layout__drawer">
-    <span class="mdl-layout-title">Title</span>
-    <nav class="mdl-navigation">
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
-    </nav>
+
+  </section>
+</main>
+
+<footer>
+  <div>
+    {{#if user}}
+    <a href='/auth/signout'>sign out</a>
+    {{else}}
+    <a href='/auth/google'>sign in</a>
+    {{/if}}
   </div>
-  <main class="mdl-layout__content">
-    <section>
-
-      <div class='section__content' id='view'>
-
-        {{> (lookup . 'content') }}
-
-      </div>
-
-    </section>
-
-    <div>
-      {{#if user}}
-      <a href='/auth/signout'>sign out</a>
-      {{else}}
-      <a href='/auth/google'>sign in</a>
-      {{/if}}
-    </div>
-  </main>
-
-</div>
+</footer>

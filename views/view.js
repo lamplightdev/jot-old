@@ -23,8 +23,8 @@ class View {
     this.initWidgets();
   }
 
-  registerWidget(Widget) {
-    this._widgets.push(new Widget(this._el));
+  registerWidget(Widget, template) {
+    this._widgets.push(new Widget(template, this._el));
 
     return this._widgets.length - 1;
   }
@@ -35,7 +35,7 @@ class View {
 
   initWidgets() {
     this._widgets.forEach(widget => {
-      widget.init();
+      widget.initEvents();
     });
   }
 

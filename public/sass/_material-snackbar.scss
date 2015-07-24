@@ -1,0 +1,38 @@
+.md-snackbar-container {
+  position: fixed;
+  bottom: -3.4rem;
+  left: 0;
+  right: 0;
+
+  -webkit-transition: transform 0.3s ease-in-out 0s;
+  transition: transform 0.3s ease-in-out 0s;
+
+  &.has-notification {
+    -webkit-transform: translateY(-3.4rem);
+    transform: translateY(-3.4rem);
+  }
+}
+
+.md-snackbar {
+  background: #323232;
+  color: white;
+
+  font-size: 1rem;
+  line-height: 3.4;
+  padding: 0 1.7rem;
+}
+
+.md-snackbar__action--primary {
+  text-transform: uppercase;
+  font-weight: 700;
+  float: right;
+
+  border: 0;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: $clr-pink-500;
+
+  font-size: 1rem;
+  line-height: 3.4;
+}

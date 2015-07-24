@@ -1,0 +1,166 @@
+
+.md-has-fixed-header {
+  margin-top: 5.5rem;
+}
+
+.md-fixed-header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+
+  z-index: 20;
+
+  padding: 0 1.1rem;
+  height: 4rem;
+  line-height: 4rem;
+
+  h3 {
+    line-height: inherit;
+  }
+
+  @include drop-shadow(1);
+}
+
+
+.md-nav {
+  $width: 280px;
+
+  position: fixed;
+  top: 0;
+  left: -$width;
+  bottom: 0;
+
+  z-index: 40;
+
+  width: $width;
+
+
+  background: white;
+  color: $clr-grey-900;
+  @include drop-shadow(2);
+
+  color: $clr-grey-900;
+
+  -webkit-transition: transform 0.3s ease-in-out 0s;
+  transition: transform 0.3s ease-in-out 0s;
+
+  &.show {
+    -webkit-transform: translateX($width);
+    transform: translateX($width);
+  }
+}
+
+.md-nav-head {
+  display: -webkit-flex;
+  display: flex;
+
+  padding: 0;
+  height: 4rem;
+  line-height: 4rem;
+
+  border-bottom: 1px solid $clr-grey-200;
+}
+
+.md-nav-body {
+  padding: 0.6rem 0 0 0;
+
+  line-height: 3.5rem;
+
+  a {
+    display: block;
+    padding: 0 1.1rem;
+
+    font-size: 1.1rem;
+    text-decoration: none;
+    color: inherit;
+
+    &:hover {
+      background-color: $clr-grey-300;
+    }
+  }
+}
+
+.md-actionbar {
+  display: -webkit-flex;
+  display: flex;
+}
+
+.md-nav-overlay {
+  position: fixed;
+  top: 0;
+  right: 100%;
+  bottom: 0;
+  left: -100%;
+
+  z-index: 30;
+
+  background: black;
+  opacity: 0;
+
+  -webkit-transition: opacity 0.3s linear 0s, transform 0s linear 0.3s;
+  transition: opacity 0.3s linear 0s, transform 0s linear 0.3s;
+
+  &.show {
+    -webkit-transition: opacity 0.3s linear 0s;
+    transition: opacity 0.3s linear 0s;
+    -webkit-transform: translateX(100%);
+    transform: translateX(100%);
+    opacity: 0.65;
+  }
+}
+
+.md-btn-logo {
+  display: inline-block;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 4rem;
+  height: 4rem;
+
+  img {
+    height: 100%;
+    width: auto;
+
+    padding: 0.5rem;
+  }
+}
+
+.md-btn-menu {
+  $width: 1.5rem;
+
+  border: 0;
+  margin: 0;
+  padding: 0 1.25rem;
+  padding-top: 1.4rem;
+
+  margin-left: -1.1rem;
+  background: transparent;
+
+  width: $width + 2.5rem;
+
+  span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    margin-bottom: 4px;
+    background: white;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &.close {
+    margin-left: 0;
+    span {
+      background-color: $clr-grey-900;
+    }
+  }
+}
+
+.md-btn-menu-close {
+
+}

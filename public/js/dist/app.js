@@ -2111,6 +2111,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     var RoutesNotes = require('../../routes/client/notes');
     var RoutesAuth = require('../../routes/client/auth');
 
+    var TitleBarView = require('../../views/titlebar');
+
     var Handlebars = require('handlebars/dist/handlebars.runtime');
     var helpers = require('../../templates/helpers');
 
@@ -2157,8 +2159,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     routesAuth.registerRoutes();
     routesNotes.registerRoutes();
 
+    var titleBar = new TitleBarView(JotApp.templates.titlebar, {
+      'titlebar-title': JotApp.templates['titlebar-title']
+    }, document.getElementById('header'));
+
+    titleBar.render(true);
+
     router.activate();
-  }, { "../../db/db": 1, "../../routers/path": 10, "../../routes/client/auth": 12, "../../routes/client/home": 13, "../../routes/client/notes": 14, "../../templates/helpers": 18, "handlebars/dist/handlebars.runtime": 5 }], 10: [function (require, module, exports) {
+  }, { "../../db/db": 1, "../../routers/path": 10, "../../routes/client/auth": 12, "../../routes/client/home": 13, "../../routes/client/notes": 14, "../../templates/helpers": 18, "../../views/titlebar": 24, "handlebars/dist/handlebars.runtime": 5 }], 10: [function (require, module, exports) {
     'use strict';
 
     var page = require('page');
@@ -2329,7 +2337,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = HomeRouter;
-  }, { "../../utility/pubsub": 19, "../../views/home": 20, "../home": 15 }], 14: [function (require, module, exports) {
+  }, { "../../utility/pubsub": 19, "../../views/home": 21, "../home": 15 }], 14: [function (require, module, exports) {
     var NotesRoutes = require('../notes');
     var NotesView = require('../../views/notes');
     var PubSub = require('../../utility/pubsub');
@@ -2383,7 +2391,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })();
 
     module.exports = NotesRouter;
-  }, { "../../models/jot": 2, "../../utility/pubsub": 19, "../../views/notes": 22, "../notes": 16 }], 15: [function (require, module, exports) {
+  }, { "../../models/jot": 2, "../../utility/pubsub": 19, "../../views/notes": 23, "../notes": 16 }], 15: [function (require, module, exports) {
     'use strict';
 
     var Routes = require('./routes');
@@ -2590,6 +2598,65 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     module.exports = new PubSub();
   }, {}], 20: [function (require, module, exports) {
+    var View = require('./view');
+
+    var ActionBar = (function (_View) {
+      _inherits(ActionBar, _View);
+
+      function ActionBar() {
+        _classCallCheck(this, ActionBar);
+
+        _get(Object.getPrototypeOf(ActionBar.prototype), "constructor", this).apply(this, arguments);
+      }
+
+      _createClass(ActionBar, [{
+        key: "initEvents",
+        value: function initEvents() {
+          var _this10 = this;
+
+          _get(Object.getPrototypeOf(ActionBar.prototype), "initEvents", this).call(this);
+
+          this._nav = this._el.querySelector('nav');
+          this._navOverlay = this._el.querySelector('.md-nav-overlay');
+          this._btnMenuOpen = this._el.querySelector('.md-btn-menu');
+          this._btnMenuClose = this._el.querySelector('.md-btn-menu.close');
+          this._links = this._el.querySelectorAll('.md-nav-body a');
+
+          this._btnMenuOpen.addEventListener('click', function (event) {
+            event.preventDefault();
+            _this10.openNav();
+          });
+
+          this._btnMenuClose.addEventListener('click', function (event) {
+            event.preventDefault();
+            _this10.closeNav();
+          });
+
+          for (var _i = 0; _i < this._links.length; _i++) {
+            this._links[_i].addEventListener('click', function () {
+              return _this10.closeNav();
+            });
+          }
+        }
+      }, {
+        key: "openNav",
+        value: function openNav() {
+          this._nav.classList.add('show');
+          this._navOverlay.classList.add('show');
+        }
+      }, {
+        key: "closeNav",
+        value: function closeNav() {
+          this._nav.classList.remove('show');
+          this._navOverlay.classList.remove('show');
+        }
+      }]);
+
+      return ActionBar;
+    })(View);
+
+    module.exports = ActionBar;
+  }, { "./view": 25 }], 21: [function (require, module, exports) {
     'use strict';
 
     var MainView = require('./main');
@@ -2627,11 +2694,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })(MainView);
 
     module.exports = ViewHome;
-  }, { "./main": 21, "handlebars/dist/handlebars.runtime": 5 }], 21: [function (require, module, exports) {
+  }, { "./main": 22, "handlebars/dist/handlebars.runtime": 5 }], 22: [function (require, module, exports) {
     var View = require('./view');
 
-    var MainView = (function (_View) {
-      _inherits(MainView, _View);
+    var MainView = (function (_View2) {
+      _inherits(MainView, _View2);
 
       function MainView(template) {
         _classCallCheck(this, MainView);
@@ -2643,7 +2710,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })(View);
 
     module.exports = MainView;
-  }, { "./view": 23 }], 22: [function (require, module, exports) {
+  }, { "./view": 25 }], 23: [function (require, module, exports) {
     'use strict';
 
     var MainView = require('./main');
@@ -2658,7 +2725,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _inherits(ViewNotes, _MainView2);
 
       function ViewNotes(template) {
-        var _this10 = this;
+        var _this11 = this;
 
         _classCallCheck(this, ViewNotes);
 
@@ -2669,7 +2736,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           if (args.changes && args.changes.length) {
             Jot.loadAll().then(function (jots) {
-              _this10.renderPartial('jots', false, {
+              _this11.renderPartial('jots', false, {
                 jots: jots
               });
             });
@@ -2715,7 +2782,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "initAddForm",
         value: function initAddForm() {
-          var _this11 = this;
+          var _this12 = this;
 
           var addForm = this._el.querySelector('#form-note-add');
 
@@ -2731,7 +2798,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               }
             }).save().then(function () {
               Jot.loadAll().then(function (jots) {
-                _this11.renderPartial('jots', false, {
+                _this12.renderPartial('jots', false, {
                   jots: jots
                 });
               });
@@ -2741,7 +2808,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "initDeleteForms",
         value: function initDeleteForms() {
-          var _this12 = this;
+          var _this13 = this;
 
           var deleteForms = this._el.querySelectorAll('.form-note-delete');
 
@@ -2760,7 +2827,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 Jot.remove(id).then(function () {
                   Jot.loadAll().then(function (jots) {
-                    _this12.renderPartial('jots', false, {
+                    _this13.renderPartial('jots', false, {
                       jots: jots
                     });
                   });
@@ -2792,7 +2859,70 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     })(MainView);
 
     module.exports = ViewNotes;
-  }, { "../models/jot": 2, "../utility/pubsub": 19, "./main": 21, "handlebars/dist/handlebars.runtime": 5 }], 23: [function (require, module, exports) {
+  }, { "../models/jot": 2, "../utility/pubsub": 19, "./main": 22, "handlebars/dist/handlebars.runtime": 5 }], 24: [function (require, module, exports) {
+    var View = require('./view');
+    var Handlebars = require('handlebars/dist/handlebars.runtime');
+    var ActionBar = require('./actionbar');
+    var PubSub = require('../utility/pubsub');
+
+    var TitleBarView = (function (_View3) {
+      _inherits(TitleBarView, _View3);
+
+      function TitleBarView(template, partials, el) {
+        var _this14 = this;
+
+        _classCallCheck(this, TitleBarView);
+
+        _get(Object.getPrototypeOf(TitleBarView.prototype), "constructor", this).call(this, template, el);
+        this._partials = partials;
+
+        this._user = null;
+
+        this.registerWidget(ActionBar, partials['titlebar-title']);
+
+        PubSub.subscribe('routeChanged', function (topic, args) {
+          return _this14.updateName(args.name);
+        });
+      }
+
+      _createClass(TitleBarView, [{
+        key: "setUser",
+        value: function setUser(user) {
+          this._user = user;
+        }
+      }, {
+        key: "updateName",
+        value: function updateName(name) {
+          this._name = name;
+          this.renderPartial('titlebar-title', 'titlebar-title');
+        }
+      }, {
+        key: "renderPartial",
+        value: function renderPartial(partialId, partialName) {
+          var part = this._el.querySelector('#' + partialId);
+
+          var template = Handlebars.template(this._partials[partialName]);
+          part.outerHTML = template({
+            name: this._name
+          });
+
+          this.initWidgets();
+        }
+      }, {
+        key: "render",
+        value: function render(preRendered) {
+          _get(Object.getPrototypeOf(TitleBarView.prototype), "render", this).call(this, preRendered, {
+            user: this._user,
+            name: this._name
+          });
+        }
+      }]);
+
+      return TitleBarView;
+    })(View);
+
+    module.exports = TitleBarView;
+  }, { "../utility/pubsub": 19, "./actionbar": 20, "./view": 25, "handlebars/dist/handlebars.runtime": 5 }], 25: [function (require, module, exports) {
     'use strict';
 
     var Handlebars = require('handlebars/dist/handlebars.runtime');
@@ -2826,8 +2956,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
       }, {
         key: "registerWidget",
-        value: function registerWidget(Widget) {
-          this._widgets.push(new Widget(this._el));
+        value: function registerWidget(Widget, template) {
+          this._widgets.push(new Widget(template, this._el));
 
           return this._widgets.length - 1;
         }
@@ -2840,7 +2970,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         key: "initWidgets",
         value: function initWidgets() {
           this._widgets.forEach(function (widget) {
-            widget.init();
+            widget.initEvents();
           });
         }
       }]);

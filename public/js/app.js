@@ -14,6 +14,8 @@ const RoutesHome = require('../../routes/client/home');
 const RoutesNotes = require('../../routes/client/notes');
 const RoutesAuth = require('../../routes/client/auth');
 
+const TitleBarView = require('../../views/titlebar');
+
 const Handlebars = require('handlebars/dist/handlebars.runtime');
 const helpers = require('../../templates/helpers');
 
@@ -38,6 +40,12 @@ const routesNotes = new RoutesNotes(router, '/notes', {
 routesHome.registerRoutes();
 routesAuth.registerRoutes();
 routesNotes.registerRoutes();
+
+const titleBar = new TitleBarView(JotApp.templates.titlebar, {
+  'titlebar-title': JotApp.templates['titlebar-title']
+}, document.getElementById('header'));
+
+titleBar.render(true);
 
 router.activate();
 

@@ -1,0 +1,30 @@
+@import "normalize";
+
+@import "material-color";
+@import "material-typography";
+@import "material-layout";
+@import "material-nav";
+@import "material-form";
+@import "material-snackbar";
+
+html {
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+header {
+  background: $clr-blue;
+  color: white;
+  z-index: 20;
+}
+
+form {
+  display: inline;
+}
+
+* {
+  box-sizing: border-box;
+  outline: none;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}

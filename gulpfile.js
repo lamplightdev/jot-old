@@ -8,6 +8,7 @@ var buffer = require('vinyl-buffer');
 gulp.task("default", function () {
 
   var b = browserify({
+    debug: true,
     entries: './public/js/app.js',
     transform: []
   });

@@ -1,0 +1,43 @@
+<div class='md-actionbar'>
+
+  <a href='?menu=open' class='md-btn-menu'>
+    <span></span>
+    <span></span>
+    <span></span>
+  </a>
+
+  {{>titlebar-title}}
+
+  <a href='/' class='md-btn-logo'>
+    <img src='images/pencil.svg' alt='Jot'>
+  </a>
+
+</div>
+
+<div class='md-nav-overlay {{#if menuOpen}}show{{/if}}'></div>
+
+<nav class='md-nav {{#if menuOpen}}show{{/if}}'>
+  <div class='md-nav-head'>
+    <a href='?menu=close' class='md-btn-menu close'>
+      <span></span>
+      <span></span>
+      <span></span>
+    </a>
+    {{#if user}}
+      <h4>{{user.displayName}}</h4>
+    {{/if}}
+  </div>
+
+  <div class='md-nav-body'>
+    <a href='/'>Home</a>
+    <a href='/event'>Events</a>
+    <a href='/screen'>Screens</a>
+    <a href='/card'>Cards</a>
+    {{#if user}}
+    <a href='/auth/signout'>Sign out</a>
+    {{else}}
+    <a href='/auth/google'>Sign in</a>
+    {{/if}}
+  </div>
+
+</nav>
