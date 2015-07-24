@@ -28,3 +28,35 @@ form {
   outline: none;
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
+
+
+.jots__jot {
+  margin: 1rem 0;
+
+  .jots__jot__item {
+    display: block;
+  }
+
+  .form-note-update, .form-note-delete {
+    display: none;
+  }
+
+  .edit-cancel {
+    display: none;
+  }
+
+  &.edit {
+
+    .form-note-update, .form-note-delete {
+      display: inline-block;
+    }
+
+    .jots__jot__item {
+      display: none;
+    }
+
+    .edit-cancel {
+      display: inline;
+    }
+  }
+}

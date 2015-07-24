@@ -14,7 +14,6 @@ class NotesRouter {
   registerRoutes() {
     this.routes.registerRoute('all', (ctx, next) => {
       return Jot.loadAll().then(jots => {
-        console.log(jots);
         return {
           params: {},
 

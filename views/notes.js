@@ -48,22 +48,26 @@ class ViewNotes extends MainView {
       const view = this._el.querySelector('.jots');
       view.outerHTML = template(params);
 
+      this.initEdit();
       this.initDeleteForms();
+      this.initUpdateForms();
     }
   }
 
   initEvents() {
     this.initAddForm();
+
+    this.initEdit();
     this.initDeleteForms();
+    this.initUpdateForms();
   }
 
   initAddForm() {
-    const addForm = this._el.querySelector('#form-note-add');
-
-    addForm.addEventListener('submit', event => {
+    const form = this._el.querySelector('#form-note-add');
+    form.addEventListener('submit', event => {
       event.preventDefault();
 
-      const contentField = addForm.elements.content;
+      const contentField = form.elements.content;
       const content = contentField.value;
 
       new Jot({
@@ -71,6 +75,7 @@ class ViewNotes extends MainView {
           content
         }
       }).save().then(() => {
+        contentField.value = '';
         Jot.loadAll().then(jots => {
           this.renderPartial('jots', false, {
             jots
@@ -80,10 +85,29 @@ class ViewNotes extends MainView {
     });
   }
 
-  initDeleteForms() {
-    const deleteForms = this._el.querySelectorAll('.form-note-delete');
+  initEdit() {
+    const links = this._el.querySelectorAll('.jots__jot__item');
+    for (let link of links) {
+      link.addEventListener('click', event => {
+        event.preventDefault();
 
-    for (let form of deleteForms) {
+        link.parentNode.classList.add('edit');
+      });
+    }
+
+    const cancels = this._el.querySelectorAll('.edit-cancel');
+    for (let cancel of cancels) {
+      cancel.addEventListener('click', event => {
+        event.preventDefault();
+
+        cancel.parentNode.classList.remove('edit');
+      });
+    }
+  }
+
+  initDeleteForms() {
+    const forms = this._el.querySelectorAll('.form-note-delete');
+    for (let form of forms) {
       form.addEventListener('submit', event => {
         event.preventDefault();
 
@@ -99,6 +123,36 @@ class ViewNotes extends MainView {
       });
     }
   }
+
+  initUpdateForms() {
+    const forms = this._el.querySelectorAll('.form-note-update');
+
+    for (let form of forms) {
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+
+        const id = form.dataset.id;
+
+        const contentField = form.elements.content;
+        const content = contentField.value;
+
+        Jot.load(id).then(jot => {
+          jot.fields = {
+            content
+          };
+
+          jot.save().then(() => {
+            Jot.loadAll().then(jots => {
+              this.renderPartial('jots', false, {
+                jots
+              });
+            });
+          });
+        });
+      });
+    }
+  }
+
 }
 
 module.exports = ViewNotes;

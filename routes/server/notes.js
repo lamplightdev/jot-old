@@ -10,7 +10,6 @@ class NotesRouter {
   registerRoutes() {
     this.routes.registerRoute('all', (req, res, next) => {
       return Jot.loadAll().then(jots => {
-        console.log(jots);
         return {
           params: {},
 
@@ -18,7 +17,8 @@ class NotesRouter {
             res.render('app', {
               name: 'Notes',
               content: 'notes',
-              jots
+              jots,
+              editJotID: req.query.edit
             });
           },
 
@@ -27,11 +27,12 @@ class NotesRouter {
       }).catch(next);
     });
 
-    this.routes.registerRoute('save', (req, res, next) => {
+    this.routes.registerRoute('add', (req, res, next) => {
       return Promise.resolve().then(() => {
         const params = {
           content: req.body.content
         };
+
         return {
           params,
 
@@ -47,8 +48,32 @@ class NotesRouter {
     this.routes.registerRoute('delete', (req, res, next) => {
       return Promise.resolve().then(() => {
         const params = {
-          id: req.params.id
+          id: req.params.id,
+          action: req.body.action
         };
+
+        return {
+          params,
+
+          resolve: () => {
+            res.redirect('/notes');
+          },
+
+          reject: next
+        };
+      }).catch(next);
+    });
+
+    this.routes.registerRoute('update', (req, res, next) => {
+      return Promise.resolve().then(() => {
+        const params = {
+          id: req.params.id,
+          action: req.body.action,
+          fields: {
+            content: req.body.content
+          }
+        };
+
         return {
           params,
 

@@ -16,7 +16,7 @@ class NotesRoutes extends Routes {
       }
     };
 
-    this._routes.save = {
+    this._routes.add = {
       _path: '/',
       _method: ['post'],
       _action: params => {
@@ -32,9 +32,28 @@ class NotesRoutes extends Routes {
       _path: '/:id',
       _method: ['post'],
       _action: params => {
-        Jot.remove(params.id).then(result => {
-          return true;
-        });
+        if (params.action !== 'delete') {
+          return Promise.reject();  //will cascade down to update etc.
+        } else {
+          return Jot.remove(params.id).then(result => {
+            return true;
+          });
+        }
+      }
+    };
+
+    this._routes.update = {
+      _path: '/:id',
+      _method: ['post'],
+      _action: params => {
+        if (params.action !== 'update') {
+          return Promise.reject();
+        } else {
+          return Jot.load(params.id).then(jot => {
+            jot.fields = params.fields;
+            return jot.save();
+          });
+        }
       }
     };
   }

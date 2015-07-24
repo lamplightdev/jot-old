@@ -154,6 +154,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this._rev = members._rev || null;
 
         this._fields = members.fields || {};
+
+        this._allowedFields = ['content', 'done'];
       }
 
       _createClass(Jot, [{
@@ -167,7 +169,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var _this2 = this;
 
           if (!this.isNew()) {
-            Promise.resolve(this.id);
+            return Promise.resolve(this.id);
           } else {
             var _ret2 = (function () {
               var slug = 'jot-';
@@ -181,7 +183,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   descending: true,
                   limit: 1
                 }).then(function (result) {
-                  console.log(result);
                   if (result.rows.length > 0) {
                     var lastDoc = result.rows[result.rows.length - 1];
                     var lastNum = parseInt(lastDoc.id.substring(slug.length), 10);
@@ -247,7 +248,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }, {
         key: "fields",
         set: function set(fields) {
-          this._fields = fields;
+          this._fields = {};
+
+          for (var fieldName in fields) {
+            if (this._allowedFields.indexOf(fieldName) > -1) {
+              this._fields[fieldName] = fields[fieldName];
+            }
+          }
 
           return this;
         },
@@ -283,6 +290,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var db = require('../db/db')();
 
           return db.get(id).then(function (doc) {
+            console.log(doc);
             return new _this5(doc);
           });
         }
@@ -2362,7 +2370,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           this.routes.registerRoute('all', function (ctx, next) {
             return Jot.loadAll().then(function (jots) {
-              console.log(jots);
               return {
                 params: {},
 
@@ -2444,7 +2451,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         };
 
-        this._routes.save = {
+        this._routes.add = {
           _path: '/',
           _method: ['post'],
           _action: function _action(params) {
@@ -2460,9 +2467,28 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           _path: '/:id',
           _method: ['post'],
           _action: function _action(params) {
-            Jot.remove(params.id).then(function (result) {
-              return true;
-            });
+            if (params.action !== 'delete') {
+              return Promise.reject(); //will cascade down to update etc.
+            } else {
+                return Jot.remove(params.id).then(function (result) {
+                  return true;
+                });
+              }
+          }
+        };
+
+        this._routes.update = {
+          _path: '/:id',
+          _method: ['post'],
+          _action: function _action(params) {
+            if (params.action !== 'update') {
+              return Promise.reject();
+            } else {
+              return Jot.load(params.id).then(function (jot) {
+                jot.fields = params.fields;
+                return jot.save();
+              });
+            }
           }
         };
       }
@@ -2507,7 +2533,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   }, {}], 18: [function (require, module, exports) {
     'use strict';
 
+    exports.ifEqual = ifEqual;
     exports.ifIn = ifIn;
+
+    function ifEqual(conditional, equalTo, options) {
+      if (conditional === equalTo) {
+        return options.fn(this);
+      }
+
+      return options.inverse(this);
+    }
 
     function ifIn(elem, arr, options) {
       if (arr.indexOf(elem) > -1) {
@@ -2770,26 +2805,30 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             var view = this._el.querySelector('.jots');
             view.outerHTML = template(params);
 
+            this.initEdit();
             this.initDeleteForms();
+            this.initUpdateForms();
           }
         }
       }, {
         key: "initEvents",
         value: function initEvents() {
           this.initAddForm();
+
+          this.initEdit();
           this.initDeleteForms();
+          this.initUpdateForms();
         }
       }, {
         key: "initAddForm",
         value: function initAddForm() {
           var _this12 = this;
 
-          var addForm = this._el.querySelector('#form-note-add');
-
-          addForm.addEventListener('submit', function (event) {
+          var form = this._el.querySelector('#form-note-add');
+          form.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            var contentField = addForm.elements.content;
+            var contentField = form.elements.content;
             var content = contentField.value;
 
             new Jot({
@@ -2797,6 +2836,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 content: content
               }
             }).save().then(function () {
+              contentField.value = '';
               Jot.loadAll().then(function (jots) {
                 _this12.renderPartial('jots', false, {
                   jots: jots
@@ -2806,19 +2846,89 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           });
         }
       }, {
-        key: "initDeleteForms",
-        value: function initDeleteForms() {
-          var _this13 = this;
-
-          var deleteForms = this._el.querySelectorAll('.form-note-delete');
-
+        key: "initEdit",
+        value: function initEdit() {
+          var links = this._el.querySelectorAll('.jots__jot__item');
           var _iteratorNormalCompletion2 = true;
           var _didIteratorError2 = false;
           var _iteratorError2 = undefined;
 
           try {
             var _loop = function () {
-              var form = _step2.value;
+              var link = _step2.value;
+
+              link.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                link.parentNode.classList.add('edit');
+              });
+            };
+
+            for (var _iterator2 = links[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              _loop();
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+                _iterator2["return"]();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
+          }
+
+          var cancels = this._el.querySelectorAll('.edit-cancel');
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
+
+          try {
+            var _loop2 = function () {
+              var cancel = _step3.value;
+
+              cancel.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                cancel.parentNode.classList.remove('edit');
+              });
+            };
+
+            for (var _iterator3 = cancels[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              _loop2();
+            }
+          } catch (err) {
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+                _iterator3["return"]();
+              }
+            } finally {
+              if (_didIteratorError3) {
+                throw _iteratorError3;
+              }
+            }
+          }
+        }
+      }, {
+        key: "initDeleteForms",
+        value: function initDeleteForms() {
+          var _this13 = this;
+
+          var forms = this._el.querySelectorAll('.form-note-delete');
+          var _iteratorNormalCompletion4 = true;
+          var _didIteratorError4 = false;
+          var _iteratorError4 = undefined;
+
+          try {
+            var _loop3 = function () {
+              var form = _step4.value;
 
               form.addEventListener('submit', function (event) {
                 event.preventDefault();
@@ -2835,20 +2945,77 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               });
             };
 
-            for (var _iterator2 = deleteForms[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              _loop();
+            for (var _iterator4 = forms[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+              _loop3();
             }
           } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
-                _iterator2["return"]();
+              if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+                _iterator4["return"]();
               }
             } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
+              if (_didIteratorError4) {
+                throw _iteratorError4;
+              }
+            }
+          }
+        }
+      }, {
+        key: "initUpdateForms",
+        value: function initUpdateForms() {
+          var _this14 = this;
+
+          var forms = this._el.querySelectorAll('.form-note-update');
+
+          var _iteratorNormalCompletion5 = true;
+          var _didIteratorError5 = false;
+          var _iteratorError5 = undefined;
+
+          try {
+            var _loop4 = function () {
+              var form = _step5.value;
+
+              form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                var id = form.dataset.id;
+
+                var contentField = form.elements.content;
+                var content = contentField.value;
+
+                Jot.load(id).then(function (jot) {
+                  jot.fields = {
+                    content: content
+                  };
+
+                  jot.save().then(function () {
+                    Jot.loadAll().then(function (jots) {
+                      _this14.renderPartial('jots', false, {
+                        jots: jots
+                      });
+                    });
+                  });
+                });
+              });
+            };
+
+            for (var _iterator5 = forms[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              _loop4();
+            }
+          } catch (err) {
+            _didIteratorError5 = true;
+            _iteratorError5 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
+                _iterator5["return"]();
+              }
+            } finally {
+              if (_didIteratorError5) {
+                throw _iteratorError5;
               }
             }
           }
@@ -2869,7 +3036,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       _inherits(TitleBarView, _View3);
 
       function TitleBarView(template, partials, el) {
-        var _this14 = this;
+        var _this15 = this;
 
         _classCallCheck(this, TitleBarView);
 
@@ -2881,7 +3048,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.registerWidget(ActionBar, partials['titlebar-title']);
 
         PubSub.subscribe('routeChanged', function (topic, args) {
-          return _this14.updateName(args.name);
+          return _this15.updateName(args.name);
         });
       }
 

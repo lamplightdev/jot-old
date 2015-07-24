@@ -1,11 +1,22 @@
 <div class='jots'>
 {{#each jots}}
-  <div>
-    {{fields.content}} - {{id}}
+  <div class='jots__jot jots__jot-{{id}} {{#ifEqual id @root.editJotID}}edit{{/ifEqual}}'>
+
+    <a class='jots__jot__item' href='/notes?edit={{id}}'>{{fields.content}} - {{id}}</a>
+
+    <form class='form-note-update form-note-update-{{id}}' data-id='{{id}}' method='post' action='/notes/{{id}}'>
+      <input type='text' name='content' value='{{fields.content}}'>
+      <input type='hidden' name='action' value='update'>
+      <button type='submit'>save</button>
+    </form>
+
     <form class='form-note-delete form-note-delete-{{id}}' data-id='{{id}}' method='post' action='/notes/{{id}}'>
       <input type='hidden' name='action' value='delete'>
       <button type='submit'>delete</button>
     </form>
+
+    <a class='edit-cancel' href='/notes'>cancel</a>
+
   </div>
 {{/each}}
 </div>

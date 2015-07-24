@@ -7,6 +7,11 @@ class Jot {
     this._rev = members._rev || null;
 
     this._fields = members.fields || {};
+
+    this._allowedFields = [
+      'content',
+      'done'
+    ];
   }
 
   get id() {
@@ -30,7 +35,13 @@ class Jot {
   }
 
   set fields(fields) {
-    this._fields = fields;
+    this._fields = {};
+
+    for (let fieldName in fields) {
+      if (this._allowedFields.indexOf(fieldName) > -1) {
+        this._fields[fieldName] = fields[fieldName];
+      }
+    }
 
     return this;
   }
@@ -45,7 +56,7 @@ class Jot {
 
   getSlug() {
     if (!this.isNew()) {
-      Promise.resolve(this.id);
+      return Promise.resolve(this.id);
     } else {
       let slug = 'jot-';
 
@@ -57,7 +68,6 @@ class Jot {
         descending: true,
         limit: 1
       }).then(result => {
-        console.log(result);
         if (result.rows.length > 0) {
           const lastDoc = result.rows[result.rows.length - 1];
           const lastNum = parseInt(lastDoc.id.substring(slug.length), 10);
@@ -117,6 +127,7 @@ class Jot {
     const db = require('../db/db')();
 
     return db.get(id).then(doc => {
+      console.log(doc);
       return new this(doc);
     });
   }

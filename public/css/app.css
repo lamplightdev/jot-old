@@ -836,3 +836,18 @@ form {
   box-sizing: border-box;
   outline: none;
   -webkit-tap-highlight-color: transparent; }
+
+.jots__jot {
+  margin: 1rem 0; }
+  .jots__jot .jots__jot__item {
+    display: block; }
+  .jots__jot .form-note-update, .jots__jot .form-note-delete {
+    display: none; }
+  .jots__jot .edit-cancel {
+    display: none; }
+  .jots__jot.edit .form-note-update, .jots__jot.edit .form-note-delete {
+    display: inline-block; }
+  .jots__jot.edit .jots__jot__item {
+    display: none; }
+  .jots__jot.edit .edit-cancel {
+    display: inline; }
