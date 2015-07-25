@@ -5,7 +5,7 @@
     <a class='jots__jot__item {{#if fields.done}}jots__jot__item--done{{/if}}' href='/notes?edit={{id}}'>{{fields.content}} - {{id}}</a>
 
     <form class='form-note-update form-note-update-{{id}}' data-id='{{id}}' method='post' action='/notes/{{id}}'>
-      <input type='text' name='content' value='{{fields.content}}'>
+      <input type='text' class='md-form-text' name='content' value='{{fields.content}}'>
       <input type='hidden' name='action' value='update'>
       <input type='hidden' name='done-status' value=''>
       <button type='submit'>save</button>

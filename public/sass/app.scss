@@ -31,10 +31,13 @@ form {
 
 
 .jots__jot {
-  margin: 1rem 0;
+  margin: 1.5rem 0;
 
   .jots__jot__item {
     display: block;
+
+    text-decoration: none;
+    color: inherit;
 
     &.jots__jot__item--done {
       text-decoration: line-through;
@@ -52,7 +55,7 @@ form {
   &.edit {
 
     .form-note-update, .form-note-delete {
-      display: inline-block;
+      display: inline;
     }
 
     .jots__jot__item {

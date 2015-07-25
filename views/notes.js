@@ -83,6 +83,10 @@ class ViewNotes extends MainView {
         });
       });
     });
+
+    form.elements.content.addEventListener('focus', () => {
+      this.unselectAllNotes();
+    });
   }
 
   initEdit() {
@@ -91,17 +95,13 @@ class ViewNotes extends MainView {
       link.addEventListener('click', event => {
         event.preventDefault();
 
-        for (let otherLink of links) {
-          if (otherLink === link) {
-            link.parentNode.classList.add('edit');
+        this.unselectAllNotes();
 
-            const contentField = link.parentNode.querySelector('.form-note-update').elements.content;
-            contentField.focus();
-            contentField.value = contentField.value; //forces cursor to go to end of text
-          } else {
-            otherLink.parentNode.classList.remove('edit');
-          }
-        }
+        link.parentNode.classList.add('edit');
+
+        const contentField = link.parentNode.querySelector('.form-note-update').elements.content;
+        contentField.focus();
+        contentField.value = contentField.value; //forces cursor to go to end of text
       });
     }
 
@@ -112,6 +112,14 @@ class ViewNotes extends MainView {
 
         cancel.parentNode.classList.remove('edit');
       });
+    }
+  }
+
+  unselectAllNotes() {
+    //TODO: have class member to hold reference to common element/element groups to avoid requerying
+    const links = this._el.querySelectorAll('.jots__jot__item');
+    for (let link of links) {
+      link.parentNode.classList.remove('edit');
     }
   }
 

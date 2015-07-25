@@ -570,7 +570,7 @@ p {
   .md-btn-logo img {
     height: 100%;
     width: auto;
-    padding: 0.5rem; }
+    padding: 1rem; }
 
 .md-btn-menu {
   border: 0;
@@ -838,9 +838,11 @@ form {
   -webkit-tap-highlight-color: transparent; }
 
 .jots__jot {
-  margin: 1rem 0; }
+  margin: 1.5rem 0; }
   .jots__jot .jots__jot__item {
-    display: block; }
+    display: block;
+    text-decoration: none;
+    color: inherit; }
     .jots__jot .jots__jot__item.jots__jot__item--done {
       text-decoration: line-through; }
   .jots__jot .form-note-update, .jots__jot .form-note-delete {
@@ -848,7 +850,7 @@ form {
   .jots__jot .edit-cancel {
     display: none; }
   .jots__jot.edit .form-note-update, .jots__jot.edit .form-note-delete {
-    display: inline-block; }
+    display: inline; }
   .jots__jot.edit .jots__jot__item {
     display: none; }
   .jots__jot.edit .edit-cancel {
