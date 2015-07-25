@@ -1,7 +1,10 @@
 'use strict';
 
+const Handlebars = require('handlebars/dist/handlebars.runtime');
+
 exports.ifEqual = ifEqual;
 exports.ifIn = ifIn;
+exports.autoLink = autoLink;
 
 function ifEqual(conditional, equalTo, options) {
   if (conditional === equalTo) {
@@ -17,4 +20,10 @@ function ifIn(elem, arr, options) {
   }
 
   return options.inverse(this);
+}
+
+function autoLink(elem, options) {
+  const url = Handlebars.escapeExpression(elem).autoLink();
+
+  return new Handlebars.SafeString(url);
 }

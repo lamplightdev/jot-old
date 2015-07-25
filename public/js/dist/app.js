@@ -2550,8 +2550,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   }, {}], 18: [function (require, module, exports) {
     'use strict';
 
+    var Handlebars = require('handlebars/dist/handlebars.runtime');
+
     exports.ifEqual = ifEqual;
     exports.ifIn = ifIn;
+    exports.autoLink = autoLink;
 
     function ifEqual(conditional, equalTo, options) {
       if (conditional === equalTo) {
@@ -2568,7 +2571,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       return options.inverse(this);
     }
-  }, {}], 19: [function (require, module, exports) {
+
+    function autoLink(elem, options) {
+      var url = Handlebars.escapeExpression(elem).autoLink();
+
+      return new Handlebars.SafeString(url);
+    }
+  }, { "handlebars/dist/handlebars.runtime": 5 }], 19: [function (require, module, exports) {
     var PubSub = (function () {
       //based on pubsub implementation at http://addyosmani.com/resources/essentialjsdesignpatterns/book/#observerpatternjavascript
 
