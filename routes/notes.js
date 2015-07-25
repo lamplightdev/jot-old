@@ -50,7 +50,14 @@ class NotesRoutes extends Routes {
           return Promise.reject();
         } else {
           return Jot.load(params.id).then(jot => {
+            const currentFields = jot.fields;
+
             jot.fields = params.fields;
+
+            if (typeof params.fields.done === 'undefined') {
+              jot.fields.done = currentFields.done;
+            }
+
             return jot.save();
           });
         }

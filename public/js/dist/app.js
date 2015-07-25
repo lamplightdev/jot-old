@@ -164,6 +164,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           return !this.id;
         }
       }, {
+        key: "isDone",
+        value: function isDone() {
+          return this.fields.done;
+        }
+      }, {
         key: "getSlug",
         value: function getSlug() {
           var _this2 = this;
@@ -270,16 +275,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
           return db.allDocs({
             include_docs: true,
-            descending: true,
-            limit: 10
+            descending: true
           }).then(function (result) {
-            var jots = [];
+            var undoneJots = [];
+            var doneJots = [];
 
             result.rows.forEach(function (row) {
-              jots.push(new _this4(row.doc));
+              var jot = new _this4(row.doc);
+              if (jot.isDone()) {
+                doneJots.push(jot);
+              } else {
+                undoneJots.push(jot);
+              }
             });
 
-            return jots;
+            return undoneJots.concat(doneJots);
           });
         }
       }, {
@@ -2485,7 +2495,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               return Promise.reject();
             } else {
               return Jot.load(params.id).then(function (jot) {
+                var currentFields = jot.fields;
+
                 jot.fields = params.fields;
+
+                if (typeof params.fields.done === 'undefined') {
+                  jot.fields.done = currentFields.done;
+                }
+
                 return jot.save();
               });
             }
@@ -2860,7 +2877,38 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               link.addEventListener('click', function (event) {
                 event.preventDefault();
 
-                link.parentNode.classList.add('edit');
+                var _iteratorNormalCompletion4 = true;
+                var _didIteratorError4 = false;
+                var _iteratorError4 = undefined;
+
+                try {
+                  for (var _iterator4 = links[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                    var otherLink = _step4.value;
+
+                    if (otherLink === link) {
+                      link.parentNode.classList.add('edit');
+
+                      var contentField = link.parentNode.querySelector('.form-note-update').elements.content;
+                      contentField.focus();
+                      contentField.value = contentField.value; //forces cursor to go to end of text
+                    } else {
+                        otherLink.parentNode.classList.remove('edit');
+                      }
+                  }
+                } catch (err) {
+                  _didIteratorError4 = true;
+                  _iteratorError4 = err;
+                } finally {
+                  try {
+                    if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+                      _iterator4["return"]();
+                    }
+                  } finally {
+                    if (_didIteratorError4) {
+                      throw _iteratorError4;
+                    }
+                  }
+                }
               });
             };
 
@@ -2922,13 +2970,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           var _this13 = this;
 
           var forms = this._el.querySelectorAll('.form-note-delete');
-          var _iteratorNormalCompletion4 = true;
-          var _didIteratorError4 = false;
-          var _iteratorError4 = undefined;
+          var _iteratorNormalCompletion5 = true;
+          var _didIteratorError5 = false;
+          var _iteratorError5 = undefined;
 
           try {
             var _loop3 = function () {
-              var form = _step4.value;
+              var form = _step5.value;
 
               form.addEventListener('submit', function (event) {
                 event.preventDefault();
@@ -2945,65 +2993,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               });
             };
 
-            for (var _iterator4 = forms[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-              _loop3();
-            }
-          } catch (err) {
-            _didIteratorError4 = true;
-            _iteratorError4 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
-                _iterator4["return"]();
-              }
-            } finally {
-              if (_didIteratorError4) {
-                throw _iteratorError4;
-              }
-            }
-          }
-        }
-      }, {
-        key: "initUpdateForms",
-        value: function initUpdateForms() {
-          var _this14 = this;
-
-          var forms = this._el.querySelectorAll('.form-note-update');
-
-          var _iteratorNormalCompletion5 = true;
-          var _didIteratorError5 = false;
-          var _iteratorError5 = undefined;
-
-          try {
-            var _loop4 = function () {
-              var form = _step5.value;
-
-              form.addEventListener('submit', function (event) {
-                event.preventDefault();
-
-                var id = form.dataset.id;
-
-                var contentField = form.elements.content;
-                var content = contentField.value;
-
-                Jot.load(id).then(function (jot) {
-                  jot.fields = {
-                    content: content
-                  };
-
-                  jot.save().then(function () {
-                    Jot.loadAll().then(function (jots) {
-                      _this14.renderPartial('jots', false, {
-                        jots: jots
-                      });
-                    });
-                  });
-                });
-              });
-            };
-
             for (var _iterator5 = forms[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-              _loop4();
+              _loop3();
             }
           } catch (err) {
             _didIteratorError5 = true;
@@ -3016,6 +3007,89 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             } finally {
               if (_didIteratorError5) {
                 throw _iteratorError5;
+              }
+            }
+          }
+        }
+      }, {
+        key: "initUpdateForms",
+        value: function initUpdateForms() {
+          var _this14 = this;
+
+          var forms = this._el.querySelectorAll('.form-note-update');
+
+          var _iteratorNormalCompletion6 = true;
+          var _didIteratorError6 = false;
+          var _iteratorError6 = undefined;
+
+          try {
+            var _loop4 = function () {
+              var form = _step6.value;
+
+              var doneButton = form.elements.done;
+              var undoneButton = form.elements.undone;
+
+              if (doneButton) {
+                doneButton.addEventListener('click', function () {
+                  form.elements['done-status'].value = 'done';
+                });
+              }
+
+              if (undoneButton) {
+                undoneButton.addEventListener('click', function () {
+                  form.elements['done-status'].value = 'undone';
+                });
+              }
+
+              form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                var id = form.dataset.id;
+
+                var content = form.elements.content.value;
+                var doneStatus = form.elements['done-status'].value;
+
+                Jot.load(id).then(function (jot) {
+
+                  var currentFields = jot.fields;
+
+                  jot.fields = {
+                    content: content
+                  };
+
+                  if (doneStatus === 'done') {
+                    jot.fields.done = true;
+                  } else if (doneStatus === 'undone') {
+                    jot.fields.done = false;
+                  } else {
+                    jot.fields.done = currentFields.done;
+                  }
+
+                  jot.save().then(function () {
+                    Jot.loadAll().then(function (jots) {
+                      _this14.renderPartial('jots', false, {
+                        jots: jots
+                      });
+                    });
+                  });
+                });
+              });
+            };
+
+            for (var _iterator6 = forms[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+              _loop4();
+            }
+          } catch (err) {
+            _didIteratorError6 = true;
+            _iteratorError6 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
+                _iterator6["return"]();
+              }
+            } finally {
+              if (_didIteratorError6) {
+                throw _iteratorError6;
               }
             }
           }

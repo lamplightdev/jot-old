@@ -841,6 +841,8 @@ form {
   margin: 1rem 0; }
   .jots__jot .jots__jot__item {
     display: block; }
+    .jots__jot .jots__jot__item.jots__jot__item--done {
+      text-decoration: line-through; }
   .jots__jot .form-note-update, .jots__jot .form-note-delete {
     display: none; }
   .jots__jot .edit-cancel {

@@ -2,12 +2,18 @@
 {{#each jots}}
   <div class='jots__jot jots__jot-{{id}} {{#ifEqual id @root.editJotID}}edit{{/ifEqual}}'>
 
-    <a class='jots__jot__item' href='/notes?edit={{id}}'>{{fields.content}} - {{id}}</a>
+    <a class='jots__jot__item {{#if fields.done}}jots__jot__item--done{{/if}}' href='/notes?edit={{id}}'>{{fields.content}} - {{id}}</a>
 
     <form class='form-note-update form-note-update-{{id}}' data-id='{{id}}' method='post' action='/notes/{{id}}'>
       <input type='text' name='content' value='{{fields.content}}'>
       <input type='hidden' name='action' value='update'>
+      <input type='hidden' name='done-status' value=''>
       <button type='submit'>save</button>
+      {{#if fields.done}}
+      <button type='submit' name='undone'>undone</button>
+      {{else}}
+      <button type='submit' name='done'>done</button>
+      {{/if}}
     </form>
 
     <form class='form-note-delete form-note-delete-{{id}}' data-id='{{id}}' method='post' action='/notes/{{id}}'>

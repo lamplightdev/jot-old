@@ -91,7 +91,17 @@ class ViewNotes extends MainView {
       link.addEventListener('click', event => {
         event.preventDefault();
 
-        link.parentNode.classList.add('edit');
+        for (let otherLink of links) {
+          if (otherLink === link) {
+            link.parentNode.classList.add('edit');
+
+            const contentField = link.parentNode.querySelector('.form-note-update').elements.content;
+            contentField.focus();
+            contentField.value = contentField.value; //forces cursor to go to end of text
+          } else {
+            otherLink.parentNode.classList.remove('edit');
+          }
+        }
       });
     }
 
@@ -128,18 +138,44 @@ class ViewNotes extends MainView {
     const forms = this._el.querySelectorAll('.form-note-update');
 
     for (let form of forms) {
+      const doneButton = form.elements.done;
+      const undoneButton = form.elements.undone;
+
+      if (doneButton) {
+        doneButton.addEventListener('click', () => {
+          form.elements['done-status'].value = 'done';
+        });
+      }
+
+      if (undoneButton) {
+        undoneButton.addEventListener('click', () => {
+          form.elements['done-status'].value = 'undone';
+        });
+      }
+
       form.addEventListener('submit', event => {
         event.preventDefault();
 
         const id = form.dataset.id;
 
-        const contentField = form.elements.content;
-        const content = contentField.value;
+        const content = form.elements.content.value;
+        const doneStatus = form.elements['done-status'].value;
 
         Jot.load(id).then(jot => {
+
+          const currentFields = jot.fields;
+
           jot.fields = {
             content
           };
+
+          if (doneStatus === 'done') {
+            jot.fields.done = true;
+          } else if (doneStatus === 'undone') {
+            jot.fields.done = false;
+          } else {
+            jot.fields.done = currentFields.done;
+          }
 
           jot.save().then(() => {
             Jot.loadAll().then(jots => {

@@ -35,6 +35,10 @@ form {
 
   .jots__jot__item {
     display: block;
+
+    &.jots__jot__item--done {
+      text-decoration: line-through;
+    }
   }
 
   .form-note-update, .form-note-delete {

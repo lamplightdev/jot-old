@@ -66,12 +66,20 @@ class NotesRouter {
 
     this.routes.registerRoute('update', (req, res, next) => {
       return Promise.resolve().then(() => {
+        const fields = {
+          content: req.body.content
+        };
+
+        if (typeof req.body.done !== 'undefined') {
+          fields.done = true;
+        } else if (typeof req.body.undone !== 'undefined') {
+          fields.done = false;
+        }
+
         const params = {
           id: req.params.id,
           action: req.body.action,
-          fields: {
-            content: req.body.content
-          }
+          fields
         };
 
         return {

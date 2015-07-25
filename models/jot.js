@@ -54,6 +54,10 @@ class Jot {
     return !this.id;
   }
 
+  isDone() {
+    return this.fields.done;
+  }
+
   getSlug() {
     if (!this.isNew()) {
       return Promise.resolve(this.id);
@@ -110,16 +114,21 @@ class Jot {
 
     return db.allDocs({
       include_docs: true,
-      descending: true,
-      limit: 10
+      descending: true
     }).then(result => {
-      const jots = [];
+      const undoneJots = [];
+      const doneJots = [];
 
       result.rows.forEach(row => {
-        jots.push(new this(row.doc));
+        const jot = new this(row.doc);
+        if (jot.isDone()) {
+          doneJots.push(jot);
+        } else {
+          undoneJots.push(jot);
+        }
       });
 
-      return jots;
+      return undoneJots.concat(doneJots);
     });
   }
 
