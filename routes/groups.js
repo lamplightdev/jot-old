@@ -2,9 +2,9 @@
 
 const Routes = require('./routes');
 
-const Jot = require('../models/jot');
+const Group = require('../models/group');
 
-class NotesRoutes extends Routes {
+class GroupsRoutes extends Routes {
   constructor(router, prefix = '') {
     super(router, prefix);
 
@@ -20,10 +20,9 @@ class NotesRoutes extends Routes {
       _path: '/',
       _method: ['post'],
       _action: params => {
-        return new Jot({
+        return new Group({
           fields: {
-            content: params.content,
-            group: params.group
+            name: params.name
           }
         }).save();
       }
@@ -36,7 +35,7 @@ class NotesRoutes extends Routes {
         if (params.action !== 'delete') {
           return Promise.reject();  //will cascade down to update etc.
         } else {
-          return Jot.remove(params.id).then(result => {
+          return Group.remove(params.id).then(result => {
             return true;
           });
         }
@@ -50,16 +49,10 @@ class NotesRoutes extends Routes {
         if (params.action !== 'update') {
           return Promise.reject();
         } else {
-          return Jot.load(params.id).then(jot => {
-            const currentFields = jot.fields;
+          return Group.load(params.id).then(group => {
+            group.fields = params.fields;
 
-            jot.fields = params.fields;
-
-            if (typeof params.fields.done === 'undefined') {
-              jot.fields.done = currentFields.done;
-            }
-
-            return jot.save();
+            return group.save();
           });
         }
       }
@@ -67,4 +60,4 @@ class NotesRoutes extends Routes {
   }
 }
 
-module.exports = NotesRoutes;
+module.exports = GroupsRoutes;

@@ -1,24 +1,23 @@
-const NotesRoutes = require('../notes');
-const Jot = require('../../models/jot');
+const GroupsRoutes = require('../groups');
+const Group = require('../../models/group');
 
-class NotesRouter {
+class GroupsRouter {
   constructor(router) {
     this.router = router;
-    this.routes = new NotesRoutes(router);
+    this.routes = new GroupsRoutes(router);
   }
 
   registerRoutes() {
     this.routes.registerRoute('all', (req, res, next) => {
-      return Jot.loadAll().then(jots => {
+      return Group.loadAll().then(groups => {
         return {
           params: {},
 
           resolve: (events) => {
             res.render('app', {
-              name: 'Notes',
-              content: 'notes',
-              jots,
-              editJotID: req.query.edit
+              name: 'Groups',
+              content: 'groups',
+              groups
             });
           },
 
@@ -30,15 +29,14 @@ class NotesRouter {
     this.routes.registerRoute('add', (req, res, next) => {
       return Promise.resolve().then(() => {
         const params = {
-          content: req.body.content,
-          group: req.body.group
+          name: req.body.name
         };
 
         return {
           params,
 
           resolve: () => {
-            res.redirect('/notes');
+            res.redirect('/groups');
           },
 
           reject: next
@@ -57,7 +55,7 @@ class NotesRouter {
           params,
 
           resolve: () => {
-            res.redirect('/notes');
+            res.redirect('/groups');
           },
 
           reject: next
@@ -68,15 +66,8 @@ class NotesRouter {
     this.routes.registerRoute('update', (req, res, next) => {
       return Promise.resolve().then(() => {
         const fields = {
-          content: req.body.content,
-          group: req.body.group
+          name: req.body.name
         };
-
-        if (typeof req.body.done !== 'undefined') {
-          fields.done = true;
-        } else if (typeof req.body.undone !== 'undefined') {
-          fields.done = false;
-        }
 
         const params = {
           id: req.params.id,
@@ -88,7 +79,7 @@ class NotesRouter {
           params,
 
           resolve: () => {
-            res.redirect('/notes');
+            res.redirect('/groups');
           },
 
           reject: next
@@ -100,4 +91,4 @@ class NotesRouter {
   }
 }
 
-module.exports = NotesRouter;
+module.exports = GroupsRouter;

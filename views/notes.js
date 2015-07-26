@@ -70,12 +70,17 @@ class ViewNotes extends MainView {
       const contentField = form.elements.content;
       const content = contentField.value;
 
+      const groupField = form.elements.group;
+      const group = groupField.value;
+
       new Jot({
         fields: {
-          content
+          content,
+          group
         }
       }).save().then(() => {
         contentField.value = '';
+        groupField.value = '';
         Jot.loadAll().then(jots => {
           this.renderPartial('jots', false, {
             jots
@@ -83,17 +88,14 @@ class ViewNotes extends MainView {
         });
       });
     });
-
-    form.elements.content.addEventListener('focus', () => {
-      this.unselectAllNotes();
-    });
   }
 
   initEdit() {
-    const links = this._el.querySelectorAll('.jots__jot__item');
+    const links = this._el.querySelectorAll('.jots__jot__edit');
     for (let link of links) {
       link.addEventListener('click', event => {
         event.preventDefault();
+        event.stopPropagation();  //stop document listener from removing 'edit' class
 
         this.unselectAllNotes();
 
@@ -110,9 +112,14 @@ class ViewNotes extends MainView {
       cancel.addEventListener('click', event => {
         event.preventDefault();
 
-        cancel.parentNode.classList.remove('edit');
+        //cancel.parentNode.classList.remove('edit');
+        //above will be handled by document listener below
       });
     }
+
+    document.addEventListener('click', event => {
+      this.unselectAllNotes();
+    });
   }
 
   unselectAllNotes() {
@@ -161,12 +168,17 @@ class ViewNotes extends MainView {
         });
       }
 
+      form.addEventListener('click', event => {
+        event.stopPropagation();  //stop document listener from removing 'edit' class
+      });
+
       form.addEventListener('submit', event => {
         event.preventDefault();
 
         const id = form.dataset.id;
 
         const content = form.elements.content.value;
+        const group = form.elements.group.value;
         const doneStatus = form.elements['done-status'].value;
 
         Jot.load(id).then(jot => {
@@ -174,7 +186,8 @@ class ViewNotes extends MainView {
           const currentFields = jot.fields;
 
           jot.fields = {
-            content
+            content,
+            group
           };
 
           if (doneStatus === 'done') {

@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/lamplightdev/jot#readme",
   "dependencies": {
+    "autolinker": "^0.18.1",
     "babel": "^5.8.3",
     "body-parser": "^1.13.2",
     "cloudant": "^1.1.0",

@@ -2,10 +2,12 @@
 {{#each jots}}
   <div class='jots__jot jots__jot-{{id}} {{#ifEqual id @root.editJotID}}edit{{/ifEqual}}'>
 
-    <a class='jots__jot__item {{#if fields.done}}jots__jot__item--done{{/if}}' href='/notes?edit={{id}}'>{{autoLink fields.content}} - {{id}}</a>
+    <div class='jots__jot__item {{#if fields.done}}jots__jot__item--done{{/if}}'>{{autoLink fields.content}} - {{id}} ({{fields.group}})</div>
+    <a class='jots__jot__edit' href='/notes?edit={{id}}' target='_parent'>edit</a>
 
     <form class='form-note-update form-note-update-{{id}}' data-id='{{id}}' method='post' action='/notes/{{id}}'>
       <input type='text' class='md-form-text' name='content' value='{{fields.content}}'>
+      <input type='text' class='md-form-text' name='group' value='{{fields.group}}'>
       <input type='hidden' name='action' value='update'>
       <input type='hidden' name='done-status' value=''>
       <button type='submit'>save</button>

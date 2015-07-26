@@ -1,5 +1,7 @@
 'use strict';
 
+const Autolinker = require('autolinker');
+
 const Handlebars = require('handlebars/dist/handlebars.runtime');
 
 exports.ifEqual = ifEqual;
@@ -23,7 +25,7 @@ function ifIn(elem, arr, options) {
 }
 
 function autoLink(elem, options) {
-  const url = Handlebars.escapeExpression(elem).autoLink();
+  const url = Autolinker.link(Handlebars.escapeExpression(elem));
 
   return new Handlebars.SafeString(url);
 }
