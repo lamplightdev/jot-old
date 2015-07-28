@@ -1,4 +1,5 @@
 const Model = require('./model');
+const Jot = require('./jot');
 
 class Group extends Model {
 
@@ -6,6 +7,12 @@ class Group extends Model {
     super(members, [
       'name'
     ]);
+
+    this.getJots();
+  }
+
+  getJots() {
+    return Jot.getForGroup(this.id);
   }
 }
 

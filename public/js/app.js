@@ -11,8 +11,9 @@ require('../../db/db')({
 const router = require('../../routers/path');
 
 const RoutesHome = require('../../routes/client/home');
-const RoutesNotes = require('../../routes/client/notes');
 const RoutesAuth = require('../../routes/client/auth');
+const RoutesJot = require('../../routes/client/jot');
+const RoutesGroup = require('../../routes/client/group');
 
 const TitleBarView = require('../../views/titlebar');
 
@@ -31,15 +32,22 @@ const routesHome = new RoutesHome(router, '/');
 
 const routesAuth = new RoutesAuth(router, '/auth');
 
-const routesNotes = new RoutesNotes(router, '/notes', {
-  item: JotApp.templates.note,
+const routesJot = new RoutesJot(router, '/jot', {
+  item: JotApp.templates.jot,
   itemadd: JotApp.templates['note-add'],
-  items: JotApp.templates.notes
+  items: JotApp.templates.jots
+});
+
+const routesGroup = new RoutesGroup(router, '/group', {
+  item: JotApp.templates.group,
+  itemadd: JotApp.templates['note-add'],
+  items: JotApp.templates.groups
 });
 
 routesHome.registerRoutes();
 routesAuth.registerRoutes();
-routesNotes.registerRoutes();
+routesJot.registerRoutes();
+routesGroup.registerRoutes();
 
 const titleBar = new TitleBarView(JotApp.templates.titlebar, {
   'titlebar-title': JotApp.templates['titlebar-title']

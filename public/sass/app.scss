@@ -30,10 +30,10 @@ form {
 }
 
 
-.jots__jot {
+.jots__jot, .groups__group {
   margin: 1.5rem 0;
 
-  .jots__jot__item {
+  .jots__jot__item, .groups__group__item {
     display: block;
 
     text-decoration: none;
@@ -44,7 +44,7 @@ form {
     }
   }
 
-  .form-note-update, .form-note-delete {
+  .form-jot-update, .form-jot-delete, .form-group-update, .form-group-delete {
     display: none;
   }
 
@@ -54,11 +54,11 @@ form {
 
   &.edit {
 
-    .form-note-update, .form-note-delete {
+    .form-jot-update, .form-jot-delete, .form-group-update, .form-group-delete {
       display: inline;
     }
 
-    .jots__jot__item {
+    .jots__jot__item, .groups__group__item {
       display: none;
     }
 

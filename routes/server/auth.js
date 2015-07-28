@@ -53,7 +53,7 @@ class AuthRouter {
                   if (err) {
                     return next(err);
                   } else {
-                    return res.redirect('/notes');
+                    return res.redirect('/jot');
                   }
                 });
               }, next);

@@ -26,6 +26,39 @@ class Jot extends Model {
       return undoneJots.concat(doneJots);
     });
   }
+
+  static getForGroup(groupId) {
+    const db = require('../db/db')();
+
+    var ddoc = {
+      _id: '_design/index',
+      views: {
+        group: {
+          map: doc => {
+            if (doc.fields.group) {
+              emit(doc.fields.group);
+            }
+          }.toString()
+        }
+      }
+    };
+
+    return db.put(ddoc).catch(err => {
+      if (err.status !== 409) {
+        throw err;
+      }
+    }).then(() => {
+      return db.query('index/group', {
+        endkey: this.getRefName() + '-',
+        startkey: this.getRefName() + '-\uffff',
+        descending: true,
+        key: groupId,
+        include_docs: true
+      });
+    }).then(result => {
+      console.log('fetch: ', result);
+    });
+  }
 }
 
 module.exports = Jot;

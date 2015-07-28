@@ -1,10 +1,10 @@
-const GroupsRoutes = require('../groups');
+const GroupRoutes = require('../group');
 const Group = require('../../models/group');
 
-class GroupsRouter {
+class GroupsServerRoutes {
   constructor(router) {
     this.router = router;
-    this.routes = new GroupsRoutes(router);
+    this.routes = new GroupRoutes(router);
   }
 
   registerRoutes() {
@@ -17,7 +17,8 @@ class GroupsRouter {
             res.render('app', {
               name: 'Groups',
               content: 'groups',
-              groups
+              groups,
+              editID: req.query.edit
             });
           },
 
@@ -36,7 +37,7 @@ class GroupsRouter {
           params,
 
           resolve: () => {
-            res.redirect('/groups');
+            res.redirect('/group');
           },
 
           reject: next
@@ -55,7 +56,7 @@ class GroupsRouter {
           params,
 
           resolve: () => {
-            res.redirect('/groups');
+            res.redirect('/group');
           },
 
           reject: next
@@ -79,7 +80,7 @@ class GroupsRouter {
           params,
 
           resolve: () => {
-            res.redirect('/groups');
+            res.redirect('/group');
           },
 
           reject: next
@@ -91,4 +92,4 @@ class GroupsRouter {
   }
 }
 
-module.exports = GroupsRouter;
+module.exports = GroupsServerRoutes;

@@ -1,10 +1,10 @@
-const NotesRoutes = require('../notes');
+const JotRoutes = require('../jot');
 const Jot = require('../../models/jot');
 
-class NotesRouter {
+class JotServerRoutes {
   constructor(router) {
     this.router = router;
-    this.routes = new NotesRoutes(router);
+    this.routes = new JotRoutes(router);
   }
 
   registerRoutes() {
@@ -15,10 +15,10 @@ class NotesRouter {
 
           resolve: (events) => {
             res.render('app', {
-              name: 'Notes',
-              content: 'notes',
+              name: 'Jots',
+              content: 'jots',
               jots,
-              editJotID: req.query.edit
+              editID: req.query.edit
             });
           },
 
@@ -38,7 +38,7 @@ class NotesRouter {
           params,
 
           resolve: () => {
-            res.redirect('/notes');
+            res.redirect('/jot');
           },
 
           reject: next
@@ -57,7 +57,7 @@ class NotesRouter {
           params,
 
           resolve: () => {
-            res.redirect('/notes');
+            res.redirect('/jot');
           },
 
           reject: next
@@ -88,7 +88,7 @@ class NotesRouter {
           params,
 
           resolve: () => {
-            res.redirect('/notes');
+            res.redirect('/jot');
           },
 
           reject: next
@@ -100,4 +100,4 @@ class NotesRouter {
   }
 }
 
-module.exports = NotesRouter;
+module.exports = JotServerRoutes;

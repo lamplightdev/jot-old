@@ -4,7 +4,7 @@ const Routes = require('./routes');
 
 const Jot = require('../models/jot');
 
-class NotesRoutes extends Routes {
+class JotRoutes extends Routes {
   constructor(router, prefix = '') {
     super(router, prefix);
 
@@ -67,4 +67,4 @@ class NotesRoutes extends Routes {
   }
 }
 
-module.exports = NotesRoutes;
+module.exports = JotRoutes;

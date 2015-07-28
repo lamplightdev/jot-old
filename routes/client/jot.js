@@ -1,14 +1,14 @@
-const NotesRoutes = require('../notes');
-const NotesView = require('../../views/notes');
+const JotRoutes = require('../jot');
+const JotsView = require('../../views/jots');
 const PubSub = require('../../utility/pubsub');
 
 const Jot = require('../../models/jot');
 
-class NotesRouter {
+class JotClientRoutes {
   constructor(router, prefix = '') {
-    this.routes = new NotesRoutes(router, prefix);
+    this.routes = new JotRoutes(router, prefix);
 
-    this.notesView = new NotesView();
+    this.jotsView = new JotsView();
   }
 
   registerRoutes() {
@@ -18,15 +18,13 @@ class NotesRouter {
           params: {},
 
           resolve: (events) => {
-            this.notesView.render(false, {
+            this.jotsView.render(false, {
               jots
             });
 
-            /*
             PubSub.publish('routeChanged', {
-              name: 'Home'
+              name: 'Jots'
             });
-            */
           },
 
           reject: (err) => {
@@ -38,4 +36,4 @@ class NotesRouter {
   }
 }
 
-module.exports = NotesRouter;
+module.exports = JotClientRoutes;

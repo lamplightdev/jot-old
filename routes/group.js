@@ -4,7 +4,7 @@ const Routes = require('./routes');
 
 const Group = require('../models/group');
 
-class GroupsRoutes extends Routes {
+class GroupRoutes extends Routes {
   constructor(router, prefix = '') {
     super(router, prefix);
 
@@ -60,4 +60,4 @@ class GroupsRoutes extends Routes {
   }
 }
 
-module.exports = GroupsRoutes;
+module.exports = GroupRoutes;

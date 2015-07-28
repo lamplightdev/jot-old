@@ -44,8 +44,8 @@ class ViewGroups extends MainView {
     console.log('render partial');
 
     if (!preRendered) {
-      var template = Handlebars.template(JotApp.templates.groups);
-      const view = this._el.querySelector('.groups');
+      var template = Handlebars.template(JotApp.templates['group-list']);
+      const view = this._el.querySelector('.group-list');
       view.outerHTML = template(params);
 
       this.initEdit();
@@ -68,7 +68,7 @@ class ViewGroups extends MainView {
       event.preventDefault();
 
       const nameField = form.elements.name;
-      const name = nameField.name;
+      const name = nameField.value;
 
       new Group({
         fields: {
@@ -157,11 +157,11 @@ class ViewGroups extends MainView {
 
         const id = form.dataset.id;
 
-        const name = form.elements.content.name;
+        const name = form.elements.name.value;
 
         Group.load(id).then(group => {
 
-          Group.fields = {
+          group.fields = {
             name
           };
 

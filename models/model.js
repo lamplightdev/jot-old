@@ -11,8 +11,12 @@ class Model {
     this._allowedFields = allowedFields;
   }
 
+  static getRefName() {
+    return this.name.toLowerCase();
+  }
+
   get refName() {
-    return this.constructor.name.toLowerCase();
+    return this.constructor.getRefName();
   }
 
   get id() {
@@ -65,7 +69,7 @@ class Model {
     } else {
       let slug = this.refName + '-';
 
-      const padding = 10; //the length of the number, e.g. '5' will start at 00000, 00001, etc.
+      const padding = 5; //the length of the number, e.g. '5' will start at 00000, 00001, etc.
 
       return this._db.allDocs({
         startkey: slug + '\uffff',
@@ -114,6 +118,8 @@ class Model {
     const db = require('../db/db')();
 
     return db.allDocs({
+      endkey: this.getRefName() + '-',
+      startkey: this.getRefName() + '-\uffff',
       include_docs: true,
       descending: true
     }).then(result => {
@@ -131,7 +137,6 @@ class Model {
     const db = require('../db/db')();
 
     return db.get(id).then(doc => {
-      console.log(doc);
       return new this(doc);
     });
   }

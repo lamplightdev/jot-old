@@ -8,7 +8,7 @@ const Jot = require('../models/jot');
 
 const PubSub = require('../utility/pubsub');
 
-class ViewNotes extends MainView {
+class ViewJots extends MainView {
   constructor(template) {
     super(template);
 
@@ -29,11 +29,11 @@ class ViewNotes extends MainView {
     console.log('render');
 
     if (!preRendered) {
-      var template = Handlebars.template(JotApp.templates.notes);
+      var template = Handlebars.template(JotApp.templates.jots);
       const view = document.getElementById('view');
       view.innerHTML = template(params);
 
-      const contentField = this._el.querySelector('#form-note-add').elements.content;
+      const contentField = this._el.querySelector('#form-jot-add').elements.content;
       contentField.focus();
     }
 
@@ -44,8 +44,8 @@ class ViewNotes extends MainView {
     console.log('render partial');
 
     if (!preRendered) {
-      var template = Handlebars.template(JotApp.templates.jots);
-      const view = this._el.querySelector('.jots');
+      var template = Handlebars.template(JotApp.templates['jot-list']);
+      const view = this._el.querySelector('.jot-list');
       view.outerHTML = template(params);
 
       this.initEdit();
@@ -63,7 +63,7 @@ class ViewNotes extends MainView {
   }
 
   initAddForm() {
-    const form = this._el.querySelector('#form-note-add');
+    const form = this._el.querySelector('#form-jot-add');
     form.addEventListener('submit', event => {
       event.preventDefault();
 
@@ -97,11 +97,11 @@ class ViewNotes extends MainView {
         event.preventDefault();
         event.stopPropagation();  //stop document listener from removing 'edit' class
 
-        this.unselectAllNotes();
+        this.unselectAllJots();
 
         link.parentNode.classList.add('edit');
 
-        const contentField = link.parentNode.querySelector('.form-note-update').elements.content;
+        const contentField = link.parentNode.querySelector('.form-jot-update').elements.content;
         contentField.focus();
         contentField.value = contentField.value; //forces cursor to go to end of text
       });
@@ -118,11 +118,11 @@ class ViewNotes extends MainView {
     }
 
     document.addEventListener('click', event => {
-      this.unselectAllNotes();
+      this.unselectAllJots();
     });
   }
 
-  unselectAllNotes() {
+  unselectAllJots() {
     //TODO: have class member to hold reference to common element/element groups to avoid requerying
     const links = this._el.querySelectorAll('.jots__jot__item');
     for (let link of links) {
@@ -131,7 +131,7 @@ class ViewNotes extends MainView {
   }
 
   initDeleteForms() {
-    const forms = this._el.querySelectorAll('.form-note-delete');
+    const forms = this._el.querySelectorAll('.form-jot-delete');
     for (let form of forms) {
       form.addEventListener('submit', event => {
         event.preventDefault();
@@ -150,7 +150,7 @@ class ViewNotes extends MainView {
   }
 
   initUpdateForms() {
-    const forms = this._el.querySelectorAll('.form-note-update');
+    const forms = this._el.querySelectorAll('.form-jot-update');
 
     for (let form of forms) {
       const doneButton = form.elements.done;
@@ -212,4 +212,4 @@ class ViewNotes extends MainView {
 
 }
 
-module.exports = ViewNotes;
+module.exports = ViewJots;

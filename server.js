@@ -13,7 +13,8 @@ const passport = require('passport');
 const auth = require('./utility/auth');
 
 const RoutesHome = require('./routes/server/home');
-const RoutesNotes = require('./routes/server/notes');
+const RoutesJot = require('./routes/server/jot');
+const RoutesGroup = require('./routes/server/group');
 const RoutesAuth = require('./routes/server/auth');
 
 const app = express();
@@ -96,8 +97,10 @@ app.use((req, res, next) => {
 
 const routesHome = new RoutesHome(require('express').Router());
 app.use('/', routesHome.registerRoutes());
-const routesNotes = new RoutesNotes(require('express').Router());
-app.use('/notes', routesNotes.registerRoutes());
+const routesJot = new RoutesJot(require('express').Router());
+app.use('/jot', routesJot.registerRoutes());
+const routesGroup = new RoutesGroup(require('express').Router());
+app.use('/group', routesGroup.registerRoutes());
 const routesAuth = new RoutesAuth(require('express').Router());
 app.use('/auth', routesAuth.registerRoutes());
 

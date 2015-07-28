@@ -1,12 +1,12 @@
-const GroupsRoutes = require('../groups');
+const GroupRoutes = require('../group');
 const GroupsView = require('../../views/groups');
 const PubSub = require('../../utility/pubsub');
 
 const Group = require('../../models/group');
 
-class GroupsRouter {
+class GroupClientRoutes {
   constructor(router, prefix = '') {
-    this.routes = new GroupsRoutes(router, prefix);
+    this.routes = new GroupRoutes(router, prefix);
 
     this.groupsView = new GroupsView();
   }
@@ -22,11 +22,9 @@ class GroupsRouter {
               groups
             });
 
-            /*
             PubSub.publish('routeChanged', {
-              name: 'Home'
+              name: 'Groups'
             });
-            */
           },
 
           reject: (err) => {
@@ -38,4 +36,4 @@ class GroupsRouter {
   }
 }
 
-module.exports = GroupsRouter;
+module.exports = GroupClientRoutes;

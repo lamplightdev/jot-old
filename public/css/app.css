@@ -837,21 +837,21 @@ form {
   outline: none;
   -webkit-tap-highlight-color: transparent; }
 
-.jots__jot {
+.jots__jot, .groups__group {
   margin: 1.5rem 0; }
-  .jots__jot .jots__jot__item {
+  .jots__jot .jots__jot__item, .jots__jot .groups__group__item, .groups__group .jots__jot__item, .groups__group .groups__group__item {
     display: block;
     text-decoration: none;
     color: inherit; }
-    .jots__jot .jots__jot__item.jots__jot__item--done {
+    .jots__jot .jots__jot__item.jots__jot__item--done, .jots__jot .groups__group__item.jots__jot__item--done, .groups__group .jots__jot__item.jots__jot__item--done, .groups__group .groups__group__item.jots__jot__item--done {
       text-decoration: line-through; }
-  .jots__jot .form-note-update, .jots__jot .form-note-delete {
+  .jots__jot .form-jot-update, .jots__jot .form-jot-delete, .jots__jot .form-group-update, .jots__jot .form-group-delete, .groups__group .form-jot-update, .groups__group .form-jot-delete, .groups__group .form-group-update, .groups__group .form-group-delete {
     display: none; }
-  .jots__jot .edit-cancel {
+  .jots__jot .edit-cancel, .groups__group .edit-cancel {
     display: none; }
-  .jots__jot.edit .form-note-update, .jots__jot.edit .form-note-delete {
+  .jots__jot.edit .form-jot-update, .jots__jot.edit .form-jot-delete, .jots__jot.edit .form-group-update, .jots__jot.edit .form-group-delete, .groups__group.edit .form-jot-update, .groups__group.edit .form-jot-delete, .groups__group.edit .form-group-update, .groups__group.edit .form-group-delete {
     display: inline; }
-  .jots__jot.edit .jots__jot__item {
+  .jots__jot.edit .jots__jot__item, .jots__jot.edit .groups__group__item, .groups__group.edit .jots__jot__item, .groups__group.edit .groups__group__item {
     display: none; }
-  .jots__jot.edit .edit-cancel {
+  .jots__jot.edit .edit-cancel, .groups__group.edit .edit-cancel {
     display: inline; }
