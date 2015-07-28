@@ -8,55 +8,87 @@ class Jot extends Model {
       'group',
       'done'
     ]);
+
+    this._group = null;
   }
 
-  static loadAll() {
-    return super.loadAll().then(jots => {
-      const undoneJots = [];
-      const doneJots = [];
+  get group() {
+    return this._group;
+  }
 
-      jots.forEach(jot => {
-        if (jot.isDone()) {
-          doneJots.push(jot);
-        } else {
-          undoneJots.push(jot);
-        }
-      });
+  get groupName() {
+    if (this._group) {
+      return this._group.fields.name;
+    } else {
+      return '-';
+    }
+  }
 
-      return undoneJots.concat(doneJots);
+  loadGroup() {
+    const Group = require('./group');
+
+    return Group.load(this.fields.group, false).then(group => {
+      this._group = group;
+      return this;
     });
   }
 
-  static getForGroup(groupId) {
+  static load(id, loadGroup = true) {
+    return super.load(id).then(jot => {
+      if (loadGroup) {
+        return jot.loadGroup().then(() => {
+          return jot;
+        });
+      } else {
+        return jot;
+      }
+    });
+  }
+
+  static loadAll(loadGroups = true) {
+    return super.loadAll().then(jots => {
+      const promises = [];
+
+      if (loadGroups) {
+        jots.forEach(jot => {
+          promises.push(jot.loadGroup());
+        });
+      }
+
+      return Promise.all(promises).then(() => {
+        const undoneJots = [];
+        const doneJots = [];
+
+        jots.forEach(jot => {
+          if (jot.isDone()) {
+            doneJots.push(jot);
+          } else {
+            undoneJots.push(jot);
+          }
+        });
+
+        return undoneJots.concat(doneJots);
+      });
+    });
+  }
+
+  static loadForGroup(groupId) {
     const db = require('../db/db')();
 
-    var ddoc = {
-      _id: '_design/index',
-      views: {
-        group: {
-          map: doc => {
-            if (doc.fields.group) {
-              emit(doc.fields.group);
-            }
-          }.toString()
-        }
-      }
-    };
-
-    return db.put(ddoc).catch(err => {
-      if (err.status !== 409) {
-        throw err;
-      }
-    }).then(() => {
-      return db.query('index/group', {
-        endkey: this.getRefName() + '-',
-        startkey: this.getRefName() + '-\uffff',
-        descending: true,
-        key: groupId,
-        include_docs: true
-      });
+    return db.query('index/group', {
+      endkey: this.getRefName() + '-',
+      startkey: this.getRefName() + '-\uffff',
+      descending: true,
+      key: groupId,
+      include_docs: true
     }).then(result => {
-      console.log('fetch: ', result);
+      const jots = [];
+
+      result.rows.forEach(row => {
+        jots.push(new this(row.doc));
+      });
+
+      return jots;
     });
   }
 }

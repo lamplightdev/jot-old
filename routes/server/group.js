@@ -1,5 +1,4 @@
 const GroupRoutes = require('../group');
-const Group = require('../../models/group');
 
 class GroupsServerRoutes {
   constructor(router) {
@@ -9,16 +8,36 @@ class GroupsServerRoutes {
 
   registerRoutes() {
     this.routes.registerRoute('all', (req, res, next) => {
-      return Group.loadAll().then(groups => {
+      return Promise.resolve().then(() => {
         return {
           params: {},
 
-          resolve: (events) => {
+          resolve: (groups) => {
             res.render('app', {
               name: 'Groups',
               content: 'groups',
               groups,
               editID: req.query.edit
+            });
+          },
+
+          reject: next
+        };
+      }).catch(next);
+    });
+
+    this.routes.registerRoute('view', (req, res, next) => {
+      return Promise.resolve().then(() => {
+        return {
+          params: {
+            id: req.params.id
+          },
+
+          resolve: (group) => {
+            res.render('app', {
+              name: 'Groups',
+              content: 'group',
+              group
             });
           },
 

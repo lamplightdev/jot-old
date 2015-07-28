@@ -2,8 +2,6 @@ const JotRoutes = require('../jot');
 const JotsView = require('../../views/jots');
 const PubSub = require('../../utility/pubsub');
 
-const Jot = require('../../models/jot');
-
 class JotClientRoutes {
   constructor(router, prefix = '') {
     this.routes = new JotRoutes(router, prefix);
@@ -13,11 +11,11 @@ class JotClientRoutes {
 
   registerRoutes() {
     this.routes.registerRoute('all', (ctx, next) => {
-      return Jot.loadAll().then(jots => {
+      return Promise.resolve().then(() => {
         return {
           params: {},
 
-          resolve: (events) => {
+          resolve: (jots) => {
             this.jotsView.render(false, {
               jots
             });

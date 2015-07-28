@@ -134,11 +134,17 @@ class Model {
   }
 
   static load(id) {
-    const db = require('../db/db')();
+    if (typeof id !== 'undefined') {
+      const db = require('../db/db')();
 
-    return db.get(id).then(doc => {
-      return new this(doc);
-    });
+      return db.get(id).then(doc => {
+        return new this(doc);
+      }).catch(err => {
+        return Promise.resolve(false);
+      });
+    } else {
+      return Promise.resolve(false);
+    }
   }
 
   static remove(id) {

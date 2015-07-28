@@ -1,5 +1,4 @@
 const JotRoutes = require('../jot');
-const Jot = require('../../models/jot');
 
 class JotServerRoutes {
   constructor(router) {
@@ -9,11 +8,11 @@ class JotServerRoutes {
 
   registerRoutes() {
     this.routes.registerRoute('all', (req, res, next) => {
-      return Jot.loadAll().then(jots => {
+      return Promise.resolve().then(() => {
         return {
           params: {},
 
-          resolve: (events) => {
+          resolve: (jots) => {
             res.render('app', {
               name: 'Jots',
               content: 'jots',

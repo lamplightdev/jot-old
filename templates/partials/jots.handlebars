@@ -1,7 +1,15 @@
+<!--
 <form id='form-jot-add' action='/jot' method='post'>
   <input type='text' class='md-form-text' name='content' value='' placeholder='New jot'>
   <input type='text' class='md-form-text' name='group' value='' placeholder='Group'>
   <button type='submit' class=''>add</button>
 </form>
+-->
 
-{{>jot-list}}
+{{#each jots}}
+  <div class='jots__jot jots__jot-{{id}}'>
+
+    <div class='jots__jot__item {{#if fields.done}}jots__jot__item--done{{/if}}'>{{autoLink fields.content}} - {{id}} (<a href='/group/{{fields.group}}'>{{groupName}}</a>)</div>
+
+  </div>
+{{/each}}

@@ -87,7 +87,11 @@ class CloudantClient {
 
       this.cloudant.db.create('jot-' + userDoc._id, (err, body) => {
         if (err) {  //database already created
-          resolve(userDoc);
+          this.initDesignDocs(userDoc).then(() => {
+            resolve(userDoc);
+          })
+
+          .catch(reject);
         } else {
 
           const results = {
@@ -108,7 +112,12 @@ class CloudantClient {
 
           .then(userDoc => {
             results.userDoc = userDoc;
-            resolve(results.userDoc);
+
+            this.initDesignDocs(userDoc).then(() => {
+              resolve(results.userDoc);
+            })
+
+            .catch(reject);
           })
 
           .catch(reject);
@@ -170,6 +179,37 @@ class CloudantClient {
           reject(new Error(err));
         } else {
           resolve(userDoc);
+        }
+      });
+
+    });
+
+    return promise;
+  }
+
+  initDesignDocs(userDoc) {
+    var ddoc = {
+      _id: '_design/index',
+      views: {
+        group: {
+          map: doc => {
+            if (doc.fields.group) {
+              emit(doc.fields.group);
+            }
+          }.toString()
+        }
+      }
+    };
+
+    const promise = new Promise((resolve, reject) => {
+
+      const dbName = 'jot-' + userDoc._id;
+      const userDB = this.cloudant.db.use(dbName);
+      userDB.insert(ddoc, (err, body) => {
+        if (err) {
+          resolve();
+        } else {
+          resolve();
         }
       });
 

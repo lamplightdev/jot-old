@@ -12,7 +12,15 @@ class GroupRoutes extends Routes {
       _path: '/',
       _method: ['get'],
       _action: () => {
-        return Promise.resolve();
+        return Group.loadAll();
+      }
+    };
+
+    this._routes.view = {
+      _path: '/:id',
+      _method: ['get'],
+      _action: params => {
+        return Group.load(params.id);
       }
     };
 

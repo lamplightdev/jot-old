@@ -12,7 +12,7 @@ class JotRoutes extends Routes {
       _path: '/',
       _method: ['get'],
       _action: () => {
-        return Promise.resolve();
+        return Jot.loadAll();
       }
     };
 
