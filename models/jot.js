@@ -25,11 +25,13 @@ class Jot extends Model {
   }
 
   loadGroup() {
-    const Group = require('./group');
+    return Promise.resolve().then(() => {
+      const Group = require('./group');
 
-    return Group.load(this.fields.group, false).then(group => {
-      this._group = group;
-      return this;
+      return Group.load(this.fields.group, false).then(group => {
+        this._group = group;
+        return this;
+      });
     });
   }
 
@@ -56,39 +58,45 @@ class Jot extends Model {
       }
 
       return Promise.all(promises).then(() => {
-        const undoneJots = [];
-        const doneJots = [];
-
-        jots.forEach(jot => {
-          if (jot.isDone()) {
-            doneJots.push(jot);
-          } else {
-            undoneJots.push(jot);
-          }
-        });
-
-        return undoneJots.concat(doneJots);
+        return this.orderJots(jots);
       });
     });
   }
 
+  static orderJots(jots) {
+    const undoneJots = [];
+    const doneJots = [];
+
+    jots.forEach(jot => {
+      if (jot.isDone()) {
+        doneJots.push(jot);
+      } else {
+        undoneJots.push(jot);
+      }
+    });
+
+    return undoneJots.concat(doneJots);
+  }
+
   static loadForGroup(groupId) {
-    const db = require('../db/db')();
+    return Promise.resolve().then(() => {
+      const db = require('../db/db')();
 
-    return db.query('index/group', {
-      endkey: this.getRefName() + '-',
-      startkey: this.getRefName() + '-\uffff',
-      descending: true,
-      key: groupId,
-      include_docs: true
-    }).then(result => {
-      const jots = [];
+      return db.query('index/group', {
+        endkey: this.getRefName() + '-',
+        startkey: this.getRefName() + '-\uffff',
+        descending: true,
+        key: groupId,
+        include_docs: true
+      }).then(result => {
+        const jots = [];
 
-      result.rows.forEach(row => {
-        jots.push(new this(row.doc));
+        result.rows.forEach(row => {
+          jots.push(new this(row.doc));
+        });
+
+        return this.orderJots(jots);
       });
-
-      return jots;
     });
   }
 }

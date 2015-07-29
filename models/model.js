@@ -64,29 +64,31 @@ class Model {
   }
 
   getSlug() {
-    if (!this.isNew()) {
-      return Promise.resolve(this.id);
-    } else {
-      let slug = this.refName + '-';
+    return Promise.resolve().then(() => {
+      if (!this.isNew()) {
+        return Promise.resolve(this.id);
+      } else {
+        let slug = this.refName + '-';
 
-      const padding = 5; //the length of the number, e.g. '5' will start at 00000, 00001, etc.
+        const padding = 5; //the length of the number, e.g. '5' will start at 00000, 00001, etc.
 
-      return this._db.allDocs({
-        startkey: slug + '\uffff',
-        endKey: slug,
-        descending: true,
-        limit: 1
-      }).then(result => {
-        if (result.rows.length > 0) {
-          const lastDoc = result.rows[result.rows.length - 1];
-          const lastNum = parseInt(lastDoc.id.substring(slug.length), 10);
+        return this._db.allDocs({
+          startkey: slug + '\uffff',
+          endKey: slug,
+          descending: true,
+          limit: 1
+        }).then(result => {
+          if (result.rows.length > 0) {
+            const lastDoc = result.rows[result.rows.length - 1];
+            const lastNum = parseInt(lastDoc.id.substring(slug.length), 10);
 
-          return slug + ('0'.repeat(padding) + (lastNum + 1)).slice(-padding);
-        } else {
-          return slug + '0'.repeat(padding);
-        }
-      });
-    }
+            return slug + ('0'.repeat(padding) + (lastNum + 1)).slice(-padding);
+          } else {
+            return slug + '0'.repeat(padding);
+          }
+        });
+      }
+    });
   }
 
   save() {
@@ -115,43 +117,49 @@ class Model {
   }
 
   static loadAll() {
-    const db = require('../db/db')();
+    return Promise.resolve().then(() => {
+      const db = require('../db/db')();
 
-    return db.allDocs({
-      endkey: this.getRefName() + '-',
-      startkey: this.getRefName() + '-\uffff',
-      include_docs: true,
-      descending: true
-    }).then(result => {
-      const models = [];
+      return db.allDocs({
+        endkey: this.getRefName() + '-',
+        startkey: this.getRefName() + '-\uffff',
+        include_docs: true,
+        descending: true
+      }).then(result => {
+        const models = [];
 
-      result.rows.forEach(row => {
-        models.push(new this(row.doc));
+        result.rows.forEach(row => {
+          models.push(new this(row.doc));
+        });
+
+        return models;
       });
-
-      return models;
     });
   }
 
   static load(id) {
-    if (typeof id !== 'undefined') {
-      const db = require('../db/db')();
+    return Promise.resolve().then(() => {
+      if (typeof id !== 'undefined') {
+        const db = require('../db/db')();
 
-      return db.get(id).then(doc => {
-        return new this(doc);
-      }).catch(err => {
-        return Promise.resolve(false);
-      });
-    } else {
-      return Promise.resolve(false);
-    }
+        return db.get(id).then(doc => {
+          return new this(doc);
+        }).catch(err => {
+          return false;
+        });
+      } else {
+        return false;
+      }
+    });
   }
 
   static remove(id) {
-    const db = require('../db/db')();
+    return Promise.resolve().then(() => {
+      const db = require('../db/db')();
 
-    return db.get(id).then(doc => {
-      return db.remove(doc);
+      return db.get(id).then(doc => {
+        return db.remove(doc);
+      });
     });
   }
 }
