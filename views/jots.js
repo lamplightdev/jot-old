@@ -32,9 +32,6 @@ class ViewJots extends MainView {
       var template = Handlebars.template(JotApp.templates.jots);
       const view = document.getElementById('view');
       view.innerHTML = template(params);
-
-      const contentField = this._el.querySelector('#form-jot-add').elements.content;
-      contentField.focus();
     }
 
     this.initEvents();

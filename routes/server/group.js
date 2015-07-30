@@ -37,7 +37,8 @@ class GroupsServerRoutes {
             res.render('app', {
               name: 'Groups',
               content: 'group',
-              group
+              group,
+              editID: req.query.edit
             });
           },
 

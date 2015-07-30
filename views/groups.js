@@ -33,8 +33,15 @@ class ViewGroups extends MainView {
       const view = document.getElementById('view');
       view.innerHTML = template(params);
 
-      const nameField = this._el.querySelector('#form-group-add').elements.name;
+      let nameField;
+      if (params.editID) {
+        nameField = this._el.querySelector('.form-jot-update-' + params.editID).elements.name;
+      } else {
+        nameField = this._el.querySelector('#form-group-add').elements.name;
+      }
+
       nameField.focus();
+      nameField.value = nameField.value;
     }
 
     this.initEvents();
@@ -76,6 +83,7 @@ class ViewGroups extends MainView {
         }
       }).save().then(() => {
         nameField.value = '';
+        nameField.focus();
         Group.loadAll().then(groups => {
           this.renderPartial('groups', false, {
             groups
@@ -92,7 +100,7 @@ class ViewGroups extends MainView {
         event.preventDefault();
         event.stopPropagation();  //stop document listener from removing 'edit' class
 
-        this.unselectAllGroups();
+        this.unselectAll();
 
         link.parentNode.classList.add('edit');
 
@@ -113,16 +121,20 @@ class ViewGroups extends MainView {
     }
 
     document.addEventListener('click', event => {
-      this.unselectAllGroups();
+      this.unselectAll();
     });
   }
 
-  unselectAllGroups() {
+  unselectAll() {
     //TODO: have class member to hold reference to common element/element groups to avoid requerying
     const links = this._el.querySelectorAll('.groups__group__item');
     for (let link of links) {
       link.parentNode.classList.remove('edit');
     }
+
+    const nameField = this._el.querySelector('#form-group-add').elements.name;
+    nameField.focus();
+    nameField.value = nameField.value;
   }
 
   initDeleteForms() {
@@ -132,6 +144,9 @@ class ViewGroups extends MainView {
         event.preventDefault();
 
         const id = form.dataset.id;
+
+        const item = this._el.querySelector('.groups__group-' + id);
+        item.parentNode.removeChild(item);
 
         Group.remove(id).then(() => {
           Group.loadAll().then(groups => {

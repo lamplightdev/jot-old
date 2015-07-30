@@ -17,6 +17,16 @@ class ViewGroup extends MainView {
       view.innerHTML = template(params);
     }
 
+    let contentField;
+    if (params.editID) {
+      contentField = this._el.querySelector('.form-jot-update-' + params.editID).elements.content;
+    } else {
+      contentField = this._el.querySelector('#form-jot-add').elements.content;
+    }
+
+    contentField.focus();
+    contentField.value = contentField.value;
+
     this.initEvents();
   }
 
@@ -60,6 +70,7 @@ class ViewGroup extends MainView {
         }
       }).save().then(() => {
         contentField.value = '';
+        contentField.focus();
         Group.load(group).then(group => {
           this.renderPartial('jots', false, {
             jots: group.jots
@@ -107,6 +118,10 @@ class ViewGroup extends MainView {
     for (let link of links) {
       link.parentNode.classList.remove('edit');
     }
+
+    const contentField = this._el.querySelector('#form-jot-add').elements.content;
+    contentField.focus();
+    contentField.value = contentField.value;
   }
 
   initDeleteForms() {
@@ -117,6 +132,9 @@ class ViewGroup extends MainView {
 
         const id = form.dataset.id;
         const group = form.dataset.groupId;
+
+        const item = this._el.querySelector('.jots__jot-' + id);
+        item.parentNode.removeChild(item);
 
         Jot.remove(id).then(() => {
           Group.load(group).then(group => {

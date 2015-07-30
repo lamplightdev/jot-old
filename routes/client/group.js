@@ -42,8 +42,15 @@ class GroupClientRoutes {
           },
 
           resolve: (group) => {
+            const queryObject = {};
+            ctx.querystring.split('&').forEach(bit => {
+              const vals = bit.split('=');
+              queryObject[vals[0]] = vals[1];
+            });
+
             this.groupView.render(false, {
-              group
+              group,
+              editID: queryObject.edit
             });
 
             PubSub.publish('routeChanged', {
