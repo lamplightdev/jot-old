@@ -1,6 +1,6 @@
 'use strict';
 
-const MainView = require('./main');
+const View = require('./view');
 
 const Handlebars = require('handlebars/dist/handlebars.runtime');
 
@@ -8,13 +8,11 @@ const Group = require('../models/group');
 
 const PubSub = require('../utility/pubsub');
 
-class ViewGroups extends MainView {
-  constructor(template) {
-    super(template);
+class ViewGroups extends View {
+  constructor(container) {
+    super(container);
 
     PubSub.subscribe('update', (topic, args) => {
-      console.log(args);
-
       if (args.changes && args.changes.length) {
         Group.loadAll().then(groups => {
           this.renderPartial('groups', false, {
@@ -23,35 +21,29 @@ class ViewGroups extends MainView {
         });
       }
     });
+
+    this._documentListeners = {};
   }
 
   render(preRendered, params) {
-    console.log('render');
+    super.render(preRendered, params);
 
-    if (!preRendered) {
-      var template = Handlebars.template(JotApp.templates.groups);
-      const view = document.getElementById('view');
-      view.innerHTML = template(params);
-
-      let nameField;
-      if (params.editID) {
-        nameField = this._el.querySelector('.form-jot-update-' + params.editID).elements.name;
-      } else {
-        nameField = this._el.querySelector('#form-group-add').elements.name;
-      }
-
-      nameField.focus();
-      nameField.value = nameField.value;
+    let nameField;
+    if (params.editID) {
+      nameField = this._el.querySelector('.form-jot-update-' + params.editID).elements.name;
+    } else {
+      nameField = this._el.querySelector('#form-group-add').elements.name;
     }
 
-    this.initEvents();
+    nameField.focus();
+    nameField.value = nameField.value;
   }
 
   renderPartial(name, preRendered, params) {
     console.log('render partial');
 
     if (!preRendered) {
-      var template = Handlebars.template(JotApp.templates['group-list']);
+      var template = Handlebars.template(this._container._partials['group-list']);
       const view = this._el.querySelector('.group-list');
       view.outerHTML = template(params);
 
@@ -67,6 +59,26 @@ class ViewGroups extends MainView {
     this.initEdit();
     this.initDeleteForms();
     this.initUpdateForms();
+  }
+
+  _addDocumentListener(name, type, fn) {
+    if (!this._documentListeners[name]) {
+      this._documentListeners[name] = {
+        type,
+        fn: fn.bind(this)
+      };
+    }
+
+    document.addEventListener(type, this._documentListeners[name].fn);
+  }
+
+  cleanup() {
+    super.cleanup();
+
+    for (let lname in this._documentListeners) {
+      const listener = this._documentListeners[lname];
+      document.removeEventListener(listener.type, listener.fn);
+    }
   }
 
   initAddForm() {
@@ -120,7 +132,7 @@ class ViewGroups extends MainView {
       });
     }
 
-    document.addEventListener('click', event => {
+    this._addDocumentListener('unselectAll', 'click', () => {
       this.unselectAll();
     });
   }
@@ -131,10 +143,6 @@ class ViewGroups extends MainView {
     for (let link of links) {
       link.parentNode.classList.remove('edit');
     }
-
-    const nameField = this._el.querySelector('#form-group-add').elements.name;
-    nameField.focus();
-    nameField.value = nameField.value;
   }
 
   initDeleteForms() {

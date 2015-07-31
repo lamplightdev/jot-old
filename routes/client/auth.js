@@ -1,7 +1,7 @@
 const AuthRoutes = require('../auth');
 
 class AuthRouter {
-  constructor(router, prefix = '') {
+  constructor(router, prefix) {
     this._db = require('../../db/db')();
 
     this._router = router;

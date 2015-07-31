@@ -3,20 +3,33 @@
 const Handlebars = require('handlebars/dist/handlebars.runtime');
 
 class View {
-  constructor(template, el = {}) {
-    this._template = template;
-    this._el = el;
+  constructor(container) {
+    this._container = container;
 
     this._widgets = [];
   }
 
+  //tidy this up?
+  get _el() {
+    return this._container._el;
+  }
+
   render(preRendered, params) {
     if (!preRendered) {
-      var template = Handlebars.template(this._template);
-      this._el.innerHTML = template(params);
+      var template = Handlebars.template(this._container._templates[this._getTemplate()]);
+      this._container.update(this, template(params));
     }
 
     this.initEvents();
+  }
+
+  _getTemplate() {
+    return this.constructor.name.toLowerCase().substring(4);
+  }
+
+  cleanup() {
+    console.log('view cleaup', this);
+    this.cleanupWidgets();
   }
 
   initEvents() {
@@ -24,18 +37,18 @@ class View {
   }
 
   registerWidget(Widget, template) {
-    this._widgets.push(new Widget(template, this._el));
-
-    return this._widgets.length - 1;
-  }
-
-  unregisterWidget(widgetIndex) {
-    this._widgets.splice(widgetIndex, 1);
+    this._widgets.push(new Widget(template, this._container));
   }
 
   initWidgets() {
     this._widgets.forEach(widget => {
       widget.initEvents();
+    });
+  }
+
+  cleanupWidgets() {
+    this._widgets.forEach(widget => {
+      widget.cleanup();
     });
   }
 

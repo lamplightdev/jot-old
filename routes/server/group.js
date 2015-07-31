@@ -35,7 +35,7 @@ class GroupsServerRoutes {
 
           resolve: (group) => {
             res.render('app', {
-              name: 'Groups',
+              name: group.fields.name,
               content: 'group',
               group,
               editID: req.query.edit

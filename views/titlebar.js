@@ -1,46 +1,57 @@
 const View = require('./view');
+
 const Handlebars = require('handlebars/dist/handlebars.runtime');
-const ActionBar = require('./actionbar');
 const PubSub = require('../utility/pubsub');
 
 class TitleBarView extends View {
+  constructor(container) {
+    super(container);
 
-  constructor(template, partials, el) {
-    super(template, el);
-    this._partials = partials;
-
-    this._user = null;
-
-    this.registerWidget(ActionBar, partials['titlebar-title']);
-
-    PubSub.subscribe('routeChanged', (topic, args) => this.updateName(args.name));
+    PubSub.subscribe('routeChanged', (topic, args) => {
+      this.renderPartial('titlebar-title', args);
+    });
   }
 
-  setUser(user) {
-    this._user = user;
+  renderPartial(name, params) {
+    console.log('render partial');
+
+    var template = Handlebars.template(this._container._partials[name]);
+    const view = this._el.querySelector('.partial-' + name);
+    view.outerHTML = template(params);
   }
 
-  updateName(name) {
-    this._name = name;
-    this.renderPartial('titlebar-title', 'titlebar-title');
-  }
+  initEvents() {
+    super.initEvents();
 
-  renderPartial(partialId, partialName) {
-    const part = this._el.querySelector('#' + partialId);
+    this._nav = this._el.querySelector('nav');
+    this._navOverlay = this._el.querySelector('.md-nav-overlay');
+    this._btnMenuOpen = this._el.querySelector('.md-btn-menu');
+    this._btnMenuClose = this._el.querySelector('.md-btn-menu.close');
+    this._links = this._el.querySelectorAll('.md-nav-body a');
 
-    var template = Handlebars.template(this._partials[partialName]);
-    part.outerHTML = template({
-      name: this._name
+    this._btnMenuOpen.addEventListener('click', event => {
+      event.preventDefault();
+      this._openNav();
     });
 
-    this.initWidgets();
+    this._btnMenuClose.addEventListener('click', event => {
+      event.preventDefault();
+      this._closeNav();
+    });
+
+    for (let i = 0; i < this._links.length; i++) {
+      this._links[i].addEventListener('click', () => this._closeNav());
+    }
   }
 
-  render(preRendered) {
-    super.render(preRendered, {
-      user: this._user,
-      name: this._name
-    });
+  _openNav() {
+    this._nav.classList.add('show');
+    this._navOverlay.classList.add('show');
+  }
+
+  _closeNav() {
+    this._nav.classList.remove('show');
+    this._navOverlay.classList.remove('show');
   }
 
 }

@@ -1,21 +1,23 @@
 'use strict';
 
-const MainView = require('./main');
+const View = require('./view');
 
 const Handlebars = require('handlebars/dist/handlebars.runtime');
 
 const Jot = require('../models/jot');
 const Group = require('../models/group');
 
-class ViewGroup extends MainView {
-  render(preRendered, params) {
-    console.log('render');
+class ViewGroup extends View {
+  constructor(container) {
+    super(container);
 
-    if (!preRendered) {
-      var template = Handlebars.template(JotApp.templates.group);
-      const view = document.getElementById('view');
-      view.innerHTML = template(params);
-    }
+    //TODO: PubSub to update jot list
+
+    this._documentListeners = {};
+  }
+
+  render(preRendered, params) {
+    super.render(preRendered, params);
 
     let contentField;
     if (params.editID) {
@@ -38,11 +40,31 @@ class ViewGroup extends MainView {
     this.initUpdateForms();
   }
 
+  _addDocumentListener(name, type, fn) {
+    if (!this._documentListeners[name]) {
+      this._documentListeners[name] = {
+        type,
+        fn: fn.bind(this)
+      };
+    }
+
+    document.addEventListener(type, this._documentListeners[name].fn);
+  }
+
+  cleanup() {
+    super.cleanup();
+
+    for (let lname in this._documentListeners) {
+      const listener = this._documentListeners[lname];
+      document.removeEventListener(listener.type, listener.fn);
+    }
+  }
+
   renderPartial(name, preRendered, params) {
     console.log('render partial');
 
     if (!preRendered) {
-      var template = Handlebars.template(JotApp.templates['jot-list']);
+      var template = Handlebars.template(this._container._partials['jot-list']);
       const view = this._el.querySelector('.jot-list');
       view.outerHTML = template(params);
 
@@ -107,9 +129,13 @@ class ViewGroup extends MainView {
       });
     }
 
-    document.addEventListener('click', event => {
+    this._addDocumentListener('unselectAll', 'click', () => {
       this.unselectAll();
     });
+  }
+
+  unselectAllListener() {
+    this.unselectAll();
   }
 
   unselectAll() {
@@ -118,10 +144,6 @@ class ViewGroup extends MainView {
     for (let link of links) {
       link.parentNode.classList.remove('edit');
     }
-
-    const contentField = this._el.querySelector('#form-jot-add').elements.content;
-    contentField.focus();
-    contentField.value = contentField.value;
   }
 
   initDeleteForms() {

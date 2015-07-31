@@ -8,6 +8,8 @@ require('../../db/db')({
   dbName: 'jot-' + JotApp.user._id
 });
 
+const ViewContainer = require('../../views/view-container');
+
 const router = require('../../routers/path');
 
 const RoutesHome = require('../../routes/client/home');
@@ -28,32 +30,34 @@ for (let helper in helpers) {
   Handlebars.registerHelper(helper, helpers[helper]);
 }
 
-const routesHome = new RoutesHome(router, '/');
+const containerMain = new ViewContainer('view', {
+  home: JotApp.templates.home,
+  group: JotApp.templates.group,
+  groups: JotApp.templates.groups,
+  jots: JotApp.templates.jots
+}, {
+  'group-list': JotApp.templates['group-list'],
+  'jot-list': JotApp.templates['jot-list']
+});
 
+const routesHome = new RoutesHome(router, '/', containerMain);
 const routesAuth = new RoutesAuth(router, '/auth');
-
-const routesJot = new RoutesJot(router, '/jot', {
-  item: JotApp.templates.jot,
-  itemadd: JotApp.templates['note-add'],
-  items: JotApp.templates.jots
-});
-
-const routesGroup = new RoutesGroup(router, '/group', {
-  item: JotApp.templates.group,
-  itemadd: JotApp.templates['note-add'],
-  items: JotApp.templates.groups
-});
+const routesJot = new RoutesJot(router, '/jot', containerMain);
+const routesGroup = new RoutesGroup(router, '/group', containerMain);
 
 routesHome.registerRoutes();
 routesAuth.registerRoutes();
 routesJot.registerRoutes();
 routesGroup.registerRoutes();
 
-const titleBar = new TitleBarView(JotApp.templates.titlebar, {
+const containerHeader = new ViewContainer('header', {
+  titlebar: JotApp.templates.titlebar
+}, {
   'titlebar-title': JotApp.templates['titlebar-title']
-}, document.getElementById('header'));
+});
+
+const titleBar = new TitleBarView(containerHeader);
 
 titleBar.render(true);
-
 router.activate();
 

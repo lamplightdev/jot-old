@@ -4,11 +4,11 @@ const GroupView = require('../../views/group');
 const PubSub = require('../../utility/pubsub');
 
 class GroupClientRoutes {
-  constructor(router, prefix = '') {
+  constructor(router, prefix, viewContainer) {
     this.routes = new GroupRoutes(router, prefix);
 
-    this.groupsView = new GroupsView();
-    this.groupView = new GroupView();
+    this.groupsView = new GroupsView(viewContainer);
+    this.groupView = new GroupView(viewContainer);
   }
 
   registerRoutes() {
@@ -54,7 +54,7 @@ class GroupClientRoutes {
             });
 
             PubSub.publish('routeChanged', {
-              name: 'Group'
+              name: group.fields.name
             });
           },
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const MainView = require('./main');
+const View = require('./view');
 
 const Handlebars = require('handlebars/dist/handlebars.runtime');
 
@@ -8,9 +8,9 @@ const Jot = require('../models/jot');
 
 const PubSub = require('../utility/pubsub');
 
-class ViewJots extends MainView {
-  constructor(template) {
-    super(template);
+class ViewJots extends View {
+  constructor(container) {
+    super(container);
 
     PubSub.subscribe('update', (topic, args) => {
       console.log(args);
@@ -25,23 +25,11 @@ class ViewJots extends MainView {
     });
   }
 
-  render(preRendered, params) {
-    console.log('render');
-
-    if (!preRendered) {
-      var template = Handlebars.template(JotApp.templates.jots);
-      const view = document.getElementById('view');
-      view.innerHTML = template(params);
-    }
-
-    this.initEvents();
-  }
-
   renderPartial(name, preRendered, params) {
     console.log('render partial');
 
     if (!preRendered) {
-      var template = Handlebars.template(JotApp.templates['jot-list']);
+      var template = Handlebars.template(this._container._partials['jot-list']);
       const view = this._el.querySelector('.jot-list');
       view.outerHTML = template(params);
     }

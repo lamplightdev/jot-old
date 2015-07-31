@@ -3,10 +3,10 @@ const JotsView = require('../../views/jots');
 const PubSub = require('../../utility/pubsub');
 
 class JotClientRoutes {
-  constructor(router, prefix = '') {
+  constructor(router, prefix, viewContainer) {
     this.routes = new JotRoutes(router, prefix);
 
-    this.jotsView = new JotsView();
+    this.jotsView = new JotsView(viewContainer);
   }
 
   registerRoutes() {

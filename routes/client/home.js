@@ -3,10 +3,10 @@ const HomeView = require('../../views/home');
 const PubSub = require('../../utility/pubsub');
 
 class HomeRouter {
-  constructor(router, prefix = '') {
+  constructor(router, prefix, viewContainer) {
     this.routes = new HomeRoutes(router, prefix);
 
-    this.homeView = new HomeView();
+    this.homeView = new HomeView(viewContainer);
   }
 
   registerRoutes() {
