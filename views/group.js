@@ -2,8 +2,6 @@
 
 const View = require('./view');
 
-const Handlebars = require('handlebars/dist/handlebars.runtime');
-
 const Jot = require('../models/jot');
 const Group = require('../models/group');
 
@@ -60,17 +58,15 @@ class ViewGroup extends View {
     }
   }
 
-  renderPartial(name, preRendered, params) {
-    console.log('render partial');
+  renderPartial(name, params) {
+    super.renderPartial(name, params);
 
-    if (!preRendered) {
-      var template = Handlebars.template(this._container._partials['jot-list']);
-      const view = this._el.querySelector('.jot-list');
-      view.outerHTML = template(params);
-
-      this.initEdit();
-      this.initDeleteForms();
-      this.initUpdateForms();
+    switch (name) {
+      case 'jot-list':
+        this.initEdit();
+        this.initDeleteForms();
+        this.initUpdateForms();
+        break;
     }
   }
 
@@ -94,7 +90,7 @@ class ViewGroup extends View {
         contentField.value = '';
         contentField.focus();
         Group.load(group).then(group => {
-          this.renderPartial('jots', false, {
+          this.renderPartial('jot-list', {
             jots: group.jots
           });
         });
@@ -160,7 +156,7 @@ class ViewGroup extends View {
 
         Jot.remove(id).then(() => {
           Group.load(group).then(group => {
-            this.renderPartial('jots', false, {
+            this.renderPartial('jot-list', {
               jots: group.jots
             });
           });
@@ -220,7 +216,7 @@ class ViewGroup extends View {
 
           jot.save().then(() => {
             Group.load(group).then(group => {
-              this.renderPartial('jots', false, {
+              this.renderPartial('jot-list', {
                 jots: group.jots
               });
             });

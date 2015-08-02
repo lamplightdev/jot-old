@@ -2,8 +2,6 @@
 
 const View = require('./view');
 
-const Handlebars = require('handlebars/dist/handlebars.runtime');
-
 const Group = require('../models/group');
 
 const PubSub = require('../utility/pubsub');
@@ -15,7 +13,7 @@ class ViewGroups extends View {
     PubSub.subscribe('update', (topic, args) => {
       if (args.changes && args.changes.length) {
         Group.loadAll().then(groups => {
-          this.renderPartial('groups', false, {
+          this.renderPartial('group-list', {
             groups
           });
         });
@@ -39,17 +37,15 @@ class ViewGroups extends View {
     nameField.value = nameField.value;
   }
 
-  renderPartial(name, preRendered, params) {
-    console.log('render partial');
+  renderPartial(name, params) {
+    super.renderPartial(name, params);
 
-    if (!preRendered) {
-      var template = Handlebars.template(this._container._partials['group-list']);
-      const view = this._el.querySelector('.group-list');
-      view.outerHTML = template(params);
-
-      this.initEdit();
-      this.initDeleteForms();
-      this.initUpdateForms();
+    switch (name) {
+      case 'group-list':
+        this.initEdit();
+        this.initDeleteForms();
+        this.initUpdateForms();
+        break;
     }
   }
 
@@ -97,7 +93,7 @@ class ViewGroups extends View {
         nameField.value = '';
         nameField.focus();
         Group.loadAll().then(groups => {
-          this.renderPartial('groups', false, {
+          this.renderPartial('group-list', {
             groups
           });
         });
@@ -158,7 +154,7 @@ class ViewGroups extends View {
 
         Group.remove(id).then(() => {
           Group.loadAll().then(groups => {
-            this.renderPartial('groups', false, {
+            this.renderPartial('group-list', {
               groups
             });
           });
@@ -190,7 +186,7 @@ class ViewGroups extends View {
 
           group.save().then(() => {
             Group.loadAll().then(groups => {
-              this.renderPartial('groups', false, {
+              this.renderPartial('group-list', {
                 groups
               });
             });

@@ -1,24 +1,26 @@
-<div class='group-list'>
-{{#each groups}}
-  <div class='groups__group groups__group-{{id}} {{#ifEqual id @root.editID}}edit{{/ifEqual}}'>
-    <a name='{{id}}' id='{{id}}'></a>
-    <div class='groups__group__item'>{{autoLink fields.name}} - {{id}} ({{jotCount}} jots) <a href='/group/{{id}}'>view</a></div>
-    <a class='groups__group__edit' href='/group?edit={{id}}' target='_parent'>edit</a>
+<div class='partial-group-list'>
+  <div class='group-list'>
+  {{#each groups}}
+    <div class='groups__group groups__group-{{id}} {{#ifEqual id @root.editID}}edit{{/ifEqual}}'>
+      <a name='{{id}}' id='{{id}}'></a>
+      <div class='groups__group__item'>{{autoLink fields.name}} - {{id}} ({{jotCount}} jots) <a href='/group/{{id}}'>view</a></div>
+      <a class='groups__group__edit' href='/group?edit={{id}}' target='_parent'>edit</a>
 
-    <form class='form-group-update form-group-update-{{id}}' data-id='{{id}}' method='post' action='/group/{{id}}'>
-      <input type='text' class='md-form-text' name='name' value='{{fields.name}}'>
-      <input type='hidden' name='action' value='update'>
-      <button type='submit'>save</button>
-    </form>
+      <form class='form-group-update form-group-update-{{id}}' data-id='{{id}}' method='post' action='/group/{{id}}'>
+        <input type='text' class='md-form-text' name='name' value='{{fields.name}}'>
+        <input type='hidden' name='action' value='update'>
+        <button type='submit'>save</button>
+      </form>
 
-    <form class='form-group-delete form-group-delete-{{id}}' data-id='{{id}}' method='post' action='/group/{{id}}'>
-      <input type='hidden' name='action' value='delete'>
-      <button type='submit'>delete</button>
-    </form>
+      <form class='form-group-delete form-group-delete-{{id}}' data-id='{{id}}' method='post' action='/group/{{id}}'>
+        <input type='hidden' name='action' value='delete'>
+        <button type='submit'>delete</button>
+      </form>
 
-    <a class='edit-cancel' href='/group'>cancel</a>
+      <a class='edit-cancel' href='/group'>cancel</a>
 
+    </div>
+  {{/each}}
+  {{>titlebar-title}}
   </div>
-{{/each}}
-{{>titlebar-title}}
 </div>

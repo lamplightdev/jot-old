@@ -23,6 +23,14 @@ class View {
     this.initEvents();
   }
 
+  renderPartial(name, params) {
+    console.log('render partial');
+
+    var template = Handlebars.template(this._container._partials[name]);
+    const view = this._el.querySelector('.partial-' + name);
+    view.outerHTML = template(params);
+  }
+
   _getTemplate() {
     return this.constructor.name.toLowerCase().substring(4);
   }

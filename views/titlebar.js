@@ -1,6 +1,5 @@
 const View = require('./view');
 
-const Handlebars = require('handlebars/dist/handlebars.runtime');
 const PubSub = require('../utility/pubsub');
 
 class TitleBarView extends View {
@@ -10,14 +9,6 @@ class TitleBarView extends View {
     PubSub.subscribe('routeChanged', (topic, args) => {
       this.renderPartial('titlebar-title', args);
     });
-  }
-
-  renderPartial(name, params) {
-    console.log('render partial');
-
-    var template = Handlebars.template(this._container._partials[name]);
-    const view = this._el.querySelector('.partial-' + name);
-    view.outerHTML = template(params);
   }
 
   initEvents() {
