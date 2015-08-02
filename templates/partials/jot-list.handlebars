@@ -1,30 +1,36 @@
 <div class='partial-jot-list'>
-  <div class='jot-list'>
+  <div class='md-list jot-list'>
   {{#each jots}}
-    <div class='jots__jot jots__jot-{{id}} {{#ifEqual id @root.editID}}edit{{/ifEqual}}'>
+    <div class='md-list-item jots__jot jots__jot-{{id}} {{#ifEqual id @root.editID}}edit{{/ifEqual}}'>
       <a name='{{id}}' id='{{id}}'></a>
-      <div class='jots__jot__item {{#if fields.done}}jots__jot__item--done{{/if}}'>{{autoLink fields.content}} - {{id}}</div>
-      <a class='jots__jot__edit' href='/group/{{fields.group}}?edit={{id}}' target='_parent'>edit</a>
 
-      <form class='form-jot-update form-jot-update-{{id}}' data-id='{{id}}' method='post' action='/jot/{{id}}'>
-        <input type='text' class='md-form-text' name='content' value='{{fields.content}}'>
-        <input type='hidden' name='group' value='{{fields.group}}'>
-        <input type='hidden' name='action' value='update'>
-        <input type='hidden' name='done-status' value=''>
-        <button type='submit'>save</button>
-        {{#if fields.done}}
-        <button type='submit' name='undone'>undone</button>
-        {{else}}
-        <button type='submit' name='done'>done</button>
-        {{/if}}
-      </form>
+      <div class='md-list-item__primary-content jots__jot__item {{#if fields.done}}jots__jot__item--done{{/if}}'>
+        {{autoLink fields.content}} - {{id}}
+      </div>
 
-      <form class='form-jot-delete form-jot-delete-{{id}}' data-id='{{id}}' data-group-id='{{fields.group}}' method='post' action='/jot/{{id}}'>
-        <input type='hidden' name='action' value='delete'>
-        <button type='submit'>delete</button>
-      </form>
+      <div class='md-list-item__secondary-content'>
+        <a class='jots__jot__edit' href='/group/{{fields.group}}?edit={{id}}' target='_parent'>edit</a>
 
-      <a class='edit-cancel' href='/jot'>cancel</a>
+        <form class='form-jot-update form-jot-update-{{id}}' data-id='{{id}}' method='post' action='/jot/{{id}}'>
+          <input type='text' class='md-form-text' name='content' value='{{fields.content}}'>
+          <input type='hidden' name='group' value='{{fields.group}}'>
+          <input type='hidden' name='action' value='update'>
+          <input type='hidden' name='done-status' value=''>
+          <button type='submit'>save</button>
+          {{#if fields.done}}
+          <button type='submit' name='undone'>undone</button>
+          {{else}}
+          <button type='submit' name='done'>done</button>
+          {{/if}}
+        </form>
+
+        <form class='form-jot-delete form-jot-delete-{{id}}' data-id='{{id}}' data-group-id='{{fields.group}}' method='post' action='/jot/{{id}}'>
+          <input type='hidden' name='action' value='delete'>
+          <button type='submit'>delete</button>
+        </form>
+
+        <a class='edit-cancel' href='/jot'>cancel</a>
+      </div>
 
     </div>
   {{/each}}

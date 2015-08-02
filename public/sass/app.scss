@@ -6,6 +6,7 @@
 @import "material-nav";
 @import "material-form";
 @import "material-snackbar";
+@import "material-list";
 
 html {
   font-size: 14px;
@@ -31,7 +32,6 @@ form {
 
 
 .jots__jot, .groups__group {
-  margin: 1.5rem 0;
 
   .jots__jot__item, .groups__group__item {
     display: block;

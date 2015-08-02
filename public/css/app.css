@@ -461,32 +461,29 @@ h1, h2, h3, h4, p {
   margin: 0;
   padding: 0; }
 
-h1 {
+h1, .text-large-1 {
   font-size: 2.4rem;
   line-height: 1.5; }
 
-h2 {
+h2, .text-large-2 {
   font-size: 1.7rem;
   line-height: 1.8; }
 
-h3 {
+h3, .text-medium-1 {
   font-size: 1.4rem;
   line-height: 2;
   font-weight: 300; }
 
-h4 {
+h4, .text-medium-2, .md-list-item .md-list-item__primary-content {
   font-size: 1.1rem;
   line-height: 2.2; }
 
-p {
+p, .text-regular, .md-list-item .md-list-item__secondary-content {
   font-size: 1rem;
   line-height: 2.3; }
 
-.section__content {
-  padding: 0 1.1rem; }
-
 .md-has-fixed-header {
-  margin-top: 5.5rem; }
+  margin-top: 4rem; }
 
 .md-fixed-header {
   position: fixed;
@@ -819,6 +816,20 @@ input[type='checkbox'] {
   font-size: 1rem;
   line-height: 3.4; }
 
+.md-list {
+  padding: 0.6rem 0; }
+
+.md-list-item {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid #eeeeee; }
+  .md-list-item:last-child {
+    border-bottom: 0; }
+  .md-list-item .md-list-item__primary-content {
+    line-height: 1.5; }
+  .md-list-item .md-list-item__secondary-content {
+    line-height: 1.5;
+    color: #9e9e9e; }
+
 html {
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
@@ -837,21 +848,24 @@ form {
   outline: none;
   -webkit-tap-highlight-color: transparent; }
 
-.jots__jot, .groups__group {
-  margin: 1.5rem 0; }
-  .jots__jot .jots__jot__item, .jots__jot .groups__group__item, .groups__group .jots__jot__item, .groups__group .groups__group__item {
-    display: block;
-    text-decoration: none;
-    color: inherit; }
-    .jots__jot .jots__jot__item.jots__jot__item--done, .jots__jot .groups__group__item.jots__jot__item--done, .groups__group .jots__jot__item.jots__jot__item--done, .groups__group .groups__group__item.jots__jot__item--done {
-      text-decoration: line-through; }
-  .jots__jot .form-jot-update, .jots__jot .form-jot-delete, .jots__jot .form-group-update, .jots__jot .form-group-delete, .groups__group .form-jot-update, .groups__group .form-jot-delete, .groups__group .form-group-update, .groups__group .form-group-delete {
-    display: none; }
-  .jots__jot .edit-cancel, .groups__group .edit-cancel {
-    display: none; }
-  .jots__jot.edit .form-jot-update, .jots__jot.edit .form-jot-delete, .jots__jot.edit .form-group-update, .jots__jot.edit .form-group-delete, .groups__group.edit .form-jot-update, .groups__group.edit .form-jot-delete, .groups__group.edit .form-group-update, .groups__group.edit .form-group-delete {
-    display: inline; }
-  .jots__jot.edit .jots__jot__item, .jots__jot.edit .groups__group__item, .groups__group.edit .jots__jot__item, .groups__group.edit .groups__group__item {
-    display: none; }
-  .jots__jot.edit .edit-cancel, .groups__group.edit .edit-cancel {
-    display: inline; }
+.jots__jot .jots__jot__item, .jots__jot .groups__group__item, .groups__group .jots__jot__item, .groups__group .groups__group__item {
+  display: block;
+  text-decoration: none;
+  color: inherit; }
+  .jots__jot .jots__jot__item.jots__jot__item--done, .jots__jot .groups__group__item.jots__jot__item--done, .groups__group .jots__jot__item.jots__jot__item--done, .groups__group .groups__group__item.jots__jot__item--done {
+    text-decoration: line-through; }
+
+.jots__jot .form-jot-update, .jots__jot .form-jot-delete, .jots__jot .form-group-update, .jots__jot .form-group-delete, .groups__group .form-jot-update, .groups__group .form-jot-delete, .groups__group .form-group-update, .groups__group .form-group-delete {
+  display: none; }
+
+.jots__jot .edit-cancel, .groups__group .edit-cancel {
+  display: none; }
+
+.jots__jot.edit .form-jot-update, .jots__jot.edit .form-jot-delete, .jots__jot.edit .form-group-update, .jots__jot.edit .form-group-delete, .groups__group.edit .form-jot-update, .groups__group.edit .form-jot-delete, .groups__group.edit .form-group-update, .groups__group.edit .form-group-delete {
+  display: inline; }
+
+.jots__jot.edit .jots__jot__item, .jots__jot.edit .groups__group__item, .groups__group.edit .jots__jot__item, .groups__group.edit .groups__group__item {
+  display: none; }
+
+.jots__jot.edit .edit-cancel, .groups__group.edit .edit-cancel {
+  display: inline; }

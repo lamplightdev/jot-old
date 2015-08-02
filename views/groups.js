@@ -110,9 +110,9 @@ class ViewGroups extends View {
 
         this.unselectAll();
 
-        link.parentNode.classList.add('edit');
+        link.parentNode.parentNode.classList.add('edit');
 
-        const nameField = link.parentNode.querySelector('.form-group-update').elements.name;
+        const nameField = link.parentNode.parentNode.querySelector('.form-group-update').elements.name;
         nameField.focus();
         nameField.value = nameField.value; //forces cursor to go to end of text
       });
@@ -150,7 +150,7 @@ class ViewGroups extends View {
         const id = form.dataset.id;
 
         const item = this._el.querySelector('.groups__group-' + id);
-        item.parentNode.removeChild(item);
+        //item.parentNode.parentNode.removeChild(item);
 
         Group.remove(id).then(() => {
           Group.loadAll().then(groups => {

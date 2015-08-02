@@ -107,9 +107,9 @@ class ViewGroup extends View {
 
         this.unselectAll();
 
-        link.parentNode.classList.add('edit');
+        link.parentNode.parentNode.classList.add('edit');
 
-        const contentField = link.parentNode.querySelector('.form-jot-update').elements.content;
+        const contentField = link.parentNode.parentNode.querySelector('.form-jot-update').elements.content;
         contentField.focus();
         contentField.value = contentField.value; //forces cursor to go to end of text
       });
@@ -152,7 +152,7 @@ class ViewGroup extends View {
         const group = form.dataset.groupId;
 
         const item = this._el.querySelector('.jots__jot-' + id);
-        item.parentNode.removeChild(item);
+        //item.parentNode.parentNode.removeChild(item);
 
         Jot.remove(id).then(() => {
           Group.load(group).then(group => {

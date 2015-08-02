@@ -7,28 +7,28 @@ h1, h2, h3, h4, p {
   padding: 0;
 }
 
-h1 {
+h1, .text-large-1 {
   font-size: 2.4rem;
   line-height: 1.5;
 }
 
-h2 {
+h2, .text-large-2 {
   font-size: 1.7rem;
   line-height: 1.8;
 }
 
-h3 {
+h3, .text-medium-1 {
   font-size: 1.4rem;
   line-height: 2;
   font-weight: 300;
 }
 
-h4 {
+h4, .text-medium-2 {
   font-size: 1.1rem;
   line-height: 2.2;
 }
 
-p {
+p, .text-regular {
   font-size: 1rem;
   line-height: 2.3;
 }

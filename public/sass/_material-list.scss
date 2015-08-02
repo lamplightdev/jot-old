@@ -1,0 +1,24 @@
+.md-list {
+  padding: 0.6rem 0;
+}
+
+.md-list-item {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid $clr-grey-200;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  .md-list-item__primary-content {
+    @extend .text-medium-2;
+    line-height: 1.5;
+  }
+
+  .md-list-item__secondary-content {
+    @extend .text-regular;
+    line-height: 1.5;
+
+    color: $clr-grey-500;
+  }
+}
