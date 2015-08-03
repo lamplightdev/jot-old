@@ -8,7 +8,6 @@ const Group = require('../models/group');
 class ViewGroup extends View {
   constructor(container) {
     super(container);
-
     //TODO: PubSub to update jot list
 
     this._documentListeners = {};
@@ -24,8 +23,8 @@ class ViewGroup extends View {
       contentField = this._el.querySelector('#form-jot-add').elements.content;
     }
 
-    contentField.focus();
-    contentField.value = contentField.value;
+    //contentField.focus();
+    //contentField.value = contentField.value;
 
     this.initEvents();
   }

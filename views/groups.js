@@ -33,8 +33,8 @@ class ViewGroups extends View {
       nameField = this._el.querySelector('#form-group-add').elements.name;
     }
 
-    nameField.focus();
-    nameField.value = nameField.value;
+    //nameField.focus();
+    //nameField.value = nameField.value;
   }
 
   renderPartial(name, params) {

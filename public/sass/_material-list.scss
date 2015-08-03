@@ -5,21 +5,28 @@
 .md-list-item {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  //flex-wrap: wrap;
   justify-content: flex-start;
   align-content: flex-start;
   align-items: flex-start;
 
-  padding: 1.4rem 1.2rem;
+  padding: 0;
   border-bottom: 1px solid $clr-grey-200;
 
   &:last-child {
     border-bottom: 0;
   }
 }
+  .md-list-item__avatar, .md-list-item__content, .md-list-item__action {
+    padding: 1.4rem 0;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
 
   .md-list-item__avatar {
-    width: 4rem;
+    padding-left: 1.2rem;
+    width: 4rem + 1.2rem;
 
     .img {
       $size: 2.5rem;
@@ -37,6 +44,15 @@
   .md-list-item__content {
     flex-grow: 1;
     flex-basis: 0;
+
+    &.md-list-item__content--no-avatar {
+      padding-left: 1.2rem;
+    }
+
+
+    &.md-list-item__content--no-action {
+      padding-right: 1.2rem;
+    }
   }
 
     .md-list-item__primary-content {
@@ -56,8 +72,10 @@
     }
 
   .md-list-item__action {
-    width: 3.5rem;
+    padding-right: 1.2rem;
     padding-left: 1.1rem;
+
+    width: 1.2rem + 1.2rem + 1.1rem;
 
     button {
       display: block;
