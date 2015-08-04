@@ -6462,6 +6462,7 @@ var ViewGroups = (function (_View) {
 
         var nameField = form.elements.name;
         var name = nameField.value;
+        var test = '';
 
         new Group({
           fields: {

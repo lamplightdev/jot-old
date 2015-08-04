@@ -12,6 +12,9 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 const auth = require('./utility/auth');
 
+const redis = require('redis');
+const RedisStore = require('connect-redis')(session);
+
 const RoutesHome = require('./routes/server/home');
 const RoutesJot = require('./routes/server/jot');
 const RoutesGroup = require('./routes/server/group');
@@ -55,7 +58,21 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+const redisClient = redis.createClient(
+  process.env.JOT_REDIS_PORT,
+  process.env.JOT_REDIS_HOST,
+  {}
+);
+redisClient.select(process.env.JOT_REDIS_DB);
+redisClient.on('error', (err) => {
+  console.log('Redis error: ' + err);
+});
+
 app.use(session({
+  store: new RedisStore({
+    client: redisClient,
+    pass: process.env.JOT_REDIS_PASSWORD
+  }),
   secret: 'kljsd87scoijsanc*^*&%g',
   resave: false,
   saveUninitialized: false,

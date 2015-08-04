@@ -84,6 +84,7 @@ class ViewGroups extends View {
 
       const nameField = form.elements.name;
       const name = nameField.value;
+      const test = '';
 
       new Group({
         fields: {
