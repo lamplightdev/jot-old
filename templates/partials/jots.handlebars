@@ -1,5 +1,6 @@
 <div class='md-list'>
 {{#each jots}}
+  {{#unless this.fields.done}}
   <div class='md-list-item jots__jot jots__jot-{{id}}'>
     <a class='md-list-item__avatar' href='/group/{{fields.group}}#{{id}}'>
       <div class='img'></div>
@@ -14,5 +15,6 @@
       </div>
     </a>
   </div>
+  {{/unless}}
 {{/each}}
 </div>
