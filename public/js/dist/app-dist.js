@@ -6059,7 +6059,7 @@ var ViewGroup = (function (_View) {
     value: function initAddForm() {
       var _this = this;
 
-      var form = this._el.querySelector('#form-jot-add');
+      var form = this._el.querySelector('.form-jot-add');
       form.addEventListener('submit', function (event) {
         event.preventDefault();
 
@@ -6413,7 +6413,7 @@ var ViewGroups = (function (_View) {
     value: function initAddForm() {
       var _this2 = this;
 
-      var form = this._el.querySelector('#form-group-add');
+      var form = this._el.querySelector('.form-group-add');
       form.addEventListener('submit', function (event) {
         event.preventDefault();
 
@@ -6440,7 +6440,7 @@ var ViewGroups = (function (_View) {
     value: function initEdit() {
       var _this3 = this;
 
-      var links = this._el.querySelectorAll('.groups__group__edit');
+      var editLinks = this._el.querySelectorAll('.groups__group__edit');
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
@@ -6470,7 +6470,7 @@ var ViewGroups = (function (_View) {
           });
         };
 
-        for (var _iterator = links[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        for (var _iterator = editLinks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           _loop();
         }
       } catch (err) {
@@ -6488,21 +6488,24 @@ var ViewGroups = (function (_View) {
         }
       }
 
-      var cancels = this._el.querySelectorAll('.edit-cancel');
+      this._addDocumentListener('unselectAll', 'click', function () {
+        _this3.unselectAll();
+      });
+    }
+  }, {
+    key: 'unselectAll',
+    value: function unselectAll() {
+      //TODO: have class member to hold reference to common element/element groups to avoid requerying
+      var items = this._el.querySelectorAll('.groups__group');
       var _iteratorNormalCompletion2 = true;
       var _didIteratorError2 = false;
       var _iteratorError2 = undefined;
 
       try {
-        for (var _iterator2 = cancels[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var cancel = _step2.value;
+        for (var _iterator2 = items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var item = _step2.value;
 
-          cancel.addEventListener('click', function (event) {
-            event.preventDefault();
-
-            //cancel.parentNode.classList.remove('edit');
-            //above will be handled by document listener below
-          });
+          item.classList.remove('edit');
         }
       } catch (err) {
         _didIteratorError2 = true;
@@ -6518,40 +6521,6 @@ var ViewGroups = (function (_View) {
           }
         }
       }
-
-      this._addDocumentListener('unselectAll', 'click', function () {
-        _this3.unselectAll();
-      });
-    }
-  }, {
-    key: 'unselectAll',
-    value: function unselectAll() {
-      //TODO: have class member to hold reference to common element/element groups to avoid requerying
-      var items = this._el.querySelectorAll('.groups__group');
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
-
-      try {
-        for (var _iterator3 = items[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var item = _step3.value;
-
-          item.classList.remove('edit');
-        }
-      } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion3 && _iterator3['return']) {
-            _iterator3['return']();
-          }
-        } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
-          }
-        }
-      }
     }
   }, {
     key: 'initDeleteForms',
@@ -6559,13 +6528,13 @@ var ViewGroups = (function (_View) {
       var _this4 = this;
 
       var forms = this._el.querySelectorAll('.form-group-delete');
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
 
       try {
         var _loop2 = function () {
-          var form = _step4.value;
+          var form = _step3.value;
 
           form.addEventListener('submit', function (event) {
             event.preventDefault();
@@ -6585,20 +6554,20 @@ var ViewGroups = (function (_View) {
           });
         };
 
-        for (var _iterator4 = forms[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        for (var _iterator3 = forms[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
           _loop2();
         }
       } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion4 && _iterator4['return']) {
-            _iterator4['return']();
+          if (!_iteratorNormalCompletion3 && _iterator3['return']) {
+            _iterator3['return']();
           }
         } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
+          if (_didIteratorError3) {
+            throw _iteratorError3;
           }
         }
       }
@@ -6610,13 +6579,13 @@ var ViewGroups = (function (_View) {
 
       var forms = this._el.querySelectorAll('.form-group-update');
 
-      var _iteratorNormalCompletion5 = true;
-      var _didIteratorError5 = false;
-      var _iteratorError5 = undefined;
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
 
       try {
         var _loop3 = function () {
-          var form = _step5.value;
+          var form = _step4.value;
 
           form.addEventListener('click', function (event) {
             event.stopPropagation(); //stop document listener from removing 'edit' class
@@ -6646,20 +6615,20 @@ var ViewGroups = (function (_View) {
           });
         };
 
-        for (var _iterator5 = forms[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+        for (var _iterator4 = forms[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
           _loop3();
         }
       } catch (err) {
-        _didIteratorError5 = true;
-        _iteratorError5 = err;
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion5 && _iterator5['return']) {
-            _iterator5['return']();
+          if (!_iteratorNormalCompletion4 && _iterator4['return']) {
+            _iterator4['return']();
           }
         } finally {
-          if (_didIteratorError5) {
-            throw _iteratorError5;
+          if (_didIteratorError4) {
+            throw _iteratorError4;
           }
         }
       }

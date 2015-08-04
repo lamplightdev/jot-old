@@ -20,10 +20,6 @@ header {
   z-index: 20;
 }
 
-form {
-  display: inline;
-}
-
 * {
   box-sizing: border-box;
   outline: none;
@@ -31,11 +27,13 @@ form {
 }
 
 
+.form-jot-add, .form-group-add {
+  padding: 0 1.2rem;
+}
+
 .jots__jot, .groups__group {
 
   .jots__jot__item, .groups__group__item {
-    display: block;
-
     text-decoration: none;
     color: inherit;
 
@@ -44,26 +42,23 @@ form {
     }
   }
 
-  .form-jot-update, .form-jot-delete, .form-group-update, .form-group-delete {
+  .jots__jot__forms, .groups__group__forms {
     display: none;
-  }
+    margin-top: -1.1rem;
 
-  .edit-cancel {
-    display: none;
+    form {
+      display: inline;
+    }
   }
 
   &.edit {
 
-    .form-jot-update, .form-jot-delete, .form-group-update, .form-group-delete {
+    .jots__jot__forms, .groups__group__forms {
       display: inline;
     }
 
     .jots__jot__item, .groups__group__item {
       display: none;
-    }
-
-    .edit-cancel {
-      display: inline;
     }
   }
 }

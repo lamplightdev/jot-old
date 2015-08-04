@@ -1,9 +1,7 @@
-<h2>{{group.fields.name}} ({{group.id}})</h2>
-
-<form id='form-jot-add' action='/group/{{group.id}}' method='post'>
+<form class='form-jot-add' action='/group/{{group.id}}' method='post'>
   <input type='text' class='md-form-text' name='content' value='' placeholder='New jot'>
   <input type='hidden' name='group' value='{{group.id}}'>
-  <button type='submit' class=''>add</button>
+  <button class='md-form-btn' type='submit'>add</button>
 </form>
 
 {{>jot-list jots=group.jots}}

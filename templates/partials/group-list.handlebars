@@ -8,28 +8,33 @@
         <div class='img'></div>
       </a>
 
-      <a class='md-list-item__content' href='/group/{{id}}'>
-        <div class='md-list-item__primary-content groups__group__item'>
-          {{fields.name}} - {{id}} ({{jotCount}} jots)
+      <a class='md-list-item__content groups__group__item' href='/group/{{id}}'>
+        <div class='md-list-item__primary-content'>
+          {{fields.name}}
         </div>
-
         <div class='md-list-item__secondary-content'>
+          {{jotCount}} jots
+        </div>
+      </a>
+
+      <div class='md-list-item__content groups__group__forms'>
+        <div class='md-list-item__primary-content'>
           <form class='form-group-update form-group-update-{{id}}' data-id='{{id}}' method='post' action='/group/{{id}}'>
             <input type='text' class='md-form-text' name='name' value='{{fields.name}}'>
             <input type='hidden' name='action' value='update'>
-            <button type='submit'>save</button>
+            <button class='md-form-btn' type='submit'>save</button>
           </form>
 
           <form class='form-group-delete form-group-delete-{{id}}' data-id='{{id}}' method='post' action='/group/{{id}}'>
             <input type='hidden' name='action' value='delete'>
-            <button type='submit'>delete</button>
+            <button class='md-form-btn' type='submit'>delete</button>
           </form>
         </div>
-      </a>
-
-      <div class='md-list-item__action'>
-        <a class='groups__group__edit' href='/group?edit={{id}}' data-id='{{id}}' target='_parent'><img src='/images/pencil.svg' alt='Edit'></a>
       </div>
+
+      <a class='md-list-item__action groups__group__edit' href='/group?edit={{id}}' data-id='{{id}}'>
+        <img src='/images/pencil.svg' alt='Edit'>
+      </a>
 
     </div>
   {{/each}}

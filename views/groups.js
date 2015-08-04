@@ -64,7 +64,7 @@ class ViewGroups extends View {
   }
 
   initAddForm() {
-    const form = this._el.querySelector('#form-group-add');
+    const form = this._el.querySelector('.form-group-add');
     form.addEventListener('submit', event => {
       event.preventDefault();
 
@@ -88,8 +88,8 @@ class ViewGroups extends View {
   }
 
   initEdit() {
-    const links = this._el.querySelectorAll('.groups__group__edit');
-    for (let link of links) {
+    const editLinks = this._el.querySelectorAll('.groups__group__edit');
+    for (let link of editLinks) {
       link.addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();  //stop document listener from removing 'edit' class
@@ -108,16 +108,6 @@ class ViewGroups extends View {
         } else {
           this.unselectAll();
         }
-      });
-    }
-
-    const cancels = this._el.querySelectorAll('.edit-cancel');
-    for (let cancel of cancels) {
-      cancel.addEventListener('click', event => {
-        event.preventDefault();
-
-        //cancel.parentNode.classList.remove('edit');
-        //above will be handled by document listener below
       });
     }
 

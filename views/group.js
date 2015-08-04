@@ -67,7 +67,7 @@ class ViewGroup extends View {
   }
 
   initAddForm() {
-    const form = this._el.querySelector('#form-jot-add');
+    const form = this._el.querySelector('.form-jot-add');
     form.addEventListener('submit', event => {
       event.preventDefault();
 
