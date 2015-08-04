@@ -17,6 +17,10 @@
     background: $clr-grey-100;
   }
 
+  &:active, &:focus {
+    background: $clr-grey-200;
+  }
+
   &:last-child {
     border-bottom: 0;
   }

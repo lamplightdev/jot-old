@@ -4,13 +4,13 @@
     <div class='md-list-item groups__group groups__group-{{id}} {{#ifEqual id @root.editID}}edit{{/ifEqual}}'>
       <a name='{{id}}' id='{{id}}'></a>
 
-      <div class='md-list-item__avatar'>
+      <a class='md-list-item__avatar' href='/group/{{id}}'>
         <div class='img'></div>
-      </div>
+      </a>
 
-      <div class='md-list-item__content'>
+      <a class='md-list-item__content' href='/group/{{id}}'>
         <div class='md-list-item__primary-content groups__group__item'>
-          {{fields.name}} - {{id}} ({{jotCount}} jots) <a href='/group/{{id}}'>view</a>
+          {{fields.name}} - {{id}} ({{jotCount}} jots)
         </div>
 
         <div class='md-list-item__secondary-content'>
@@ -24,10 +24,8 @@
             <input type='hidden' name='action' value='delete'>
             <button type='submit'>delete</button>
           </form>
-
-          <a class='edit-cancel' href='/group'>cancel</a>
         </div>
-      </div>
+      </a>
 
       <div class='md-list-item__action'>
         <a class='groups__group__edit' href='/group?edit={{id}}' data-id='{{id}}' target='_parent'><img src='/images/pencil.svg' alt='Edit'></a>

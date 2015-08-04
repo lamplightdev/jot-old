@@ -63,7 +63,7 @@ const redisClient = redis.createClient(
   process.env.JOT_REDIS_HOST,
   {}
 );
-redisClient.select(process.env.JOT_REDIS_DB);
+redisClient.select(process.env.JOT_REDIS_DB, () => {});
 redisClient.on('error', (err) => {
   console.log('Redis error: ' + err);
 });
@@ -73,11 +73,11 @@ app.use(session({
     client: redisClient,
     pass: process.env.JOT_REDIS_PASSWORD
   }),
-  secret: 'kljsd87scoijsanc*^*&%g',
+  secret: 'kl988sd87scoijsanc*^*&%g',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 1209600 //two weeks
+    maxAge: 1209600 * 1000 //two weeks
   }
 }));
 
