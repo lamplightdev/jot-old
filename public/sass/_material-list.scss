@@ -3,11 +3,15 @@
 }
 
 .md-list-item {
+  display: -webkit-flex;
   display: flex;
+  -webkit-flex-direction: row;
   flex-direction: row;
-  //flex-wrap: wrap;
+  -webkit-justify-content: flex-start;
   justify-content: flex-start;
+  -webkit-align-content: flex-start;
   align-content: flex-start;
+  -webkit-align-items: flex-start;
   align-items: flex-start;
 
   padding: 0;
@@ -50,7 +54,9 @@
   }
 
   .md-list-item__content {
+    -webkit-flex-grow: 1;
     flex-grow: 1;
+    -webkit-flex-basis: 0;
     flex-basis: 0;
 
     &.md-list-item__content--no-avatar {
