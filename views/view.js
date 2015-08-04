@@ -1,11 +1,14 @@
 'use strict';
 
 const Handlebars = require('handlebars/dist/handlebars.runtime');
+const PubSub = require('../utility/pubsub');
 
 class View {
   constructor(container) {
     this._container = container;
 
+    this._subscriptions = [];
+    this._documentListeners = {};
     this._widgets = [];
   }
 
@@ -15,6 +18,8 @@ class View {
   }
 
   render(preRendered, params) {
+    this.cleanup();
+
     if (!preRendered) {
       var template = Handlebars.template(this._container._templates[this._getTemplate()]);
       this._container.update(this, template(params));
@@ -35,8 +40,29 @@ class View {
     return this.constructor.name.toLowerCase().substring(4);
   }
 
+  _addDocumentListener(name, type, fn) {
+    if (!this._documentListeners[name]) {
+      this._documentListeners[name] = {
+        type,
+        fn: fn.bind(this)
+      };
+    }
+
+    document.addEventListener(type, this._documentListeners[name].fn);
+  }
+
   cleanup() {
     console.log('view cleaup', this);
+
+    for (let sub of this._subscriptions) {
+      PubSub.unsubscribe(sub);
+    }
+
+    for (let lname in this._documentListeners) {
+      const listener = this._documentListeners[lname];
+      document.removeEventListener(listener.type, listener.fn);
+    }
+
     this.cleanupWidgets();
   }
 

@@ -8,22 +8,22 @@ const Group = require('../models/group');
 const PubSub = require('../utility/pubsub');
 
 class ViewGroup extends View {
-  constructor(container) {
-    super(container);
+  render(preRendered, params) {
+    super.render(preRendered, params);
 
-    /* TODO: HOW TO GET CURRENT GROUP?? SHOULD THIS BE IN RENDER
-    PubSub.subscribe('update', (topic, args) => {
+    this._subscriptions.push(PubSub.subscribe('update', (topic, args) => {
       if (args.changes && args.changes.length) {
-        Group.load(group).then(group => {
+        Group.load(params.group.id).then(group => {
           this.renderPartial('jot-list', {
             jots: group.jots
           });
         });
       }
-    });
-    */
+    }));
 
-    this._documentListeners = {};
+    this._addDocumentListener('unselectAll', 'click', () => {
+      this.unselectAll();
+    });
   }
 
   renderPartial(name, params) {
@@ -44,26 +44,6 @@ class ViewGroup extends View {
     this.initEdit();
     this.initDeleteForms();
     this.initUpdateForms();
-  }
-
-  _addDocumentListener(name, type, fn) {
-    if (!this._documentListeners[name]) {
-      this._documentListeners[name] = {
-        type,
-        fn: fn.bind(this)
-      };
-    }
-
-    document.addEventListener(type, this._documentListeners[name].fn);
-  }
-
-  cleanup() {
-    super.cleanup();
-
-    for (let lname in this._documentListeners) {
-      const listener = this._documentListeners[lname];
-      document.removeEventListener(listener.type, listener.fn);
-    }
   }
 
   initAddForm() {
@@ -117,10 +97,6 @@ class ViewGroup extends View {
         }
       });
     }
-
-    this._addDocumentListener('unselectAll', 'click', () => {
-      this.unselectAll();
-    });
   }
 
   unselectAllListener() {

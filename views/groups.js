@@ -7,10 +7,10 @@ const Group = require('../models/group');
 const PubSub = require('../utility/pubsub');
 
 class ViewGroups extends View {
-  constructor(container) {
-    super(container);
+  render(preRendered, params) {
+    super.render(preRendered, params);
 
-    PubSub.subscribe('update', (topic, args) => {
+    this._subscriptions.push(PubSub.subscribe('update', (topic, args) => {
       if (args.changes && args.changes.length) {
         Group.loadAll().then(groups => {
           this.renderPartial('group-list', {
@@ -18,9 +18,11 @@ class ViewGroups extends View {
           });
         });
       }
-    });
+    }));
 
-    this._documentListeners = {};
+    this._addDocumentListener('unselectAll', 'click', () => {
+      this.unselectAll();
+    });
   }
 
   renderPartial(name, params) {
@@ -41,26 +43,6 @@ class ViewGroups extends View {
     this.initEdit();
     this.initDeleteForms();
     this.initUpdateForms();
-  }
-
-  _addDocumentListener(name, type, fn) {
-    if (!this._documentListeners[name]) {
-      this._documentListeners[name] = {
-        type,
-        fn: fn.bind(this)
-      };
-    }
-
-    document.addEventListener(type, this._documentListeners[name].fn);
-  }
-
-  cleanup() {
-    super.cleanup();
-
-    for (let lname in this._documentListeners) {
-      const listener = this._documentListeners[lname];
-      document.removeEventListener(listener.type, listener.fn);
-    }
   }
 
   initAddForm() {
@@ -110,10 +92,6 @@ class ViewGroups extends View {
         }
       });
     }
-
-    this._addDocumentListener('unselectAll', 'click', () => {
-      this.unselectAll();
-    });
   }
 
   unselectAll() {

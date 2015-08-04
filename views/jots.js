@@ -7,10 +7,10 @@ const Jot = require('../models/jot');
 const PubSub = require('../utility/pubsub');
 
 class ViewJots extends View {
-  constructor(container) {
-    super(container);
+  render(preRendered, params) {
+    super.render(preRendered, params);
 
-    PubSub.subscribe('update', (topic, args) => {
+    this._subscriptions.push(PubSub.subscribe('update', (topic, args) => {
       console.log(args);
 
       if (args.changes && args.changes.length) {
@@ -20,7 +20,7 @@ class ViewJots extends View {
           });
         });
       }
-    });
+    }));
   }
 
 }

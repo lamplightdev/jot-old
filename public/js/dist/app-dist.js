@@ -5990,27 +5990,34 @@ var PubSub = require('../utility/pubsub');
 var ViewGroup = (function (_View) {
   _inherits(ViewGroup, _View);
 
-  function ViewGroup(container) {
+  function ViewGroup() {
     _classCallCheck(this, ViewGroup);
 
-    _get(Object.getPrototypeOf(ViewGroup.prototype), 'constructor', this).call(this, container);
-
-    /* TODO: HOW TO GET CURRENT GROUP?? SHOULD THIS BE IN RENDER
-    PubSub.subscribe('update', (topic, args) => {
-      if (args.changes && args.changes.length) {
-        Group.load(group).then(group => {
-          this.renderPartial('jot-list', {
-            jots: group.jots
-          });
-        });
-      }
-    });
-    */
-
-    this._documentListeners = {};
+    _get(Object.getPrototypeOf(ViewGroup.prototype), 'constructor', this).apply(this, arguments);
   }
 
   _createClass(ViewGroup, [{
+    key: 'render',
+    value: function render(preRendered, params) {
+      var _this = this;
+
+      _get(Object.getPrototypeOf(ViewGroup.prototype), 'render', this).call(this, preRendered, params);
+
+      this._subscriptions.push(PubSub.subscribe('update', function (topic, args) {
+        if (args.changes && args.changes.length) {
+          Group.load(params.group.id).then(function (group) {
+            _this.renderPartial('jot-list', {
+              jots: group.jots
+            });
+          });
+        }
+      }));
+
+      this._addDocumentListener('unselectAll', 'click', function () {
+        _this.unselectAll();
+      });
+    }
+  }, {
     key: 'renderPartial',
     value: function renderPartial(name, params) {
       _get(Object.getPrototypeOf(ViewGroup.prototype), 'renderPartial', this).call(this, name, params);
@@ -6033,31 +6040,9 @@ var ViewGroup = (function (_View) {
       this.initUpdateForms();
     }
   }, {
-    key: '_addDocumentListener',
-    value: function _addDocumentListener(name, type, fn) {
-      if (!this._documentListeners[name]) {
-        this._documentListeners[name] = {
-          type: type,
-          fn: fn.bind(this)
-        };
-      }
-
-      document.addEventListener(type, this._documentListeners[name].fn);
-    }
-  }, {
-    key: 'cleanup',
-    value: function cleanup() {
-      _get(Object.getPrototypeOf(ViewGroup.prototype), 'cleanup', this).call(this);
-
-      for (var lname in this._documentListeners) {
-        var listener = this._documentListeners[lname];
-        document.removeEventListener(listener.type, listener.fn);
-      }
-    }
-  }, {
     key: 'initAddForm',
     value: function initAddForm() {
-      var _this = this;
+      var _this2 = this;
 
       var form = this._el.querySelector('.form-jot-add');
       form.addEventListener('submit', function (event) {
@@ -6078,7 +6063,7 @@ var ViewGroup = (function (_View) {
           contentField.value = '';
           contentField.focus();
           Group.load(group).then(function (group) {
-            _this.renderPartial('jot-list', {
+            _this2.renderPartial('jot-list', {
               jots: group.jots
             });
           });
@@ -6088,7 +6073,7 @@ var ViewGroup = (function (_View) {
   }, {
     key: 'initEdit',
     value: function initEdit() {
-      var _this2 = this;
+      var _this3 = this;
 
       var links = this._el.querySelectorAll('.jots__jot__edit');
       var _iteratorNormalCompletion = true;
@@ -6104,18 +6089,18 @@ var ViewGroup = (function (_View) {
             event.stopPropagation(); //stop document listener from removing 'edit' class
 
             var id = link.dataset.id;
-            var item = _this2._el.querySelector('.jots__jot-' + id);
+            var item = _this3._el.querySelector('.jots__jot-' + id);
 
             if (!item.classList.contains('edit')) {
-              _this2.unselectAll();
+              _this3.unselectAll();
 
               item.classList.add('edit');
 
-              var contentField = _this2._el.querySelector('.form-jot-update-' + id).elements.content;
+              var contentField = _this3._el.querySelector('.form-jot-update-' + id).elements.content;
               contentField.focus();
               contentField.value = contentField.value; //forces cursor to go to end of text
             } else {
-                _this2.unselectAll();
+                _this3.unselectAll();
               }
           });
         };
@@ -6137,10 +6122,6 @@ var ViewGroup = (function (_View) {
           }
         }
       }
-
-      this._addDocumentListener('unselectAll', 'click', function () {
-        _this2.unselectAll();
-      });
     }
   }, {
     key: 'unselectAllListener',
@@ -6180,7 +6161,7 @@ var ViewGroup = (function (_View) {
   }, {
     key: 'initDeleteForms',
     value: function initDeleteForms() {
-      var _this3 = this;
+      var _this4 = this;
 
       var forms = this._el.querySelectorAll('.form-jot-delete');
       var _iteratorNormalCompletion3 = true;
@@ -6197,12 +6178,12 @@ var ViewGroup = (function (_View) {
             var id = form.dataset.id;
             var group = form.dataset.groupId;
 
-            var item = _this3._el.querySelector('.jots__jot-' + id);
+            var item = _this4._el.querySelector('.jots__jot-' + id);
             //item.parentNode.parentNode.removeChild(item);
 
             Jot.remove(id).then(function () {
               Group.load(group).then(function (group) {
-                _this3.renderPartial('jot-list', {
+                _this4.renderPartial('jot-list', {
                   jots: group.jots
                 });
               });
@@ -6231,7 +6212,7 @@ var ViewGroup = (function (_View) {
   }, {
     key: 'initUpdateForms',
     value: function initUpdateForms() {
-      var _this4 = this;
+      var _this5 = this;
 
       var forms = this._el.querySelectorAll('.form-jot-update');
 
@@ -6290,7 +6271,7 @@ var ViewGroup = (function (_View) {
 
               jot.save().then(function () {
                 Group.load(group).then(function (group) {
-                  _this4.renderPartial('jot-list', {
+                  _this5.renderPartial('jot-list', {
                     jots: group.jots
                   });
                 });
@@ -6344,27 +6325,34 @@ var PubSub = require('../utility/pubsub');
 var ViewGroups = (function (_View) {
   _inherits(ViewGroups, _View);
 
-  function ViewGroups(container) {
-    var _this = this;
-
+  function ViewGroups() {
     _classCallCheck(this, ViewGroups);
 
-    _get(Object.getPrototypeOf(ViewGroups.prototype), 'constructor', this).call(this, container);
-
-    PubSub.subscribe('update', function (topic, args) {
-      if (args.changes && args.changes.length) {
-        Group.loadAll().then(function (groups) {
-          _this.renderPartial('group-list', {
-            groups: groups
-          });
-        });
-      }
-    });
-
-    this._documentListeners = {};
+    _get(Object.getPrototypeOf(ViewGroups.prototype), 'constructor', this).apply(this, arguments);
   }
 
   _createClass(ViewGroups, [{
+    key: 'render',
+    value: function render(preRendered, params) {
+      var _this = this;
+
+      _get(Object.getPrototypeOf(ViewGroups.prototype), 'render', this).call(this, preRendered, params);
+
+      this._subscriptions.push(PubSub.subscribe('update', function (topic, args) {
+        if (args.changes && args.changes.length) {
+          Group.loadAll().then(function (groups) {
+            _this.renderPartial('group-list', {
+              groups: groups
+            });
+          });
+        }
+      }));
+
+      this._addDocumentListener('unselectAll', 'click', function () {
+        _this.unselectAll();
+      });
+    }
+  }, {
     key: 'renderPartial',
     value: function renderPartial(name, params) {
       _get(Object.getPrototypeOf(ViewGroups.prototype), 'renderPartial', this).call(this, name, params);
@@ -6385,28 +6373,6 @@ var ViewGroups = (function (_View) {
       this.initEdit();
       this.initDeleteForms();
       this.initUpdateForms();
-    }
-  }, {
-    key: '_addDocumentListener',
-    value: function _addDocumentListener(name, type, fn) {
-      if (!this._documentListeners[name]) {
-        this._documentListeners[name] = {
-          type: type,
-          fn: fn.bind(this)
-        };
-      }
-
-      document.addEventListener(type, this._documentListeners[name].fn);
-    }
-  }, {
-    key: 'cleanup',
-    value: function cleanup() {
-      _get(Object.getPrototypeOf(ViewGroups.prototype), 'cleanup', this).call(this);
-
-      for (var lname in this._documentListeners) {
-        var listener = this._documentListeners[lname];
-        document.removeEventListener(listener.type, listener.fn);
-      }
     }
   }, {
     key: 'initAddForm',
@@ -6487,10 +6453,6 @@ var ViewGroups = (function (_View) {
           }
         }
       }
-
-      this._addDocumentListener('unselectAll', 'click', function () {
-        _this3.unselectAll();
-      });
     }
   }, {
     key: 'unselectAll',
@@ -6668,6 +6630,8 @@ module.exports = ViewHome;
 },{"./view":31}],28:[function(require,module,exports){
 'use strict';
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -6683,25 +6647,32 @@ var PubSub = require('../utility/pubsub');
 var ViewJots = (function (_View) {
   _inherits(ViewJots, _View);
 
-  function ViewJots(container) {
-    var _this = this;
-
+  function ViewJots() {
     _classCallCheck(this, ViewJots);
 
-    _get(Object.getPrototypeOf(ViewJots.prototype), 'constructor', this).call(this, container);
-
-    PubSub.subscribe('update', function (topic, args) {
-      console.log(args);
-
-      if (args.changes && args.changes.length) {
-        Jot.loadAll().then(function (jots) {
-          _this.render(false, {
-            jots: jots
-          });
-        });
-      }
-    });
+    _get(Object.getPrototypeOf(ViewJots.prototype), 'constructor', this).apply(this, arguments);
   }
+
+  _createClass(ViewJots, [{
+    key: 'render',
+    value: function render(preRendered, params) {
+      var _this = this;
+
+      _get(Object.getPrototypeOf(ViewJots.prototype), 'render', this).call(this, preRendered, params);
+
+      this._subscriptions.push(PubSub.subscribe('update', function (topic, args) {
+        console.log(args);
+
+        if (args.changes && args.changes.length) {
+          Jot.loadAll().then(function (jots) {
+            _this.render(false, {
+              jots: jots
+            });
+          });
+        }
+      }));
+    }
+  }]);
 
   return ViewJots;
 })(View);
@@ -6830,6 +6801,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var Handlebars = require('handlebars/dist/handlebars.runtime');
+var PubSub = require('../utility/pubsub');
 
 var View = (function () {
   function View(container) {
@@ -6837,6 +6809,8 @@ var View = (function () {
 
     this._container = container;
 
+    this._subscriptions = [];
+    this._documentListeners = {};
     this._widgets = [];
   }
 
@@ -6845,6 +6819,8 @@ var View = (function () {
   _createClass(View, [{
     key: 'render',
     value: function render(preRendered, params) {
+      this.cleanup();
+
       if (!preRendered) {
         var template = Handlebars.template(this._container._templates[this._getTemplate()]);
         this._container.update(this, template(params));
@@ -6867,9 +6843,52 @@ var View = (function () {
       return this.constructor.name.toLowerCase().substring(4);
     }
   }, {
+    key: '_addDocumentListener',
+    value: function _addDocumentListener(name, type, fn) {
+      if (!this._documentListeners[name]) {
+        this._documentListeners[name] = {
+          type: type,
+          fn: fn.bind(this)
+        };
+      }
+
+      document.addEventListener(type, this._documentListeners[name].fn);
+    }
+  }, {
     key: 'cleanup',
     value: function cleanup() {
       console.log('view cleaup', this);
+
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        for (var _iterator = this._subscriptions[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var sub = _step.value;
+
+          PubSub.unsubscribe(sub);
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator['return']) {
+            _iterator['return']();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      for (var lname in this._documentListeners) {
+        var listener = this._documentListeners[lname];
+        document.removeEventListener(listener.type, listener.fn);
+      }
+
       this.cleanupWidgets();
     }
   }, {
@@ -6908,7 +6927,7 @@ var View = (function () {
 
 module.exports = View;
 
-},{"handlebars/dist/handlebars.runtime":8}]},{},[12])
+},{"../utility/pubsub":24,"handlebars/dist/handlebars.runtime":8}]},{},[12])
 
 
 //# sourceMappingURL=app-dist.js.map
