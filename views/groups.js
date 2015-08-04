@@ -23,20 +23,6 @@ class ViewGroups extends View {
     this._documentListeners = {};
   }
 
-  render(preRendered, params) {
-    super.render(preRendered, params);
-
-    let nameField;
-    if (params.editID) {
-      nameField = this._el.querySelector('.form-jot-update-' + params.editID).elements.name;
-    } else {
-      nameField = this._el.querySelector('#form-group-add').elements.name;
-    }
-
-    //nameField.focus();
-    //nameField.value = nameField.value;
-  }
-
   renderPartial(name, params) {
     super.renderPartial(name, params);
 
@@ -84,7 +70,6 @@ class ViewGroups extends View {
 
       const nameField = form.elements.name;
       const name = nameField.value;
-      const test = '';
 
       new Group({
         fields: {
@@ -109,13 +94,20 @@ class ViewGroups extends View {
         event.preventDefault();
         event.stopPropagation();  //stop document listener from removing 'edit' class
 
-        this.unselectAll();
+        const id = link.dataset.id;
+        const item = this._el.querySelector('.groups__group-' + id);
 
-        link.parentNode.parentNode.classList.add('edit');
+        if (!item.classList.contains('edit')) {
+          this.unselectAll();
 
-        const nameField = link.parentNode.parentNode.querySelector('.form-group-update').elements.name;
-        nameField.focus();
-        nameField.value = nameField.value; //forces cursor to go to end of text
+          item.classList.add('edit');
+
+          const nameField = this._el.querySelector('.form-group-update-' + id).elements.name;
+          nameField.focus();
+          nameField.value = nameField.value; //forces cursor to go to end of text
+        } else {
+          this.unselectAll();
+        }
       });
     }
 
@@ -136,9 +128,9 @@ class ViewGroups extends View {
 
   unselectAll() {
     //TODO: have class member to hold reference to common element/element groups to avoid requerying
-    const links = this._el.querySelectorAll('.groups__group__item');
-    for (let link of links) {
-      link.parentNode.classList.remove('edit');
+    const items = this._el.querySelectorAll('.groups__group');
+    for (let item of items) {
+      item.classList.remove('edit');
     }
   }
 

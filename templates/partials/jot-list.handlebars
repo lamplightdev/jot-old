@@ -14,8 +14,6 @@
         </div>
 
         <div class='md-list-item__secondary-content'>
-          <a class='jots__jot__edit' href='/group/{{fields.group}}?edit={{id}}' target='_parent'>edit</a>
-
           <form class='form-jot-update form-jot-update-{{id}}' data-id='{{id}}' method='post' action='/jot/{{id}}'>
             <input type='text' class='md-form-text' name='content' value='{{fields.content}}'>
             <input type='hidden' name='group' value='{{fields.group}}'>
@@ -33,13 +31,11 @@
             <input type='hidden' name='action' value='delete'>
             <button type='submit'>delete</button>
           </form>
-
-          <a class='edit-cancel' href='/jot'>cancel</a>
         </div>
       </div>
 
       <div class='md-list-item__action'>
-        <button><img src='/images/pencil.svg' alt='Edit'></button>
+        <a class='jots__jot__edit' href='/group/{{fields.group}}?edit={{id}}' data-id='{{id}}' target='_parent'><img src='/images/pencil.svg' alt='Edit'></a>
       </div>
 
     </div>

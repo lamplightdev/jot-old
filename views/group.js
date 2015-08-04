@@ -5,28 +5,37 @@ const View = require('./view');
 const Jot = require('../models/jot');
 const Group = require('../models/group');
 
+const PubSub = require('../utility/pubsub');
+
 class ViewGroup extends View {
   constructor(container) {
     super(container);
-    //TODO: PubSub to update jot list
+
+    /* TODO: HOW TO GET CURRENT GROUP?? SHOULD THIS BE IN RENDER
+    PubSub.subscribe('update', (topic, args) => {
+      if (args.changes && args.changes.length) {
+        Group.load(group).then(group => {
+          this.renderPartial('jot-list', {
+            jots: group.jots
+          });
+        });
+      }
+    });
+    */
 
     this._documentListeners = {};
   }
 
-  render(preRendered, params) {
-    super.render(preRendered, params);
+  renderPartial(name, params) {
+    super.renderPartial(name, params);
 
-    let contentField;
-    if (params.editID) {
-      contentField = this._el.querySelector('.form-jot-update-' + params.editID).elements.content;
-    } else {
-      contentField = this._el.querySelector('#form-jot-add').elements.content;
+    switch (name) {
+      case 'jot-list':
+        this.initEdit();
+        this.initDeleteForms();
+        this.initUpdateForms();
+        break;
     }
-
-    //contentField.focus();
-    //contentField.value = contentField.value;
-
-    this.initEvents();
   }
 
   initEvents() {
@@ -54,18 +63,6 @@ class ViewGroup extends View {
     for (let lname in this._documentListeners) {
       const listener = this._documentListeners[lname];
       document.removeEventListener(listener.type, listener.fn);
-    }
-  }
-
-  renderPartial(name, params) {
-    super.renderPartial(name, params);
-
-    switch (name) {
-      case 'jot-list':
-        this.initEdit();
-        this.initDeleteForms();
-        this.initUpdateForms();
-        break;
     }
   }
 
@@ -104,23 +101,20 @@ class ViewGroup extends View {
         event.preventDefault();
         event.stopPropagation();  //stop document listener from removing 'edit' class
 
-        this.unselectAll();
+        const id = link.dataset.id;
+        const item = this._el.querySelector('.jots__jot-' + id);
 
-        link.parentNode.parentNode.classList.add('edit');
+        if (!item.classList.contains('edit')) {
+          this.unselectAll();
 
-        const contentField = link.parentNode.parentNode.querySelector('.form-jot-update').elements.content;
-        contentField.focus();
-        contentField.value = contentField.value; //forces cursor to go to end of text
-      });
-    }
+          item.classList.add('edit');
 
-    const cancels = this._el.querySelectorAll('.edit-cancel');
-    for (let cancel of cancels) {
-      cancel.addEventListener('click', event => {
-        event.preventDefault();
-
-        //cancel.parentNode.classList.remove('edit');
-        //above will be handled by document listener below
+          const contentField = this._el.querySelector('.form-jot-update-' + id).elements.content;
+          contentField.focus();
+          contentField.value = contentField.value; //forces cursor to go to end of text
+        } else {
+          this.unselectAll();
+        }
       });
     }
 
@@ -135,9 +129,9 @@ class ViewGroup extends View {
 
   unselectAll() {
     //TODO: have class member to hold reference to common element/element groups to avoid requerying
-    const links = this._el.querySelectorAll('.jots__jot__item');
-    for (let link of links) {
-      link.parentNode.classList.remove('edit');
+    const items = this._el.querySelectorAll('.jots__jot');
+    for (let item of items) {
+      item.classList.remove('edit');
     }
   }
 

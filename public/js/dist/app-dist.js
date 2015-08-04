@@ -5985,6 +5985,8 @@ var View = require('./view');
 var Jot = require('../models/jot');
 var Group = require('../models/group');
 
+var PubSub = require('../utility/pubsub');
+
 var ViewGroup = (function (_View) {
   _inherits(ViewGroup, _View);
 
@@ -5992,27 +5994,34 @@ var ViewGroup = (function (_View) {
     _classCallCheck(this, ViewGroup);
 
     _get(Object.getPrototypeOf(ViewGroup.prototype), 'constructor', this).call(this, container);
-    //TODO: PubSub to update jot list
+
+    /* TODO: HOW TO GET CURRENT GROUP?? SHOULD THIS BE IN RENDER
+    PubSub.subscribe('update', (topic, args) => {
+      if (args.changes && args.changes.length) {
+        Group.load(group).then(group => {
+          this.renderPartial('jot-list', {
+            jots: group.jots
+          });
+        });
+      }
+    });
+    */
 
     this._documentListeners = {};
   }
 
   _createClass(ViewGroup, [{
-    key: 'render',
-    value: function render(preRendered, params) {
-      _get(Object.getPrototypeOf(ViewGroup.prototype), 'render', this).call(this, preRendered, params);
+    key: 'renderPartial',
+    value: function renderPartial(name, params) {
+      _get(Object.getPrototypeOf(ViewGroup.prototype), 'renderPartial', this).call(this, name, params);
 
-      var contentField = undefined;
-      if (params.editID) {
-        contentField = this._el.querySelector('.form-jot-update-' + params.editID).elements.content;
-      } else {
-        contentField = this._el.querySelector('#form-jot-add').elements.content;
+      switch (name) {
+        case 'jot-list':
+          this.initEdit();
+          this.initDeleteForms();
+          this.initUpdateForms();
+          break;
       }
-
-      //contentField.focus();
-      //contentField.value = contentField.value;
-
-      this.initEvents();
     }
   }, {
     key: 'initEvents',
@@ -6043,19 +6052,6 @@ var ViewGroup = (function (_View) {
       for (var lname in this._documentListeners) {
         var listener = this._documentListeners[lname];
         document.removeEventListener(listener.type, listener.fn);
-      }
-    }
-  }, {
-    key: 'renderPartial',
-    value: function renderPartial(name, params) {
-      _get(Object.getPrototypeOf(ViewGroup.prototype), 'renderPartial', this).call(this, name, params);
-
-      switch (name) {
-        case 'jot-list':
-          this.initEdit();
-          this.initDeleteForms();
-          this.initUpdateForms();
-          break;
       }
     }
   }, {
@@ -6107,13 +6103,20 @@ var ViewGroup = (function (_View) {
             event.preventDefault();
             event.stopPropagation(); //stop document listener from removing 'edit' class
 
-            _this2.unselectAll();
+            var id = link.dataset.id;
+            var item = _this2._el.querySelector('.jots__jot-' + id);
 
-            link.parentNode.parentNode.classList.add('edit');
+            if (!item.classList.contains('edit')) {
+              _this2.unselectAll();
 
-            var contentField = link.parentNode.parentNode.querySelector('.form-jot-update').elements.content;
-            contentField.focus();
-            contentField.value = contentField.value; //forces cursor to go to end of text
+              item.classList.add('edit');
+
+              var contentField = _this2._el.querySelector('.form-jot-update-' + id).elements.content;
+              contentField.focus();
+              contentField.value = contentField.value; //forces cursor to go to end of text
+            } else {
+                _this2.unselectAll();
+              }
           });
         };
 
@@ -6135,21 +6138,29 @@ var ViewGroup = (function (_View) {
         }
       }
 
-      var cancels = this._el.querySelectorAll('.edit-cancel');
+      this._addDocumentListener('unselectAll', 'click', function () {
+        _this2.unselectAll();
+      });
+    }
+  }, {
+    key: 'unselectAllListener',
+    value: function unselectAllListener() {
+      this.unselectAll();
+    }
+  }, {
+    key: 'unselectAll',
+    value: function unselectAll() {
+      //TODO: have class member to hold reference to common element/element groups to avoid requerying
+      var items = this._el.querySelectorAll('.jots__jot');
       var _iteratorNormalCompletion2 = true;
       var _didIteratorError2 = false;
       var _iteratorError2 = undefined;
 
       try {
-        for (var _iterator2 = cancels[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var cancel = _step2.value;
+        for (var _iterator2 = items[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var item = _step2.value;
 
-          cancel.addEventListener('click', function (event) {
-            event.preventDefault();
-
-            //cancel.parentNode.classList.remove('edit');
-            //above will be handled by document listener below
-          });
+          item.classList.remove('edit');
         }
       } catch (err) {
         _didIteratorError2 = true;
@@ -6165,45 +6176,6 @@ var ViewGroup = (function (_View) {
           }
         }
       }
-
-      this._addDocumentListener('unselectAll', 'click', function () {
-        _this2.unselectAll();
-      });
-    }
-  }, {
-    key: 'unselectAllListener',
-    value: function unselectAllListener() {
-      this.unselectAll();
-    }
-  }, {
-    key: 'unselectAll',
-    value: function unselectAll() {
-      //TODO: have class member to hold reference to common element/element groups to avoid requerying
-      var links = this._el.querySelectorAll('.jots__jot__item');
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
-
-      try {
-        for (var _iterator3 = links[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var link = _step3.value;
-
-          link.parentNode.classList.remove('edit');
-        }
-      } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion3 && _iterator3['return']) {
-            _iterator3['return']();
-          }
-        } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
-          }
-        }
-      }
     }
   }, {
     key: 'initDeleteForms',
@@ -6211,13 +6183,13 @@ var ViewGroup = (function (_View) {
       var _this3 = this;
 
       var forms = this._el.querySelectorAll('.form-jot-delete');
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
 
       try {
         var _loop2 = function () {
-          var form = _step4.value;
+          var form = _step3.value;
 
           form.addEventListener('submit', function (event) {
             event.preventDefault();
@@ -6238,20 +6210,20 @@ var ViewGroup = (function (_View) {
           });
         };
 
-        for (var _iterator4 = forms[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        for (var _iterator3 = forms[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
           _loop2();
         }
       } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion4 && _iterator4['return']) {
-            _iterator4['return']();
+          if (!_iteratorNormalCompletion3 && _iterator3['return']) {
+            _iterator3['return']();
           }
         } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
+          if (_didIteratorError3) {
+            throw _iteratorError3;
           }
         }
       }
@@ -6263,13 +6235,13 @@ var ViewGroup = (function (_View) {
 
       var forms = this._el.querySelectorAll('.form-jot-update');
 
-      var _iteratorNormalCompletion5 = true;
-      var _didIteratorError5 = false;
-      var _iteratorError5 = undefined;
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
 
       try {
         var _loop3 = function () {
-          var form = _step5.value;
+          var form = _step4.value;
 
           var doneButton = form.elements.done;
           var undoneButton = form.elements.undone;
@@ -6327,20 +6299,20 @@ var ViewGroup = (function (_View) {
           });
         };
 
-        for (var _iterator5 = forms[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+        for (var _iterator4 = forms[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
           _loop3();
         }
       } catch (err) {
-        _didIteratorError5 = true;
-        _iteratorError5 = err;
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion5 && _iterator5['return']) {
-            _iterator5['return']();
+          if (!_iteratorNormalCompletion4 && _iterator4['return']) {
+            _iterator4['return']();
           }
         } finally {
-          if (_didIteratorError5) {
-            throw _iteratorError5;
+          if (_didIteratorError4) {
+            throw _iteratorError4;
           }
         }
       }
@@ -6352,7 +6324,7 @@ var ViewGroup = (function (_View) {
 
 module.exports = ViewGroup;
 
-},{"../models/group":2,"../models/jot":3,"./view":31}],26:[function(require,module,exports){
+},{"../models/group":2,"../models/jot":3,"../utility/pubsub":24,"./view":31}],26:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6393,21 +6365,6 @@ var ViewGroups = (function (_View) {
   }
 
   _createClass(ViewGroups, [{
-    key: 'render',
-    value: function render(preRendered, params) {
-      _get(Object.getPrototypeOf(ViewGroups.prototype), 'render', this).call(this, preRendered, params);
-
-      var nameField = undefined;
-      if (params.editID) {
-        nameField = this._el.querySelector('.form-jot-update-' + params.editID).elements.name;
-      } else {
-        nameField = this._el.querySelector('#form-group-add').elements.name;
-      }
-
-      //nameField.focus();
-      //nameField.value = nameField.value;
-    }
-  }, {
     key: 'renderPartial',
     value: function renderPartial(name, params) {
       _get(Object.getPrototypeOf(ViewGroups.prototype), 'renderPartial', this).call(this, name, params);
@@ -6462,7 +6419,6 @@ var ViewGroups = (function (_View) {
 
         var nameField = form.elements.name;
         var name = nameField.value;
-        var test = '';
 
         new Group({
           fields: {
@@ -6497,13 +6453,20 @@ var ViewGroups = (function (_View) {
             event.preventDefault();
             event.stopPropagation(); //stop document listener from removing 'edit' class
 
-            _this3.unselectAll();
+            var id = link.dataset.id;
+            var item = _this3._el.querySelector('.groups__group-' + id);
 
-            link.parentNode.parentNode.classList.add('edit');
+            if (!item.classList.contains('edit')) {
+              _this3.unselectAll();
 
-            var nameField = link.parentNode.parentNode.querySelector('.form-group-update').elements.name;
-            nameField.focus();
-            nameField.value = nameField.value; //forces cursor to go to end of text
+              item.classList.add('edit');
+
+              var nameField = _this3._el.querySelector('.form-group-update-' + id).elements.name;
+              nameField.focus();
+              nameField.value = nameField.value; //forces cursor to go to end of text
+            } else {
+                _this3.unselectAll();
+              }
           });
         };
 
@@ -6564,16 +6527,16 @@ var ViewGroups = (function (_View) {
     key: 'unselectAll',
     value: function unselectAll() {
       //TODO: have class member to hold reference to common element/element groups to avoid requerying
-      var links = this._el.querySelectorAll('.groups__group__item');
+      var items = this._el.querySelectorAll('.groups__group');
       var _iteratorNormalCompletion3 = true;
       var _didIteratorError3 = false;
       var _iteratorError3 = undefined;
 
       try {
-        for (var _iterator3 = links[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          var link = _step3.value;
+        for (var _iterator3 = items[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var item = _step3.value;
 
-          link.parentNode.classList.remove('edit');
+          item.classList.remove('edit');
         }
       } catch (err) {
         _didIteratorError3 = true;

@@ -14,8 +14,6 @@
         </div>
 
         <div class='md-list-item__secondary-content'>
-          <a class='groups__group__edit' href='/group?edit={{id}}' target='_parent'>edit</a>
-
           <form class='form-group-update form-group-update-{{id}}' data-id='{{id}}' method='post' action='/group/{{id}}'>
             <input type='text' class='md-form-text' name='name' value='{{fields.name}}'>
             <input type='hidden' name='action' value='update'>
@@ -32,8 +30,9 @@
       </div>
 
       <div class='md-list-item__action'>
-        <button><img src='/images/pencil.svg' alt='Edit'></button>
+        <a class='groups__group__edit' href='/group?edit={{id}}' data-id='{{id}}' target='_parent'><img src='/images/pencil.svg' alt='Edit'></a>
       </div>
+
     </div>
   {{/each}}
   </div>
