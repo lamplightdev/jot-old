@@ -4,9 +4,18 @@ const View = require('./view');
 
 const Group = require('../models/group');
 
+const ColourSelectorWidget = require('./colour-selector');
+
 const PubSub = require('../utility/pubsub');
 
 class ViewGroups extends View {
+
+  constructor(container) {
+    super(container);
+
+    this.registerWidget(ColourSelectorWidget);
+  }
+
   render(preRendered, params) {
     super.render(preRendered, params);
 
@@ -26,20 +35,22 @@ class ViewGroups extends View {
   }
 
   renderPartial(name, params) {
-    super.renderPartial(name, params);
+    const el = super.renderPartial(name, params);
 
     switch (name) {
       case 'group-list':
         this.initEdit();
         this.initDeleteForms();
         this.initUpdateForms();
+        this.initWidgets(el);
         break;
     }
   }
 
   initEvents() {
-    this.initAddForm();
+    super.initEvents();
 
+    this.initAddForm();
     this.initEdit();
     this.initDeleteForms();
     this.initUpdateForms();
@@ -69,6 +80,14 @@ class ViewGroups extends View {
           });
         });
       });
+    });
+
+    const toShow = form.querySelector('.show-on-focus');
+
+    form.addEventListener('click', event => {
+      event.stopPropagation();
+      this.unselectAll();
+      toShow.classList.add('show');
     });
   }
 
@@ -102,6 +121,11 @@ class ViewGroups extends View {
     const items = this._el.querySelectorAll('.groups__group');
     for (let item of items) {
       item.classList.remove('edit');
+    }
+
+    const shows = this._el.querySelectorAll('.show-on-focus');
+    for (let show of shows) {
+      show.classList.remove('show');
     }
   }
 

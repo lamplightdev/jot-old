@@ -15,7 +15,8 @@ class ViewGroup extends View {
       if (args.changes && args.changes.length) {
         Group.load(params.group.id).then(group => {
           this.renderPartial('jot-list', {
-            jots: group.jots
+            jots: group.jots,
+            group
           });
         });
       }
@@ -39,8 +40,9 @@ class ViewGroup extends View {
   }
 
   initEvents() {
-    this.initAddForm();
+    super.initEvents();
 
+    this.initAddForm();
     this.initEdit();
     this.initDeleteForms();
     this.initUpdateForms();
@@ -67,10 +69,19 @@ class ViewGroup extends View {
         contentField.focus();
         Group.load(group).then(group => {
           this.renderPartial('jot-list', {
-            jots: group.jots
+            jots: group.jots,
+            group
           });
         });
       });
+    });
+
+    const toShow = form.querySelector('.show-on-focus');
+
+    form.addEventListener('click', event => {
+      event.stopPropagation();
+      this.unselectAll();
+      toShow.classList.add('show');
     });
   }
 
@@ -99,15 +110,16 @@ class ViewGroup extends View {
     }
   }
 
-  unselectAllListener() {
-    this.unselectAll();
-  }
-
   unselectAll() {
     //TODO: have class member to hold reference to common element/element groups to avoid requerying
     const items = this._el.querySelectorAll('.jots__jot');
     for (let item of items) {
       item.classList.remove('edit');
+    }
+
+    const shows = this._el.querySelectorAll('.show-on-focus');
+    for (let show of shows) {
+      show.classList.remove('show');
     }
   }
 
@@ -126,7 +138,8 @@ class ViewGroup extends View {
         Jot.remove(id).then(() => {
           Group.load(group).then(group => {
             this.renderPartial('jot-list', {
-              jots: group.jots
+              jots: group.jots,
+              group
             });
           });
         });
@@ -186,7 +199,8 @@ class ViewGroup extends View {
           jot.save().then(() => {
             Group.load(group).then(group => {
               this.renderPartial('jot-list', {
-                jots: group.jots
+                jots: group.jots,
+                group
               });
             });
           });

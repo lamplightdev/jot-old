@@ -1,0 +1,12 @@
+<div class='partial-colour-selector'>
+  <div class='colour-selector'>
+    {{#each colours}}
+      <div class='colour-selector__colour {{#ifEqual ../current this.code}}colour-selector__colour--current{{/ifEqual}}' style='background-color: {{this.code}}' data-value='{{this.code}}'></div>
+    {{/each}}
+    <select name='colour'>
+    {{#each colours}}
+      <option value='{{this.code}}' {{#ifEqual ../current this.code}}selected{{/ifEqual}}>{{this.name}}</option>
+    {{/each}}
+    </select>
+  </div>
+</div>

@@ -1,7 +1,6 @@
 class Widget {
 
-  constructor(parentView) {
-    this._parentView = parentView;
+  constructor() {
   }
 
   initEvents() {
@@ -9,7 +8,6 @@ class Widget {
   }
 
   cleanup() {
-    console.log('widget cleaup', this);
   }
 }
 

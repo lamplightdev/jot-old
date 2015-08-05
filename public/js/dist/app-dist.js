@@ -5304,7 +5304,7 @@ var titleBar = new TitleBarView(containerHeader);
 titleBar.render(true);
 router.activate();
 
-},{"../../db/db":1,"../../routers/path":13,"../../routes/client/auth":15,"../../routes/client/group":16,"../../routes/client/home":17,"../../routes/client/jot":18,"../../templates/helpers":23,"../../views/titlebar":29,"../../views/view-container":30,"handlebars/dist/handlebars.runtime":8}],13:[function(require,module,exports){
+},{"../../db/db":1,"../../routers/path":13,"../../routes/client/auth":15,"../../routes/client/group":16,"../../routes/client/home":17,"../../routes/client/jot":18,"../../templates/helpers":23,"../../views/titlebar":30,"../../views/view-container":31,"handlebars/dist/handlebars.runtime":8}],13:[function(require,module,exports){
 'use strict';
 
 var page = require('page');
@@ -5530,7 +5530,7 @@ var GroupClientRoutes = (function () {
 
 module.exports = GroupClientRoutes;
 
-},{"../../models/group":2,"../../utility/pubsub":24,"../../views/group":25,"../../views/groups":26,"../group":19}],17:[function(require,module,exports){
+},{"../../models/group":2,"../../utility/pubsub":24,"../../views/group":26,"../../views/groups":27,"../group":19}],17:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -5582,7 +5582,7 @@ var HomeRouter = (function () {
 
 module.exports = HomeRouter;
 
-},{"../../utility/pubsub":24,"../../views/home":27,"../home":20}],18:[function(require,module,exports){
+},{"../../utility/pubsub":24,"../../views/home":28,"../home":20}],18:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -5636,7 +5636,7 @@ var JotClientRoutes = (function () {
 
 module.exports = JotClientRoutes;
 
-},{"../../utility/pubsub":24,"../../views/jots":28,"../jot":21}],19:[function(require,module,exports){
+},{"../../utility/pubsub":24,"../../views/jots":29,"../jot":21}],19:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -6016,6 +6016,142 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var Widget = require('./widget');
+
+var ColourSelector = (function (_Widget) {
+  _inherits(ColourSelector, _Widget);
+
+  function ColourSelector() {
+    _classCallCheck(this, ColourSelector);
+
+    _get(Object.getPrototypeOf(ColourSelector.prototype), 'constructor', this).apply(this, arguments);
+  }
+
+  _createClass(ColourSelector, [{
+    key: 'initEvents',
+    value: function initEvents(el) {
+      var _this = this;
+
+      _get(Object.getPrototypeOf(ColourSelector.prototype), 'initEvents', this).call(this);
+
+      var widgets = el.querySelectorAll('.partial-colour-selector');
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
+
+      try {
+        var _loop = function () {
+          var widget = _step.value;
+
+          var options = widget.querySelectorAll('.colour-selector__colour');
+          var select = widget.querySelector('select');
+
+          _iteratorNormalCompletion2 = true;
+          _didIteratorError2 = false;
+          _iteratorError2 = undefined;
+
+          try {
+            var _loop2 = function () {
+              var option = _step2.value;
+
+              option.addEventListener('click', function () {
+                _this.unselectAll(options);
+                option.classList.add('colour-selector__colour--current');
+                select.value = option.dataset.value;
+              });
+            };
+
+            for (_iterator2 = options[Symbol.iterator](); !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              _loop2();
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2['return']) {
+                _iterator2['return']();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
+          }
+        };
+
+        for (var _iterator = widgets[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var _iteratorNormalCompletion2;
+
+          var _didIteratorError2;
+
+          var _iteratorError2;
+
+          var _iterator2, _step2;
+
+          _loop();
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator['return']) {
+            _iterator['return']();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+    }
+  }, {
+    key: 'unselectAll',
+    value: function unselectAll(options) {
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = options[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var option = _step3.value;
+
+          option.classList.remove('colour-selector__colour--current');
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3['return']) {
+            _iterator3['return']();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
+    }
+  }]);
+
+  return ColourSelector;
+})(Widget);
+
+module.exports = ColourSelector;
+
+},{"./widget":33}],26:[function(require,module,exports){
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 var View = require('./view');
 
 var Jot = require('../models/jot');
@@ -6043,7 +6179,8 @@ var ViewGroup = (function (_View) {
         if (args.changes && args.changes.length) {
           Group.load(params.group.id).then(function (group) {
             _this.renderPartial('jot-list', {
-              jots: group.jots
+              jots: group.jots,
+              group: group
             });
           });
         }
@@ -6069,8 +6206,9 @@ var ViewGroup = (function (_View) {
   }, {
     key: 'initEvents',
     value: function initEvents() {
-      this.initAddForm();
+      _get(Object.getPrototypeOf(ViewGroup.prototype), 'initEvents', this).call(this);
 
+      this.initAddForm();
       this.initEdit();
       this.initDeleteForms();
       this.initUpdateForms();
@@ -6100,10 +6238,19 @@ var ViewGroup = (function (_View) {
           contentField.focus();
           Group.load(group).then(function (group) {
             _this2.renderPartial('jot-list', {
-              jots: group.jots
+              jots: group.jots,
+              group: group
             });
           });
         });
+      });
+
+      var toShow = form.querySelector('.show-on-focus');
+
+      form.addEventListener('click', function (event) {
+        event.stopPropagation();
+        _this2.unselectAll();
+        toShow.classList.add('show');
       });
     }
   }, {
@@ -6160,11 +6307,6 @@ var ViewGroup = (function (_View) {
       }
     }
   }, {
-    key: 'unselectAllListener',
-    value: function unselectAllListener() {
-      this.unselectAll();
-    }
-  }, {
     key: 'unselectAll',
     value: function unselectAll() {
       //TODO: have class member to hold reference to common element/element groups to avoid requerying
@@ -6193,42 +6335,17 @@ var ViewGroup = (function (_View) {
           }
         }
       }
-    }
-  }, {
-    key: 'initDeleteForms',
-    value: function initDeleteForms() {
-      var _this4 = this;
 
-      var forms = this._el.querySelectorAll('.form-jot-delete');
+      var shows = this._el.querySelectorAll('.show-on-focus');
       var _iteratorNormalCompletion3 = true;
       var _didIteratorError3 = false;
       var _iteratorError3 = undefined;
 
       try {
-        var _loop2 = function () {
-          var form = _step3.value;
+        for (var _iterator3 = shows[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var show = _step3.value;
 
-          form.addEventListener('submit', function (event) {
-            event.preventDefault();
-
-            var id = form.dataset.id;
-            var group = form.dataset.groupId;
-
-            var item = _this4._el.querySelector('.jots__jot-' + id);
-            //item.parentNode.parentNode.removeChild(item);
-
-            Jot.remove(id).then(function () {
-              Group.load(group).then(function (group) {
-                _this4.renderPartial('jot-list', {
-                  jots: group.jots
-                });
-              });
-            });
-          });
-        };
-
-        for (var _iterator3 = forms[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-          _loop2();
+          show.classList.remove('show');
         }
       } catch (err) {
         _didIteratorError3 = true;
@@ -6246,19 +6363,71 @@ var ViewGroup = (function (_View) {
       }
     }
   }, {
+    key: 'initDeleteForms',
+    value: function initDeleteForms() {
+      var _this4 = this;
+
+      var forms = this._el.querySelectorAll('.form-jot-delete');
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
+
+      try {
+        var _loop2 = function () {
+          var form = _step4.value;
+
+          form.addEventListener('submit', function (event) {
+            event.preventDefault();
+
+            var id = form.dataset.id;
+            var group = form.dataset.groupId;
+
+            var item = _this4._el.querySelector('.jots__jot-' + id);
+            //item.parentNode.parentNode.removeChild(item);
+
+            Jot.remove(id).then(function () {
+              Group.load(group).then(function (group) {
+                _this4.renderPartial('jot-list', {
+                  jots: group.jots,
+                  group: group
+                });
+              });
+            });
+          });
+        };
+
+        for (var _iterator4 = forms[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+          _loop2();
+        }
+      } catch (err) {
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion4 && _iterator4['return']) {
+            _iterator4['return']();
+          }
+        } finally {
+          if (_didIteratorError4) {
+            throw _iteratorError4;
+          }
+        }
+      }
+    }
+  }, {
     key: 'initUpdateForms',
     value: function initUpdateForms() {
       var _this5 = this;
 
       var forms = this._el.querySelectorAll('.form-jot-update');
 
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
+      var _iteratorNormalCompletion5 = true;
+      var _didIteratorError5 = false;
+      var _iteratorError5 = undefined;
 
       try {
         var _loop3 = function () {
-          var form = _step4.value;
+          var form = _step5.value;
 
           var doneButton = form.elements.done;
           var undoneButton = form.elements.undone;
@@ -6308,7 +6477,8 @@ var ViewGroup = (function (_View) {
               jot.save().then(function () {
                 Group.load(group).then(function (group) {
                   _this5.renderPartial('jot-list', {
-                    jots: group.jots
+                    jots: group.jots,
+                    group: group
                   });
                 });
               });
@@ -6316,20 +6486,20 @@ var ViewGroup = (function (_View) {
           });
         };
 
-        for (var _iterator4 = forms[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        for (var _iterator5 = forms[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
           _loop3();
         }
       } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
+        _didIteratorError5 = true;
+        _iteratorError5 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion4 && _iterator4['return']) {
-            _iterator4['return']();
+          if (!_iteratorNormalCompletion5 && _iterator5['return']) {
+            _iterator5['return']();
           }
         } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
+          if (_didIteratorError5) {
+            throw _iteratorError5;
           }
         }
       }
@@ -6341,7 +6511,7 @@ var ViewGroup = (function (_View) {
 
 module.exports = ViewGroup;
 
-},{"../models/group":2,"../models/jot":3,"../utility/pubsub":24,"./view":31}],26:[function(require,module,exports){
+},{"../models/group":2,"../models/jot":3,"../utility/pubsub":24,"./view":32}],27:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6356,15 +6526,19 @@ var View = require('./view');
 
 var Group = require('../models/group');
 
+var ColourSelectorWidget = require('./colour-selector');
+
 var PubSub = require('../utility/pubsub');
 
 var ViewGroups = (function (_View) {
   _inherits(ViewGroups, _View);
 
-  function ViewGroups() {
+  function ViewGroups(container) {
     _classCallCheck(this, ViewGroups);
 
-    _get(Object.getPrototypeOf(ViewGroups.prototype), 'constructor', this).apply(this, arguments);
+    _get(Object.getPrototypeOf(ViewGroups.prototype), 'constructor', this).call(this, container);
+
+    this.registerWidget(ColourSelectorWidget);
   }
 
   _createClass(ViewGroups, [{
@@ -6391,21 +6565,23 @@ var ViewGroups = (function (_View) {
   }, {
     key: 'renderPartial',
     value: function renderPartial(name, params) {
-      _get(Object.getPrototypeOf(ViewGroups.prototype), 'renderPartial', this).call(this, name, params);
+      var el = _get(Object.getPrototypeOf(ViewGroups.prototype), 'renderPartial', this).call(this, name, params);
 
       switch (name) {
         case 'group-list':
           this.initEdit();
           this.initDeleteForms();
           this.initUpdateForms();
+          this.initWidgets(el);
           break;
       }
     }
   }, {
     key: 'initEvents',
     value: function initEvents() {
-      this.initAddForm();
+      _get(Object.getPrototypeOf(ViewGroups.prototype), 'initEvents', this).call(this);
 
+      this.initAddForm();
       this.initEdit();
       this.initDeleteForms();
       this.initUpdateForms();
@@ -6438,6 +6614,14 @@ var ViewGroups = (function (_View) {
             });
           });
         });
+      });
+
+      var toShow = form.querySelector('.show-on-focus');
+
+      form.addEventListener('click', function (event) {
+        event.stopPropagation();
+        _this2.unselectAll();
+        toShow.classList.add('show');
       });
     }
   }, {
@@ -6522,6 +6706,32 @@ var ViewGroups = (function (_View) {
           }
         }
       }
+
+      var shows = this._el.querySelectorAll('.show-on-focus');
+      var _iteratorNormalCompletion3 = true;
+      var _didIteratorError3 = false;
+      var _iteratorError3 = undefined;
+
+      try {
+        for (var _iterator3 = shows[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+          var show = _step3.value;
+
+          show.classList.remove('show');
+        }
+      } catch (err) {
+        _didIteratorError3 = true;
+        _iteratorError3 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion3 && _iterator3['return']) {
+            _iterator3['return']();
+          }
+        } finally {
+          if (_didIteratorError3) {
+            throw _iteratorError3;
+          }
+        }
+      }
     }
   }, {
     key: 'initDeleteForms',
@@ -6529,13 +6739,13 @@ var ViewGroups = (function (_View) {
       var _this4 = this;
 
       var forms = this._el.querySelectorAll('.form-group-delete');
-      var _iteratorNormalCompletion3 = true;
-      var _didIteratorError3 = false;
-      var _iteratorError3 = undefined;
+      var _iteratorNormalCompletion4 = true;
+      var _didIteratorError4 = false;
+      var _iteratorError4 = undefined;
 
       try {
         var _loop2 = function () {
-          var form = _step3.value;
+          var form = _step4.value;
 
           form.addEventListener('submit', function (event) {
             event.preventDefault();
@@ -6555,20 +6765,20 @@ var ViewGroups = (function (_View) {
           });
         };
 
-        for (var _iterator3 = forms[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+        for (var _iterator4 = forms[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
           _loop2();
         }
       } catch (err) {
-        _didIteratorError3 = true;
-        _iteratorError3 = err;
+        _didIteratorError4 = true;
+        _iteratorError4 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion3 && _iterator3['return']) {
-            _iterator3['return']();
+          if (!_iteratorNormalCompletion4 && _iterator4['return']) {
+            _iterator4['return']();
           }
         } finally {
-          if (_didIteratorError3) {
-            throw _iteratorError3;
+          if (_didIteratorError4) {
+            throw _iteratorError4;
           }
         }
       }
@@ -6580,13 +6790,13 @@ var ViewGroups = (function (_View) {
 
       var forms = this._el.querySelectorAll('.form-group-update');
 
-      var _iteratorNormalCompletion4 = true;
-      var _didIteratorError4 = false;
-      var _iteratorError4 = undefined;
+      var _iteratorNormalCompletion5 = true;
+      var _didIteratorError5 = false;
+      var _iteratorError5 = undefined;
 
       try {
         var _loop3 = function () {
-          var form = _step4.value;
+          var form = _step5.value;
 
           form.addEventListener('click', function (event) {
             event.stopPropagation(); //stop document listener from removing 'edit' class
@@ -6618,20 +6828,20 @@ var ViewGroups = (function (_View) {
           });
         };
 
-        for (var _iterator4 = forms[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+        for (var _iterator5 = forms[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
           _loop3();
         }
       } catch (err) {
-        _didIteratorError4 = true;
-        _iteratorError4 = err;
+        _didIteratorError5 = true;
+        _iteratorError5 = err;
       } finally {
         try {
-          if (!_iteratorNormalCompletion4 && _iterator4['return']) {
-            _iterator4['return']();
+          if (!_iteratorNormalCompletion5 && _iterator5['return']) {
+            _iterator5['return']();
           }
         } finally {
-          if (_didIteratorError4) {
-            throw _iteratorError4;
+          if (_didIteratorError5) {
+            throw _iteratorError5;
           }
         }
       }
@@ -6643,7 +6853,7 @@ var ViewGroups = (function (_View) {
 
 module.exports = ViewGroups;
 
-},{"../models/group":2,"../utility/pubsub":24,"./view":31}],27:[function(require,module,exports){
+},{"../models/group":2,"../utility/pubsub":24,"./colour-selector":25,"./view":32}],28:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -6668,7 +6878,7 @@ var ViewHome = (function (_View) {
 
 module.exports = ViewHome;
 
-},{"./view":31}],28:[function(require,module,exports){
+},{"./view":32}],29:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6720,7 +6930,7 @@ var ViewJots = (function (_View) {
 
 module.exports = ViewJots;
 
-},{"../models/jot":3,"../utility/pubsub":24,"./view":31}],29:[function(require,module,exports){
+},{"../models/jot":3,"../utility/pubsub":24,"./view":32}],30:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6798,7 +7008,7 @@ var TitleBarView = (function (_View) {
 
 module.exports = TitleBarView;
 
-},{"../utility/pubsub":24,"./view":31}],30:[function(require,module,exports){
+},{"../utility/pubsub":24,"./view":32}],31:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6834,7 +7044,7 @@ var ViewContainer = (function () {
 
 module.exports = ViewContainer;
 
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6877,6 +7087,8 @@ var View = (function () {
       var template = Handlebars.template(this._container._partials[name]);
       var view = this._el.querySelector('.partial-' + name);
       view.outerHTML = template(params);
+
+      return this._el.querySelector('.partial-' + name);
     }
   }, {
     key: '_getTemplate',
@@ -6935,18 +7147,18 @@ var View = (function () {
   }, {
     key: 'initEvents',
     value: function initEvents() {
-      this.initWidgets();
+      this.initWidgets(this._el);
     }
   }, {
     key: 'registerWidget',
-    value: function registerWidget(Widget, template) {
-      this._widgets.push(new Widget(template, this._container));
+    value: function registerWidget(Widget) {
+      this._widgets.push(new Widget());
     }
   }, {
     key: 'initWidgets',
-    value: function initWidgets() {
+    value: function initWidgets(el) {
       this._widgets.forEach(function (widget) {
-        widget.initEvents();
+        widget.initEvents(el);
       });
     }
   }, {
@@ -6968,7 +7180,32 @@ var View = (function () {
 
 module.exports = View;
 
-},{"../utility/pubsub":24,"handlebars/dist/handlebars.runtime":8}]},{},[12])
+},{"../utility/pubsub":24,"handlebars/dist/handlebars.runtime":8}],33:[function(require,module,exports){
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Widget = (function () {
+  function Widget() {
+    _classCallCheck(this, Widget);
+  }
+
+  _createClass(Widget, [{
+    key: "initEvents",
+    value: function initEvents() {}
+  }, {
+    key: "cleanup",
+    value: function cleanup() {}
+  }]);
+
+  return Widget;
+})();
+
+module.exports = Widget;
+
+},{}]},{},[12])
 
 
 //# sourceMappingURL=app-dist.js.map

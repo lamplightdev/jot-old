@@ -34,6 +34,8 @@ class View {
     var template = Handlebars.template(this._container._partials[name]);
     const view = this._el.querySelector('.partial-' + name);
     view.outerHTML = template(params);
+
+    return this._el.querySelector('.partial-' + name);
   }
 
   _getTemplate() {
@@ -67,16 +69,16 @@ class View {
   }
 
   initEvents() {
-    this.initWidgets();
+    this.initWidgets(this._el);
   }
 
-  registerWidget(Widget, template) {
-    this._widgets.push(new Widget(template, this._container));
+  registerWidget(Widget) {
+    this._widgets.push(new Widget());
   }
 
-  initWidgets() {
+  initWidgets(el) {
     this._widgets.forEach(widget => {
-      widget.initEvents();
+      widget.initEvents(el);
     });
   }
 

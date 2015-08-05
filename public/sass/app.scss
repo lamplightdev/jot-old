@@ -29,6 +29,14 @@ header {
 
 .form-jot-add, .form-group-add {
   padding: 0 1.2rem;
+
+  .show-on-focus {
+    display: none;
+
+    &.show {
+      display: block;
+    }
+  }
 }
 
 .jots__jot, .groups__group {
@@ -62,3 +70,26 @@ header {
     }
   }
 }
+
+.colour-selector {
+  padding: 1rem 0;
+
+  select {
+    display: none;
+  }
+}
+
+  .colour-selector__colour {
+    $size: 30px;
+
+    cursor: pointer;
+
+    display: inline-block;
+    width: $size;
+    height: $size;
+    border-radius: $size;
+
+    &.colour-selector__colour--current {
+      border: 2px solid $clr-grey-800;
+    }
+  }

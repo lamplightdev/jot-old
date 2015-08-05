@@ -21,16 +21,7 @@
         <div class='md-list-item__primary-content'>
           <form class='form-group-update form-group-update-{{id}}' data-id='{{id}}' method='post' action='/group/{{id}}'>
             <input type='text' class='md-form-text' name='name' value='{{fields.name}}'>
-            <div class='colour-selector'>
-              {{#each colours}}
-                <div class='colour-selector__colour {{#ifEqual ../fields.colour this.code}}colour-selector__colour--current{{/ifEqual}}' style='background-color: {{this.code}}'></div>
-              {{/each}}
-              <select name='colour'>
-              {{#each colours}}
-                <option value='{{this.code}}' {{#ifEqual ../fields.colour this.code}}selected{{/ifEqual}}>{{this.name}}</option>
-              {{/each}}
-              </select>
-            </div>
+            {{>colour-selector colours=colours current=fields.colour}}
             <input type='hidden' name='action' value='update'>
             <button class='md-form-btn' type='submit'>save</button>
           </form>
