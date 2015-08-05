@@ -1,5 +1,15 @@
 <form class='form-group-add' action='/group' method='post'>
   <input type='text' class='md-form-text' name='name' value='' placeholder='New group'>
+  <div class='colour-selector'>
+    {{#each colours}}
+      <div class='colour-selector__colour' style='background-color: {{this.code}}'></div>
+    {{/each}}
+    <select name='colour'>
+    {{#each colours}}
+      <option value='{{this.code}}'>{{this.name}}</option>
+    {{/each}}
+    </select>
+  </div>
   <button class='md-form-btn' type='submit'>add</button>
 </form>
 

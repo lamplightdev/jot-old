@@ -3,7 +3,7 @@
   {{#unless this.fields.done}}
   <div class='md-list-item jots__jot jots__jot-{{id}}'>
     <a class='md-list-item__avatar' href='/group/{{fields.group}}#{{id}}'>
-      <div class='img'></div>
+      <div class='img' {{#if group.fields.colour}}style='background-color: {{group.fields.colour}}'{{/if}}></div>
     </a>
 
     <a class='md-list-item__content md-list-item__content--no-action' href='/group/{{fields.group}}#{{id}}'>

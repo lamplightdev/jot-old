@@ -1,3 +1,4 @@
+const Group = require('../../models/group');
 const GroupRoutes = require('../group');
 
 class GroupsServerRoutes {
@@ -16,6 +17,7 @@ class GroupsServerRoutes {
             res.render('app', {
               name: 'Groups',
               content: 'groups',
+              colours: Group.getColours(),
               groups,
               editID: req.query.edit
             });
@@ -50,7 +52,8 @@ class GroupsServerRoutes {
     this.routes.registerRoute('add', (req, res, next) => {
       return Promise.resolve().then(() => {
         const params = {
-          name: req.body.name
+          name: req.body.name,
+          colour: req.body.colour
         };
 
         return {
@@ -87,7 +90,8 @@ class GroupsServerRoutes {
     this.routes.registerRoute('update', (req, res, next) => {
       return Promise.resolve().then(() => {
         const fields = {
-          name: req.body.name
+          name: req.body.name,
+          colour: req.body.colour
         };
 
         const params = {

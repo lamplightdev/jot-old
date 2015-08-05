@@ -1,3 +1,4 @@
+const Group = require('../../models/group');
 const GroupRoutes = require('../group');
 const GroupsView = require('../../views/groups');
 const GroupView = require('../../views/group');
@@ -19,6 +20,7 @@ class GroupClientRoutes {
 
           resolve: (groups) => {
             this.groupsView.render(false, {
+              colours: Group.getColours(),
               groups
             });
 

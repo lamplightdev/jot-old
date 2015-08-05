@@ -53,9 +53,12 @@ class ViewGroups extends View {
       const nameField = form.elements.name;
       const name = nameField.value;
 
+      const colour = form.elements.colour.value;
+
       new Group({
         fields: {
-          name
+          name,
+          colour
         }
       }).save().then(() => {
         nameField.value = '';
@@ -138,11 +141,13 @@ class ViewGroups extends View {
         const id = form.dataset.id;
 
         const name = form.elements.name.value;
+        const colour = form.elements.colour.value;
 
         Group.load(id).then(group => {
 
           group.fields = {
-            name
+            name,
+            colour
           };
 
           group.save().then(() => {

@@ -148,7 +148,7 @@ var Group = (function (_Model) {
   function Group(members) {
     _classCallCheck(this, Group);
 
-    _get(Object.getPrototypeOf(Group.prototype), 'constructor', this).call(this, members, ['name']);
+    _get(Object.getPrototypeOf(Group.prototype), 'constructor', this).call(this, members, ['name', 'colour']);
 
     this._jots = [];
   }
@@ -164,6 +164,11 @@ var Group = (function (_Model) {
       });
     }
   }, {
+    key: 'colours',
+    get: function get() {
+      return this.constructor.getColours();
+    }
+  }, {
     key: 'jots',
     get: function get() {
       return this._jots;
@@ -174,6 +179,35 @@ var Group = (function (_Model) {
       return this._jots.length;
     }
   }], [{
+    key: 'getColours',
+    value: function getColours() {
+      return [{
+        name: 'blue',
+        code: '#2196f3'
+      }, {
+        name: 'red',
+        code: '#f44336'
+      }, {
+        name: 'purple',
+        code: '#9c27b0'
+      }, {
+        name: 'teal',
+        code: '#009688'
+      }, {
+        name: 'green',
+        code: '#4caf50'
+      }, {
+        name: 'yellow',
+        code: '#ffeb3b'
+      }, {
+        name: 'orange',
+        code: '#ff9800'
+      }, {
+        name: 'brown',
+        code: '#795548'
+      }];
+    }
+  }, {
     key: 'load',
     value: function load(id) {
       var loadJots = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
@@ -5414,6 +5448,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
+var Group = require('../../models/group');
 var GroupRoutes = require('../group');
 var GroupsView = require('../../views/groups');
 var GroupView = require('../../views/group');
@@ -5441,6 +5476,7 @@ var GroupClientRoutes = (function () {
 
             resolve: function resolve(groups) {
               _this.groupsView.render(false, {
+                colours: Group.getColours(),
                 groups: groups
               });
 
@@ -5494,7 +5530,7 @@ var GroupClientRoutes = (function () {
 
 module.exports = GroupClientRoutes;
 
-},{"../../utility/pubsub":24,"../../views/group":25,"../../views/groups":26,"../group":19}],17:[function(require,module,exports){
+},{"../../models/group":2,"../../utility/pubsub":24,"../../views/group":25,"../../views/groups":26,"../group":19}],17:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6386,9 +6422,12 @@ var ViewGroups = (function (_View) {
         var nameField = form.elements.name;
         var name = nameField.value;
 
+        var colour = form.elements.colour.value;
+
         new Group({
           fields: {
-            name: name
+            name: name,
+            colour: colour
           }
         }).save().then(function () {
           nameField.value = '';
@@ -6559,11 +6598,13 @@ var ViewGroups = (function (_View) {
             var id = form.dataset.id;
 
             var name = form.elements.name.value;
+            var colour = form.elements.colour.value;
 
             Group.load(id).then(function (group) {
 
               group.fields = {
-                name: name
+                name: name,
+                colour: colour
               };
 
               group.save().then(function () {

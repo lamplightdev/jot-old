@@ -5,7 +5,7 @@
       <a name='{{id}}' id='{{id}}'></a>
 
       <a class='md-list-item__avatar jots__jot__edit' href='/group/{{fields.group}}?edit={{id}}' data-id='{{id}}'>
-        <div class='img'></div>
+        <div class='img' {{#if @root.group.fields.colour}}style='background-color: {{@root.group.fields.colour}}'{{/if}}></div>
       </a>
 
       <a class='md-list-item__content jots__jot__edit jots__jot__item {{#if fields.done}}jots__jot__item--done{{/if}}' href='/group/{{fields.group}}?edit={{id}}' data-id='{{id}}'>
