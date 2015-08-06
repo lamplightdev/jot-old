@@ -71,6 +71,29 @@ header {
   }
 }
 
+$colours: (
+  blue: $list-blue,
+  red: $list-red,
+  teal: $list-teal,
+  yellow: $list-yellow,
+  orange: $list-orange,
+  brown: $list-brown
+);
+
+@each $colour, $list in $colours {
+  .colour-#{$colour} {
+    background: nth($list, 6);
+
+    &.priority-1 {
+      background: nth($list, 3);
+    }
+
+    &.priority-0 {
+      background: nth($list, 1);
+    }
+  }
+}
+
 .colour-selector {
   padding: 1rem 0;
 

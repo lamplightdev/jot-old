@@ -5,7 +5,7 @@
       <a name='{{id}}' id='{{id}}'></a>
 
       <a class='md-list-item__avatar' href='/group/{{id}}'>
-        <div class='img' {{#if fields.colour}}style='background-color: {{fields.colour}}'{{/if}}></div>
+        <div class='img colour-{{fields.colour}} light'></div>
       </a>
 
       <a class='md-list-item__content groups__group__item' href='/group/{{id}}'>
@@ -21,7 +21,7 @@
         <div class='md-list-item__primary-content'>
           <form class='form-group-update form-group-update-{{id}}' data-id='{{id}}' method='post' action='/group/{{id}}'>
             <input type='text' class='md-form-text' name='name' value='{{fields.name}}'>
-            {{>colour-selector colours=colours current=fields.colour}}
+            {{>colour-selector name='colour' colours=colours current=fields.colour}}
             <input type='hidden' name='action' value='update'>
             <button class='md-form-btn' type='submit'>save</button>
           </form>

@@ -30,7 +30,8 @@ class GroupRoutes extends Routes {
       _action: params => {
         return new Group({
           fields: {
-            name: params.name
+            name: params.name,
+            colour: params.colour
           }
         }).save();
       }

@@ -13,31 +13,14 @@ class Group extends Model {
   }
 
   static getColours() {
-    return [{
-      name: 'blue',
-      code: '#2196f3'
-    }, {
-      name: 'red',
-      code: '#f44336'
-    }, {
-      name: 'purple',
-      code: '#9c27b0'
-    }, {
-      name: 'teal',
-      code: '#009688'
-    }, {
-      name: 'green',
-      code: '#4caf50'
-    }, {
-      name: 'yellow',
-      code: '#ffeb3b'
-    }, {
-      name: 'orange',
-      code: '#ff9800'
-    }, {
-      name: 'brown',
-      code: '#795548'
-    }];
+    return [
+      'blue',
+      'red',
+      'teal',
+      'yellow',
+      'orange',
+      'brown'
+    ];
   }
 
   get colours() {

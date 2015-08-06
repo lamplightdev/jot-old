@@ -5,9 +5,17 @@ const View = require('./view');
 const Jot = require('../models/jot');
 const Group = require('../models/group');
 
+const ColourSelectorWidget = require('./colour-selector');
+
 const PubSub = require('../utility/pubsub');
 
 class ViewGroup extends View {
+  constructor(container) {
+    super(container);
+
+    this.registerWidget(ColourSelectorWidget);
+  }
+
   render(preRendered, params) {
     super.render(preRendered, params);
 
@@ -28,13 +36,14 @@ class ViewGroup extends View {
   }
 
   renderPartial(name, params) {
-    super.renderPartial(name, params);
+    const el = super.renderPartial(name, params);
 
     switch (name) {
       case 'jot-list':
         this.initEdit();
         this.initDeleteForms();
         this.initUpdateForms();
+        this.initWidgets(el);
         break;
     }
   }
@@ -59,10 +68,13 @@ class ViewGroup extends View {
       const groupField = form.elements.group;
       const group = groupField.value;
 
+      const priority = form.elements.priority.value;
+
       new Jot({
         fields: {
           content,
-          group
+          group,
+          priority
         }
       }).save().then(() => {
         contentField.value = '';
@@ -178,6 +190,7 @@ class ViewGroup extends View {
         const content = form.elements.content.value;
         const group = form.elements.group.value;
         const doneStatus = form.elements['done-status'].value;
+        const priority = form.elements.priority.value;
 
         Jot.load(id).then(jot => {
 
@@ -185,7 +198,8 @@ class ViewGroup extends View {
 
           jot.fields = {
             content,
-            group
+            group,
+            priority
           };
 
           if (doneStatus === 'done') {

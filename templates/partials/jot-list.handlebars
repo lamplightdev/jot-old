@@ -5,7 +5,7 @@
       <a name='{{id}}' id='{{id}}'></a>
 
       <a class='md-list-item__avatar jots__jot__edit' href='/group/{{fields.group}}?edit={{id}}' data-id='{{id}}'>
-        <div class='img' {{#if @root.group.fields.colour}}style='background-color: {{@root.group.fields.colour}}'{{/if}}></div>
+        <div class='img colour-{{@root.group.fields.colour}} priority-{{fields.priority}}'></div>
       </a>
 
       <a class='md-list-item__content jots__jot__edit jots__jot__item {{#if fields.done}}jots__jot__item--done{{/if}}' href='/group/{{fields.group}}?edit={{id}}' data-id='{{id}}'>
@@ -21,6 +21,7 @@
             <input type='hidden' name='group' value='{{fields.group}}'>
             <input type='hidden' name='action' value='update'>
             <input type='hidden' name='done-status' value=''>
+            {{>colour-selector name='priority' rootColour=@root.group.fields.colour colours=priorities current=fields.priority}}
             <button class='md-form-btn' type='submit'>save</button>
             {{#if fields.done}}
             <button class='md-form-btn' type='submit' name='undone'>undone</button>

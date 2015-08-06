@@ -181,31 +181,7 @@ var Group = (function (_Model) {
   }], [{
     key: 'getColours',
     value: function getColours() {
-      return [{
-        name: 'blue',
-        code: '#2196f3'
-      }, {
-        name: 'red',
-        code: '#f44336'
-      }, {
-        name: 'purple',
-        code: '#9c27b0'
-      }, {
-        name: 'teal',
-        code: '#009688'
-      }, {
-        name: 'green',
-        code: '#4caf50'
-      }, {
-        name: 'yellow',
-        code: '#ffeb3b'
-      }, {
-        name: 'orange',
-        code: '#ff9800'
-      }, {
-        name: 'brown',
-        code: '#795548'
-      }];
+      return ['blue', 'red', 'teal', 'yellow', 'orange', 'brown'];
     }
   }, {
     key: 'load',
@@ -265,7 +241,7 @@ var Jot = (function (_Model) {
   function Jot(members) {
     _classCallCheck(this, Jot);
 
-    _get(Object.getPrototypeOf(Jot.prototype), 'constructor', this).call(this, members, ['content', 'group', 'done']);
+    _get(Object.getPrototypeOf(Jot.prototype), 'constructor', this).call(this, members, ['content', 'group', 'done', 'priority']);
 
     this._group = null;
   }
@@ -285,6 +261,11 @@ var Jot = (function (_Model) {
       });
     }
   }, {
+    key: 'priorities',
+    get: function get() {
+      return this.constructor.getPriorities();
+    }
+  }, {
     key: 'group',
     get: function get() {
       return this._group;
@@ -299,6 +280,11 @@ var Jot = (function (_Model) {
       }
     }
   }], [{
+    key: 'getPriorities',
+    value: function getPriorities() {
+      return ['2', '1', '0'];
+    }
+  }, {
     key: 'load',
     value: function load(id) {
       var loadGroup = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
@@ -5448,6 +5434,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
+var Jot = require('../../models/jot');
 var Group = require('../../models/group');
 var GroupRoutes = require('../group');
 var GroupsView = require('../../views/groups');
@@ -5508,7 +5495,8 @@ var GroupClientRoutes = (function () {
 
               _this.groupView.render(false, {
                 group: group,
-                editID: queryObject.edit
+                editID: queryObject.edit,
+                priorities: Jot.getPriorities()
               });
 
               PubSub.publish('routeChanged', {
@@ -5530,7 +5518,7 @@ var GroupClientRoutes = (function () {
 
 module.exports = GroupClientRoutes;
 
-},{"../../models/group":2,"../../utility/pubsub":24,"../../views/group":26,"../../views/groups":27,"../group":19}],17:[function(require,module,exports){
+},{"../../models/group":2,"../../models/jot":3,"../../utility/pubsub":24,"../../views/group":26,"../../views/groups":27,"../group":19}],17:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -5681,7 +5669,8 @@ var GroupRoutes = (function (_Routes) {
       _action: function _action(params) {
         return new Group({
           fields: {
-            name: params.name
+            name: params.name,
+            colour: params.colour
           }
         }).save();
       }
@@ -5796,7 +5785,8 @@ var JotRoutes = (function (_Routes) {
         return new Jot({
           fields: {
             content: params.content,
-            group: params.group
+            group: params.group,
+            priority: params.priority
           }
         }).save();
       }
@@ -6157,15 +6147,19 @@ var View = require('./view');
 var Jot = require('../models/jot');
 var Group = require('../models/group');
 
+var ColourSelectorWidget = require('./colour-selector');
+
 var PubSub = require('../utility/pubsub');
 
 var ViewGroup = (function (_View) {
   _inherits(ViewGroup, _View);
 
-  function ViewGroup() {
+  function ViewGroup(container) {
     _classCallCheck(this, ViewGroup);
 
-    _get(Object.getPrototypeOf(ViewGroup.prototype), 'constructor', this).apply(this, arguments);
+    _get(Object.getPrototypeOf(ViewGroup.prototype), 'constructor', this).call(this, container);
+
+    this.registerWidget(ColourSelectorWidget);
   }
 
   _createClass(ViewGroup, [{
@@ -6193,13 +6187,14 @@ var ViewGroup = (function (_View) {
   }, {
     key: 'renderPartial',
     value: function renderPartial(name, params) {
-      _get(Object.getPrototypeOf(ViewGroup.prototype), 'renderPartial', this).call(this, name, params);
+      var el = _get(Object.getPrototypeOf(ViewGroup.prototype), 'renderPartial', this).call(this, name, params);
 
       switch (name) {
         case 'jot-list':
           this.initEdit();
           this.initDeleteForms();
           this.initUpdateForms();
+          this.initWidgets(el);
           break;
       }
     }
@@ -6228,10 +6223,13 @@ var ViewGroup = (function (_View) {
         var groupField = form.elements.group;
         var group = groupField.value;
 
+        var priority = form.elements.priority.value;
+
         new Jot({
           fields: {
             content: content,
-            group: group
+            group: group,
+            priority: priority
           }
         }).save().then(function () {
           contentField.value = '';
@@ -6456,6 +6454,7 @@ var ViewGroup = (function (_View) {
             var content = form.elements.content.value;
             var group = form.elements.group.value;
             var doneStatus = form.elements['done-status'].value;
+            var priority = form.elements.priority.value;
 
             Jot.load(id).then(function (jot) {
 
@@ -6463,7 +6462,8 @@ var ViewGroup = (function (_View) {
 
               jot.fields = {
                 content: content,
-                group: group
+                group: group,
+                priority: priority
               };
 
               if (doneStatus === 'done') {
@@ -6511,7 +6511,7 @@ var ViewGroup = (function (_View) {
 
 module.exports = ViewGroup;
 
-},{"../models/group":2,"../models/jot":3,"../utility/pubsub":24,"./view":32}],27:[function(require,module,exports){
+},{"../models/group":2,"../models/jot":3,"../utility/pubsub":24,"./colour-selector":25,"./view":32}],27:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();

@@ -1,3 +1,4 @@
+const Jot = require('../../models/jot');
 const Group = require('../../models/group');
 const GroupRoutes = require('../group');
 const GroupsView = require('../../views/groups');
@@ -52,7 +53,8 @@ class GroupClientRoutes {
 
             this.groupView.render(false, {
               group,
-              editID: queryObject.edit
+              editID: queryObject.edit,
+              priorities: Jot.getPriorities()
             });
 
             PubSub.publish('routeChanged', {

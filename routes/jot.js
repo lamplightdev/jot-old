@@ -23,7 +23,8 @@ class JotRoutes extends Routes {
         return new Jot({
           fields: {
             content: params.content,
-            group: params.group
+            group: params.group,
+            priority: params.priority
           }
         }).save();
       }

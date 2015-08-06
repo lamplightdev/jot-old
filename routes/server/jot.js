@@ -30,7 +30,8 @@ class JotServerRoutes {
       return Promise.resolve().then(() => {
         const params = {
           content: req.body.content,
-          group: req.body.group
+          group: req.body.group,
+          priority: req.body.priority
         };
 
         return {
@@ -68,7 +69,8 @@ class JotServerRoutes {
       return Promise.resolve().then(() => {
         const fields = {
           content: req.body.content,
-          group: req.body.group
+          group: req.body.group,
+          priority: req.body.priority
         };
 
         if (typeof req.body.done !== 'undefined') {

@@ -6,10 +6,23 @@ class Jot extends Model {
     super(members, [
       'content',
       'group',
-      'done'
+      'done',
+      'priority'
     ]);
 
     this._group = null;
+  }
+
+  static getPriorities() {
+    return [
+      '2',
+      '1',
+      '0'
+    ];
+  }
+
+  get priorities() {
+    return this.constructor.getPriorities();
   }
 
   get group() {
