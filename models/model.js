@@ -1,3 +1,5 @@
+const DateUtils = require('../utility/date');
+
 class Model {
 
   constructor(members, allowedFields) {
@@ -5,6 +7,8 @@ class Model {
 
     this._id = members._id || null;
     this._rev = members._rev || null;
+
+    this._dateAdded = members.dateAdded || null;
 
     this._fields = members.fields || {};
 
@@ -35,6 +39,20 @@ class Model {
 
   set rev(rev) {
     this._rev = rev;
+
+    return this;
+  }
+
+  get dateAdded() {
+    if (this._dateAdded) {
+      return DateUtils.format(new Date(this._dateAdded));
+    } else {
+      return '';
+    }
+  }
+
+  set dateAdded(date) {
+    this._dateAdded = date;
 
     return this;
   }
@@ -95,11 +113,16 @@ class Model {
     return this.getSlug().then(slug => {
       const params = {
         _id: slug,
+        dateAdded: this._dateAdded,
         fields: this.fields
       };
 
       if (!this.isNew()) {
         params._rev = this.rev;
+      }
+
+      if (this.isNew() || !this._dateAdded) {
+        params.dateAdded = new Date().toISOString();
       }
 
       return this._db.put(params).then(response => {

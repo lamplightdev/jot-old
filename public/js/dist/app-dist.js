@@ -128,12 +128,12 @@ module.exports = function (options) {
   }
 };
 
-},{"../utility/pubsub":24,"pouchdb":6}],2:[function(require,module,exports){
+},{"../utility/pubsub":25,"pouchdb":6}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x7, _x8, _x9) { var _again = true; _function: while (_again) { var object = _x7, property = _x8, receiver = _x9; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x7 = parent; _x8 = property; _x9 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
@@ -178,6 +178,13 @@ var Group = (function (_Model) {
     get: function get() {
       return this._jots.length;
     }
+  }, {
+    key: 'jotDoneCount',
+    get: function get() {
+      return this._jots.filter(function (jot) {
+        return !!jot.fields.done;
+      }).length;
+    }
   }], [{
     key: 'getColours',
     value: function getColours() {
@@ -203,6 +210,11 @@ var Group = (function (_Model) {
     value: function loadAll() {
       var loadJots = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
 
+      var _this2 = this;
+
+      var order = arguments.length <= 1 || arguments[1] === undefined ? 'alpha' : arguments[1];
+      var direction = arguments.length <= 2 || arguments[2] === undefined ? 'asc' : arguments[2];
+
       return _get(Object.getPrototypeOf(Group), 'loadAll', this).call(this).then(function (groups) {
         var promises = [];
 
@@ -212,8 +224,54 @@ var Group = (function (_Model) {
           });
         }
 
-        return Promise.all(promises);
+        return Promise.all(promises).then(function () {
+          return _this2.order(groups, order, direction);
+        });
       });
+    }
+  }, {
+    key: 'order',
+    value: function order(groups) {
+      var _order = arguments.length <= 1 || arguments[1] === undefined ? 'alpha' : arguments[1];
+
+      var direction = arguments.length <= 2 || arguments[2] === undefined ? 'asc' : arguments[2];
+
+      switch (_order) {
+        case 'date':
+          groups.sort(function (a, b) {
+            if (a.dateAdded > b.dateAdded) {
+              return 1;
+            }
+
+            if (a.dateAdded < b.dateAdded) {
+              return -1;
+            }
+
+            return 0;
+          });
+
+          break;
+        case 'alpha':
+          groups.sort(function (a, b) {
+            if (a.fields.name.toLowerCase() > b.fields.name.toLowerCase()) {
+              return 1;
+            }
+
+            if (a.fields.name.toLowerCase() < b.fields.name.toLowerCase()) {
+              return -1;
+            }
+
+            return 0;
+          });
+
+          break;
+      }
+
+      if (direction === 'desc') {
+        groups.reverse();
+      }
+
+      return groups;
     }
   }]);
 
@@ -227,7 +285,7 @@ module.exports = Group;
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x3, _x4, _x5) { var _again = true; _function: while (_again) { var object = _x3, property = _x4, receiver = _x5; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x3 = parent; _x4 = property; _x5 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x9, _x10, _x11) { var _again = true; _function: while (_again) { var object = _x9, property = _x10, receiver = _x11; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x9 = parent; _x10 = property; _x11 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
@@ -302,9 +360,12 @@ var Jot = (function (_Model) {
   }, {
     key: 'loadAll',
     value: function loadAll() {
+      var loadGroups = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
       var _this2 = this;
 
-      var loadGroups = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+      var order = arguments.length <= 1 || arguments[1] === undefined ? 'date' : arguments[1];
+      var direction = arguments.length <= 2 || arguments[2] === undefined ? 'desc' : arguments[2];
 
       return _get(Object.getPrototypeOf(Jot), 'loadAll', this).call(this).then(function (jots) {
         var promises = [];
@@ -316,13 +377,52 @@ var Jot = (function (_Model) {
         }
 
         return Promise.all(promises).then(function () {
-          return _this2.orderJots(jots);
+          return _this2.order(jots, order, direction);
         });
       });
     }
   }, {
-    key: 'orderJots',
-    value: function orderJots(jots) {
+    key: 'order',
+    value: function order(jots) {
+      var _order = arguments.length <= 1 || arguments[1] === undefined ? 'date' : arguments[1];
+
+      var direction = arguments.length <= 2 || arguments[2] === undefined ? 'desc' : arguments[2];
+
+      switch (_order) {
+        case 'date':
+          jots.sort(function (a, b) {
+            if (a.dateAdded > b.dateAdded) {
+              return 1;
+            }
+
+            if (a.dateAdded < b.dateAdded) {
+              return -1;
+            }
+
+            return 0;
+          });
+
+          break;
+        case 'alpha':
+          jots.sort(function (a, b) {
+            if (a.fields.content.toLowerCase() > b.fields.content.toLowerCase()) {
+              return 1;
+            }
+
+            if (a.fields.content.toLowerCase() < b.fields.content.toLowerCase()) {
+              return -1;
+            }
+
+            return 0;
+          });
+
+          break;
+      }
+
+      if (direction === 'desc') {
+        jots.reverse();
+      }
+
       var undoneJots = [];
       var doneJots = [];
 
@@ -341,12 +441,13 @@ var Jot = (function (_Model) {
     value: function loadForGroup(groupId) {
       var _this3 = this;
 
+      var order = arguments.length <= 1 || arguments[1] === undefined ? 'date' : arguments[1];
+      var direction = arguments.length <= 2 || arguments[2] === undefined ? 'desc' : arguments[2];
+
       return Promise.resolve().then(function () {
         var db = require('../db/db')();
 
         return db.query('index/group', {
-          endkey: _this3.getRefName() + '-',
-          startkey: _this3.getRefName() + '-￿',
           descending: true,
           key: groupId,
           include_docs: true
@@ -357,7 +458,7 @@ var Jot = (function (_Model) {
             jots.push(new _this3(row.doc));
           });
 
-          return _this3.orderJots(jots);
+          return _this3.order(jots, order, direction);
         });
       });
     }
@@ -375,6 +476,8 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
+var DateUtils = require('../utility/date');
+
 var Model = (function () {
   function Model(members, allowedFields) {
     _classCallCheck(this, Model);
@@ -383,6 +486,8 @@ var Model = (function () {
 
     this._id = members._id || null;
     this._rev = members._rev || null;
+
+    this._dateAdded = members.dateAdded || null;
 
     this._fields = members.fields || {};
 
@@ -444,11 +549,16 @@ var Model = (function () {
       return this.getSlug().then(function (slug) {
         var params = {
           _id: slug,
+          dateAdded: _this2._dateAdded,
           fields: _this2.fields
         };
 
         if (!_this2.isNew()) {
           params._rev = _this2.rev;
+        }
+
+        if (_this2.isNew() || !_this2._dateAdded) {
+          params.dateAdded = new Date().toISOString();
         }
 
         return _this2._db.put(params).then(function (response) {
@@ -485,6 +595,20 @@ var Model = (function () {
     },
     set: function set(rev) {
       this._rev = rev;
+
+      return this;
+    }
+  }, {
+    key: 'dateAdded',
+    get: function get() {
+      if (this._dateAdded) {
+        return DateUtils.format(new Date(this._dateAdded));
+      } else {
+        return '';
+      }
+    },
+    set: function set(date) {
+      this._dateAdded = date;
 
       return this;
     }
@@ -570,7 +694,7 @@ var Model = (function () {
 
 module.exports = Model;
 
-},{"../db/db":1}],5:[function(require,module,exports){
+},{"../db/db":1,"../utility/date":24}],5:[function(require,module,exports){
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module unless amdModuleId is set
@@ -5290,7 +5414,7 @@ var titleBar = new TitleBarView(containerHeader);
 titleBar.render(true);
 router.activate();
 
-},{"../../db/db":1,"../../routers/path":13,"../../routes/client/auth":15,"../../routes/client/group":16,"../../routes/client/home":17,"../../routes/client/jot":18,"../../templates/helpers":23,"../../views/titlebar":30,"../../views/view-container":31,"handlebars/dist/handlebars.runtime":8}],13:[function(require,module,exports){
+},{"../../db/db":1,"../../routers/path":13,"../../routes/client/auth":15,"../../routes/client/group":16,"../../routes/client/home":17,"../../routes/client/jot":18,"../../templates/helpers":23,"../../views/titlebar":31,"../../views/view-container":32,"handlebars/dist/handlebars.runtime":8}],13:[function(require,module,exports){
 'use strict';
 
 var page = require('page');
@@ -5518,7 +5642,7 @@ var GroupClientRoutes = (function () {
 
 module.exports = GroupClientRoutes;
 
-},{"../../models/group":2,"../../models/jot":3,"../../utility/pubsub":24,"../../views/group":26,"../../views/groups":27,"../group":19}],17:[function(require,module,exports){
+},{"../../models/group":2,"../../models/jot":3,"../../utility/pubsub":25,"../../views/group":27,"../../views/groups":28,"../group":19}],17:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -5570,7 +5694,7 @@ var HomeRouter = (function () {
 
 module.exports = HomeRouter;
 
-},{"../../utility/pubsub":24,"../../views/home":28,"../home":20}],18:[function(require,module,exports){
+},{"../../utility/pubsub":25,"../../views/home":29,"../home":20}],18:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -5624,7 +5748,7 @@ var JotClientRoutes = (function () {
 
 module.exports = JotClientRoutes;
 
-},{"../../utility/pubsub":24,"../../views/jots":29,"../jot":21}],19:[function(require,module,exports){
+},{"../../utility/pubsub":25,"../../views/jots":30,"../jot":21}],19:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -5908,6 +6032,46 @@ function autoLink(elem, options) {
 }
 
 },{"autolinker":5,"handlebars/dist/handlebars.runtime":8}],24:[function(require,module,exports){
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var DateUtils = (function () {
+  function DateUtils() {
+    _classCallCheck(this, DateUtils);
+  }
+
+  _createClass(DateUtils, null, [{
+    key: 'getDays',
+    value: function getDays() {
+      return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    }
+  }, {
+    key: 'getMonths',
+    value: function getMonths() {
+      return ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    }
+  }, {
+    key: 'format',
+    value: function format(date) {
+      var day = date.getDay();
+      var dayNum = date.getDate();
+      var monthNum = date.getMonth();
+      var minutes = date.getMinutes();
+      var hours = date.getHours();
+
+      return this.getDays()[day] + ' ' + dayNum + ' ' + this.getMonths()[monthNum] + ' ' + hours + ':' + minutes;
+    }
+  }]);
+
+  return DateUtils;
+})();
+
+module.exports = DateUtils;
+
+},{}],25:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -5995,7 +6159,7 @@ var PubSub = (function () {
 
 module.exports = new PubSub();
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6131,7 +6295,7 @@ var ColourSelector = (function (_Widget) {
 
 module.exports = ColourSelector;
 
-},{"./widget":33}],26:[function(require,module,exports){
+},{"./widget":34}],27:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6511,7 +6675,7 @@ var ViewGroup = (function (_View) {
 
 module.exports = ViewGroup;
 
-},{"../models/group":2,"../models/jot":3,"../utility/pubsub":24,"./colour-selector":25,"./view":32}],27:[function(require,module,exports){
+},{"../models/group":2,"../models/jot":3,"../utility/pubsub":25,"./colour-selector":26,"./view":33}],28:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6853,7 +7017,7 @@ var ViewGroups = (function (_View) {
 
 module.exports = ViewGroups;
 
-},{"../models/group":2,"../utility/pubsub":24,"./colour-selector":25,"./view":32}],28:[function(require,module,exports){
+},{"../models/group":2,"../utility/pubsub":25,"./colour-selector":26,"./view":33}],29:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -6878,7 +7042,7 @@ var ViewHome = (function (_View) {
 
 module.exports = ViewHome;
 
-},{"./view":32}],29:[function(require,module,exports){
+},{"./view":33}],30:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6930,7 +7094,7 @@ var ViewJots = (function (_View) {
 
 module.exports = ViewJots;
 
-},{"../models/jot":3,"../utility/pubsub":24,"./view":32}],30:[function(require,module,exports){
+},{"../models/jot":3,"../utility/pubsub":25,"./view":33}],31:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7008,7 +7172,7 @@ var TitleBarView = (function (_View) {
 
 module.exports = TitleBarView;
 
-},{"../utility/pubsub":24,"./view":32}],31:[function(require,module,exports){
+},{"../utility/pubsub":25,"./view":33}],32:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7044,7 +7208,7 @@ var ViewContainer = (function () {
 
 module.exports = ViewContainer;
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7180,7 +7344,7 @@ var View = (function () {
 
 module.exports = View;
 
-},{"../utility/pubsub":24,"handlebars/dist/handlebars.runtime":8}],33:[function(require,module,exports){
+},{"../utility/pubsub":25,"handlebars/dist/handlebars.runtime":8}],34:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();

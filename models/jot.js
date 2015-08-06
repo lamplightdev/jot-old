@@ -60,7 +60,7 @@ class Jot extends Model {
     });
   }
 
-  static loadAll(loadGroups = true) {
+  static loadAll(loadGroups = true, order = 'date', direction = 'desc') {
     return super.loadAll().then(jots => {
       const promises = [];
 
@@ -71,12 +71,48 @@ class Jot extends Model {
       }
 
       return Promise.all(promises).then(() => {
-        return this.orderJots(jots);
+        return this.order(jots, order, direction);
       });
     });
   }
 
-  static orderJots(jots) {
+  static order(jots, order = 'date', direction = 'desc') {
+
+    switch (order) {
+      case 'date':
+        jots.sort((a, b) => {
+          if (a.dateAdded > b.dateAdded) {
+            return 1;
+          }
+
+          if (a.dateAdded < b.dateAdded) {
+            return -1;
+          }
+
+          return 0;
+        });
+
+        break;
+      case 'alpha':
+        jots.sort((a, b) => {
+          if (a.fields.content.toLowerCase() > b.fields.content.toLowerCase()) {
+            return 1;
+          }
+
+          if (a.fields.content.toLowerCase() < b.fields.content.toLowerCase()) {
+            return -1;
+          }
+
+          return 0;
+        });
+
+        break;
+    }
+
+    if (direction === 'desc') {
+      jots.reverse();
+    }
+
     const undoneJots = [];
     const doneJots = [];
 
@@ -91,13 +127,11 @@ class Jot extends Model {
     return undoneJots.concat(doneJots);
   }
 
-  static loadForGroup(groupId) {
+  static loadForGroup(groupId, order = 'date', direction = 'desc') {
     return Promise.resolve().then(() => {
       const db = require('../db/db')();
 
       return db.query('index/group', {
-        endkey: this.getRefName() + '-',
-        startkey: this.getRefName() + '-\uffff',
         descending: true,
         key: groupId,
         include_docs: true
@@ -108,7 +142,7 @@ class Jot extends Model {
           jots.push(new this(row.doc));
         });
 
-        return this.orderJots(jots);
+        return this.order(jots, order, direction);
       });
     });
   }

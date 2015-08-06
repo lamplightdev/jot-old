@@ -188,7 +188,7 @@ class CloudantClient {
   }
 
   initDesignDocs(userDoc) {
-    var ddoc = {
+    const ddocs = [{
       _id: '_design/index',
       views: {
         group: {
@@ -199,14 +199,17 @@ class CloudantClient {
           }.toString()
         }
       }
-    };
+    }];
 
     const promise = new Promise((resolve, reject) => {
 
       const dbName = 'jot-' + userDoc._id;
       const userDB = this.cloudant.db.use(dbName);
-      userDB.insert(ddoc, (err, body) => {
+      userDB.bulk({
+        docs: ddocs
+      }, {}, (err, body) => {
         if (err) {
+          console.log('ddoc error', err, body);
           resolve();
         } else {
           resolve();

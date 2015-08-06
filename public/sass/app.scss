@@ -46,7 +46,9 @@ header {
     color: inherit;
 
     &.jots__jot__item--done {
-      text-decoration: line-through;
+      .md-list-item__primary-content {
+        text-decoration: line-through;
+      }
     }
   }
 

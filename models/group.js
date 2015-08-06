@@ -35,6 +35,10 @@ class Group extends Model {
     return this._jots.length;
   }
 
+  get jotDoneCount() {
+    return this._jots.filter(jot => !!jot.fields.done).length;
+  }
+
   loadJots() {
     return Jot.loadForGroup(this.id).then(jots => {
       this._jots = jots;
@@ -54,7 +58,7 @@ class Group extends Model {
     });
   }
 
-  static loadAll(loadJots = true) {
+  static loadAll(loadJots = true, order = 'alpha', direction = 'asc') {
     return super.loadAll().then(groups => {
       const promises = [];
 
@@ -64,8 +68,50 @@ class Group extends Model {
         });
       }
 
-      return Promise.all(promises);
+      return Promise.all(promises).then(() => {
+        return this.order(groups, order, direction);
+      });
     });
+  }
+
+  static order(groups, order = 'alpha', direction = 'asc') {
+
+    switch (order) {
+      case 'date':
+        groups.sort((a, b) => {
+          if (a.dateAdded > b.dateAdded) {
+            return 1;
+          }
+
+          if (a.dateAdded < b.dateAdded) {
+            return -1;
+          }
+
+          return 0;
+        });
+
+        break;
+      case 'alpha':
+        groups.sort((a, b) => {
+          if (a.fields.name.toLowerCase() > b.fields.name.toLowerCase()) {
+            return 1;
+          }
+
+          if (a.fields.name.toLowerCase() < b.fields.name.toLowerCase()) {
+            return -1;
+          }
+
+          return 0;
+        });
+
+        break;
+    }
+
+    if (direction === 'desc') {
+      groups.reverse();
+    }
+
+    return groups;
   }
 }
 
