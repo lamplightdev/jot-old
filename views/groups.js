@@ -106,9 +106,9 @@ class ViewGroups extends View {
 
           item.classList.add('edit');
 
-          const nameField = this._el.querySelector('.form-group-update-' + id).elements.name;
-          nameField.focus();
-          nameField.value = nameField.value; //forces cursor to go to end of text
+          //const nameField = this._el.querySelector('.form-group-update-' + id).elements.name;
+          //nameField.focus();
+          //nameField.value = nameField.value; //forces cursor to go to end of text
         } else {
           this.unselectAll();
         }

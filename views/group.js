@@ -112,9 +112,9 @@ class ViewGroup extends View {
 
           item.classList.add('edit');
 
-          const contentField = this._el.querySelector('.form-jot-update-' + id).elements.content;
-          contentField.focus();
-          contentField.value = contentField.value; //forces cursor to go to end of text
+          //const contentField = this._el.querySelector('.form-jot-update-' + id).elements.content;
+          //contentField.focus();
+          //contentField.value = contentField.value; //forces cursor to go to end of text
         } else {
           this.unselectAll();
         }

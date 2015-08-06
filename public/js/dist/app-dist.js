@@ -6277,9 +6277,9 @@ var ViewGroup = (function (_View) {
 
               item.classList.add('edit');
 
-              var contentField = _this3._el.querySelector('.form-jot-update-' + id).elements.content;
-              contentField.focus();
-              contentField.value = contentField.value; //forces cursor to go to end of text
+              //const contentField = this._el.querySelector('.form-jot-update-' + id).elements.content;
+              //contentField.focus();
+              //contentField.value = contentField.value; //forces cursor to go to end of text
             } else {
                 _this3.unselectAll();
               }
@@ -6650,9 +6650,9 @@ var ViewGroups = (function (_View) {
 
               item.classList.add('edit');
 
-              var nameField = _this3._el.querySelector('.form-group-update-' + id).elements.name;
-              nameField.focus();
-              nameField.value = nameField.value; //forces cursor to go to end of text
+              //const nameField = this._el.querySelector('.form-group-update-' + id).elements.name;
+              //nameField.focus();
+              //nameField.value = nameField.value; //forces cursor to go to end of text
             } else {
                 _this3.unselectAll();
               }
