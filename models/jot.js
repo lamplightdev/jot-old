@@ -76,16 +76,16 @@ class Jot extends Model {
     });
   }
 
-  static order(jots, order = 'date', direction = 'desc') {
+  static order(jots, sortOrder = 'date', sortDirection = 'desc') {
 
-    switch (order) {
+    switch (sortOrder) {
       case 'date':
         jots.sort((a, b) => {
-          if (a.dateAdded > b.dateAdded) {
+          if (a._dateAdded > b._dateAdded) {
             return 1;
           }
 
-          if (a.dateAdded < b.dateAdded) {
+          if (a._dateAdded < b._dateAdded) {
             return -1;
           }
 
@@ -107,9 +107,23 @@ class Jot extends Model {
         });
 
         break;
+      case 'priority':
+        jots.sort((a, b) => {
+          if (a.fields.priority > b.fields.priority) {
+            return 1;
+          }
+
+          if (a.fields.priority < b.fields.priority) {
+            return -1;
+          }
+
+          return 0;
+        });
+
+        break;
     }
 
-    if (direction === 'desc') {
+    if (sortDirection === 'desc') {
       jots.reverse();
     }
 

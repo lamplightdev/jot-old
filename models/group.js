@@ -39,17 +39,17 @@ class Group extends Model {
     return this._jots.filter(jot => !!jot.fields.done).length;
   }
 
-  loadJots() {
-    return Jot.loadForGroup(this.id).then(jots => {
+  loadJots(order = 'alpha', direction = 'asc') {
+    return Jot.loadForGroup(this.id, order, direction).then(jots => {
       this._jots = jots;
       return this;
     });
   }
 
-  static load(id, loadJots = true) {
+  static load(id, loadJots = true, jotOrder = 'alpha', jotDirection = 'asc') {
     return super.load(id).then(group => {
       if (loadJots) {
-        return group.loadJots().then(() => {
+        return group.loadJots(jotOrder, jotDirection).then(() => {
           return group;
         });
       } else {
@@ -79,11 +79,11 @@ class Group extends Model {
     switch (order) {
       case 'date':
         groups.sort((a, b) => {
-          if (a.dateAdded > b.dateAdded) {
+          if (a._dateAdded > b._dateAdded) {
             return 1;
           }
 
-          if (a.dateAdded < b.dateAdded) {
+          if (a._dateAdded < b._dateAdded) {
             return -1;
           }
 
@@ -112,6 +112,26 @@ class Group extends Model {
     }
 
     return groups;
+  }
+
+  static remove(id) {
+    return super.remove(id).then(() => {
+      const db = require('../db/db')();
+
+      return Jot.loadForGroup(id).then(jots => {
+        const docs = jots.map(jot => {
+          return {
+            _id: jot.id,
+            _rev: jot.rev,
+            _deleted: true
+          };
+        });
+
+        return db.bulkDocs(docs).then(() => {
+          return true;
+        });
+      });
+    });
   }
 }
 

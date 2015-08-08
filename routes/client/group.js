@@ -26,7 +26,13 @@ class GroupClientRoutes {
             });
 
             PubSub.publish('routeChanged', {
-              name: 'Groups'
+              name: 'Groups',
+              order: [{
+                name: 'Alpha',
+                type: 'alpha',
+                direction: 'asc',
+                current: false
+              }]
             });
           },
 
@@ -58,7 +64,23 @@ class GroupClientRoutes {
             });
 
             PubSub.publish('routeChanged', {
-              name: group.fields.name
+              name: group.fields.name,
+              order: [{
+                name: 'Alpha',
+                type: 'alpha',
+                direction: 'asc',
+                current: false
+              }, {
+                name: 'Date',
+                type: 'date',
+                direction: 'desc',
+                current: false
+              }, {
+                name: 'Priority',
+                type: 'priority',
+                direction: 'asc',
+                current: false
+              }]
             });
           },
 

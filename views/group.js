@@ -30,6 +30,17 @@ class ViewGroup extends View {
       }
     }));
 
+    this._subscriptions.push(PubSub.subscribe('orderChanged', (topic, args) => {
+      console.log('orderChanged group', args);
+
+      Group.load(params.group.id, true, args.type, args.direction).then(group => {
+        this.renderPartial('jot-list', {
+          jots: group.jots,
+          group
+        });
+      });
+    }));
+
     this._addDocumentListener('unselectAll', 'click', () => {
       this.unselectAll();
     });

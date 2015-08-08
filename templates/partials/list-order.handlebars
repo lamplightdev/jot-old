@@ -1,0 +1,12 @@
+<div class='partial-list-order' style='text-align: right;'>
+  {{#if order}}
+    {{#each order}}
+      <a
+        href='#'
+        class='{{#if current}}{{current}}{{/if}}'
+        data-type='{{type}}'
+        data-direction='{{direction}}'
+        >{{name}}</a>
+    {{/each}}
+  {{/if}}
+</div>

@@ -21,7 +21,23 @@ class JotClientRoutes {
             });
 
             PubSub.publish('routeChanged', {
-              name: 'Jots'
+              name: 'Jots',
+              order: [{
+                name: 'Alpha',
+                type: 'alpha',
+                direction: 'asc',
+                current: false
+              }, {
+                name: 'Date',
+                type: 'date',
+                direction: 'desc',
+                current: false
+              }, {
+                name: 'Priority',
+                type: 'priority',
+                direction: 'asc',
+                current: false
+              }]
             });
           },
 

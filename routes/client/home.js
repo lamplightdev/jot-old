@@ -19,7 +19,8 @@ class HomeRouter {
             this.homeView.render(false, {});
 
             PubSub.publish('routeChanged', {
-              name: 'Home'
+              name: 'Home',
+              order: []
             });
           },
 

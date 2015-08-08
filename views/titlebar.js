@@ -1,14 +1,33 @@
 const View = require('./view');
 
+const ListOrder = require('./list-order');
 const PubSub = require('../utility/pubsub');
 
 class TitleBarView extends View {
   constructor(container) {
     super(container);
 
-    PubSub.subscribe('routeChanged', (topic, args) => {
+    this.registerWidget(ListOrder);
+  }
+
+  render(preRendered, params) {
+    super.render(preRendered, params);
+
+    this._subscriptions.push(PubSub.subscribe('routeChanged', (topic, args) => {
       this.renderPartial('titlebar-title', args);
-    });
+
+      this.updateSorting(args);
+    }));
+  }
+
+  renderPartial(name, params) {
+    const el = super.renderPartial(name, params);
+
+    switch (name) {
+      case 'list-order':
+        this.initWidgets(el);
+        break;
+    }
   }
 
   initEvents() {
@@ -43,6 +62,10 @@ class TitleBarView extends View {
   _closeNav() {
     this._nav.classList.remove('show');
     this._navOverlay.classList.remove('show');
+  }
+
+  updateSorting(args) {
+    this.renderPartial('list-order', args);
   }
 
 }
