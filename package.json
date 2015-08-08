@@ -28,6 +28,7 @@
     "express-handlebars": "^2.0.1",
     "express-session": "^1.11.3",
     "express-state": "^1.2.0",
+    "fastclick": "^1.0.6",
     "handlebars": "^3.0.3",
     "morgan": "^1.6.1",
     "page": "^1.6.3",

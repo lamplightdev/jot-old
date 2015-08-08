@@ -8,6 +8,8 @@ require('../../db/db')({
   dbName: 'jot-' + JotApp.user._id
 });
 
+const attachFastClick = require('fastclick');
+
 const ViewContainer = require('../../views/view-container');
 
 const router = require('../../routers/path');
@@ -21,6 +23,8 @@ const TitleBarView = require('../../views/titlebar');
 
 const Handlebars = require('handlebars/dist/handlebars.runtime');
 const helpers = require('../../templates/helpers');
+
+attachFastClick(document.body);
 
 for (let key of Object.keys(JotApp.templates)) {
   Handlebars.registerPartial(key, Handlebars.template(JotApp.templates[key]));
