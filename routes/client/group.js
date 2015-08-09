@@ -32,6 +32,17 @@ class GroupClientRoutes {
                 type: 'alpha',
                 direction: 'asc',
                 current: false
+              }],
+              tabs: [{
+                title: 'Home',
+                link: '/'
+              }, {
+                title: 'Jots',
+                link: '/jot'
+              }, {
+                title: 'Groups',
+                link: '/group',
+                current: true
               }]
             });
           },
@@ -80,6 +91,14 @@ class GroupClientRoutes {
                 type: 'priority',
                 direction: 'asc',
                 current: false
+              }],
+              tabs: [{
+                url: '/group/' + group.id,
+                title: 'undone',
+                current: true
+              }, {
+                url: '/group/' + group.id,
+                title: 'done'
               }]
             });
           },

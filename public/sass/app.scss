@@ -7,17 +7,24 @@
 @import "material-form";
 @import "material-snackbar";
 @import "material-list";
+@import "material-tabs";
 
 html {
   font-size: 14px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: $clr-grey-50;
 }
 
 header {
   background: $clr-blue;
   color: white;
   z-index: 20;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }
 
 * {

@@ -1,0 +1,36 @@
+.md-tabs {
+}
+
+.md-tab {
+  display: inline-block;
+
+  text-align: center;
+  text-transform: uppercase;
+
+  line-height: 3.5rem;
+
+  color: rgba(255, 255, 255, 0.7);
+  border-bottom: 2px solid inherit;
+
+  &.current {
+    color: white;
+    border-bottom: 2px solid white;
+  }
+
+  a {
+    display: block;
+  }
+}
+
+.md-tabs--3 {
+  .md-tab {
+    width: 33.33333%;
+  }
+}
+
+
+.md-tabs--2 {
+  .md-tab {
+    width: 50%;
+  }
+}

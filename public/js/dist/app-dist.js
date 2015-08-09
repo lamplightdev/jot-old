@@ -6293,6 +6293,7 @@ var containerHeader = new ViewContainer('header', {
   titlebar: JotApp.templates.titlebar
 }, {
   'titlebar-title': JotApp.templates['titlebar-title'],
+  'titlebar-tabs': JotApp.templates['titlebar-tabs'],
   'list-order': JotApp.templates['list-order']
 });
 
@@ -6485,6 +6486,17 @@ var GroupClientRoutes = (function () {
                   type: 'alpha',
                   direction: 'asc',
                   current: false
+                }],
+                tabs: [{
+                  title: 'Home',
+                  link: '/'
+                }, {
+                  title: 'Jots',
+                  link: '/jot'
+                }, {
+                  title: 'Groups',
+                  link: '/group',
+                  current: true
                 }]
               });
             },
@@ -6533,6 +6545,14 @@ var GroupClientRoutes = (function () {
                   type: 'priority',
                   direction: 'asc',
                   current: false
+                }],
+                tabs: [{
+                  url: '/group/' + group.id,
+                  title: 'undone',
+                  current: true
+                }, {
+                  url: '/group/' + group.id,
+                  title: 'done'
                 }]
               });
             },
@@ -6586,7 +6606,18 @@ var HomeRouter = (function () {
 
               PubSub.publish('routeChanged', {
                 name: 'Home',
-                order: []
+                order: [],
+                tabs: [{
+                  title: 'Home',
+                  link: '/',
+                  current: true
+                }, {
+                  title: 'Jots',
+                  link: '/jot'
+                }, {
+                  title: 'Groups',
+                  link: '/group'
+                }]
               });
             },
 
@@ -6656,6 +6687,17 @@ var JotClientRoutes = (function () {
                   type: 'priority',
                   direction: 'asc',
                   current: false
+                }],
+                tabs: [{
+                  title: 'Home',
+                  link: '/'
+                }, {
+                  title: 'Jots',
+                  link: '/jot',
+                  current: true
+                }, {
+                  title: 'Groups',
+                  link: '/group'
                 }]
               });
             },
@@ -8196,6 +8238,7 @@ var TitleBarView = (function (_View) {
 
       this._subscriptions.push(PubSub.subscribe('routeChanged', function (topic, args) {
         _this.renderPartial('titlebar-title', args);
+        _this.renderPartial('titlebar-tabs', args);
 
         _this.updateSorting(args);
       }));

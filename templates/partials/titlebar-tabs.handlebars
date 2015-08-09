@@ -1,0 +1,9 @@
+<div class='partial-titlebar-tabs'>
+  {{#if tabs}}
+  <div class='md-tabs md-tabs--{{tabs.length}}'>
+    {{#each tabs}}<div class='md-tab {{#if current}}current{{/if}}'>
+      <a href='{{link}}'>{{title}}</a>
+    </div>{{/each}}
+  </div>
+  {{/if}}
+</div>

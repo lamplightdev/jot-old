@@ -20,7 +20,18 @@ class HomeRouter {
 
             PubSub.publish('routeChanged', {
               name: 'Home',
-              order: []
+              order: [],
+              tabs: [{
+                title: 'Home',
+                link: '/',
+                current: true
+              }, {
+                title: 'Jots',
+                link: '/jot'
+              }, {
+                title: 'Groups',
+                link: '/group'
+              }]
             });
           },
 

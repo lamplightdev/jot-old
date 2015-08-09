@@ -7,18 +7,32 @@ class JotServerRoutes {
   }
 
   registerRoutes() {
+    const routeParams = {
+      tabs: [{
+        title: 'Home',
+        link: '/'
+      }, {
+        title: 'Jots',
+        link: '/jot',
+        current: true
+      }, {
+        title: 'Groups',
+        link: '/group'
+      }]
+    };
+
     this.routes.registerRoute('all', (req, res, next) => {
       return Promise.resolve().then(() => {
         return {
           params: {},
 
           resolve: (jots) => {
-            res.render('app', {
+            res.render('app', Object.assign(routeParams, {
               name: 'Jots',
               content: 'jots',
               jots,
               editID: req.query.edit
-            });
+            }));
           },
 
           reject: next

@@ -58,6 +58,7 @@ const containerHeader = new ViewContainer('header', {
   titlebar: JotApp.templates.titlebar
 }, {
   'titlebar-title': JotApp.templates['titlebar-title'],
+  'titlebar-tabs': JotApp.templates['titlebar-tabs'],
   'list-order': JotApp.templates['list-order']
 });
 

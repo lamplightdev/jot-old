@@ -8,19 +8,33 @@ class GroupsServerRoutes {
   }
 
   registerRoutes() {
+    const routeParams = {
+      tabs: [{
+        title: 'Home',
+        link: '/'
+      }, {
+        title: 'Jots',
+        link: '/jot'
+      }, {
+        title: 'Groups',
+        link: '/group',
+        current: true
+      }]
+    };
+
     this.routes.registerRoute('all', (req, res, next) => {
       return Promise.resolve().then(() => {
         return {
           params: {},
 
           resolve: (groups) => {
-            res.render('app', {
+            res.render('app', Object.assign(routeParams, {
               name: 'Groups',
               content: 'groups',
               colours: Group.getColours(),
               groups,
               editID: req.query.edit
-            });
+            }));
           },
 
           reject: next
@@ -40,7 +54,15 @@ class GroupsServerRoutes {
               name: group.fields.name,
               content: 'group',
               group,
-              editID: req.query.edit
+              editID: req.query.edit,
+              tabs: [{
+                url: '/group/' + req.params.id,
+                title: 'undone',
+                current: true
+              }, {
+                url: '/group/' + req.params.id,
+                title: 'done'
+              }]
             });
           },
 

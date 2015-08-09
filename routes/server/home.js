@@ -7,16 +7,30 @@ class HomeRouter {
   }
 
   registerRoutes() {
+    const routeParams = {
+      tabs: [{
+        title: 'Home',
+        link: '/',
+        current: true
+      }, {
+        title: 'Jots',
+        link: '/jot'
+      }, {
+        title: 'Groups',
+        link: '/group'
+      }]
+    };
+
     this.routes.registerRoute('home', (req, res, next) => {
       return Promise.resolve().then(() => {
         return {
           params: {},
 
           resolve: (events) => {
-            res.render('app', {
+            res.render('app', Object.assign(routeParams, {
               name: 'Home',
               content: 'home'
-            });
+            }));
           },
 
           reject: next

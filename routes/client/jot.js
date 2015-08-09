@@ -10,6 +10,7 @@ class JotClientRoutes {
   }
 
   registerRoutes() {
+
     this.routes.registerRoute('all', (ctx, next) => {
       return Promise.resolve().then(() => {
         return {
@@ -37,6 +38,17 @@ class JotClientRoutes {
                 type: 'priority',
                 direction: 'asc',
                 current: false
+              }],
+              tabs: [{
+                title: 'Home',
+                link: '/'
+              }, {
+                title: 'Jots',
+                link: '/jot',
+                current: true
+              }, {
+                title: 'Groups',
+                link: '/group'
               }]
             });
           },

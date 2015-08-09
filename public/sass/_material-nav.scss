@@ -1,6 +1,10 @@
 
 .md-has-fixed-header {
   margin-top: 4rem;
+
+  &.md-has-header-tabs {
+    margin-top: 4rem + 3.5rem + 0.4rem;
+  }
 }
 
 .md-fixed-header {
@@ -11,7 +15,6 @@
 
   z-index: 20;
 
-  padding: 0 1.1rem;
   height: 4rem;
   line-height: 4rem;
 
@@ -22,6 +25,10 @@
   @include drop-shadow(1);
 }
 
+.md-header--has-tabs {
+  height: 4rem + 3.5rem + 0.4rem;
+  @include drop-shadow(0);
+}
 
 .md-nav {
   $width: 280px;
@@ -84,6 +91,7 @@
 .md-actionbar {
   display: -webkit-flex;
   display: flex;
+  padding: 0 1.1rem;
 }
 
 .md-nav-overlay {
