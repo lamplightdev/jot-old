@@ -1,17 +1,20 @@
 <div class='md-actionbar'>
 
-  <a href='?menu=open' class='md-btn-menu'>
-    <span></span>
-    <span></span>
-    <span></span>
-  </a>
+  <div class='md-actionbar__menu'>
+    <a href='?menu=open' class='md-btn-menu'>
+      <span></span>
+      <span></span>
+      <span></span>
+    </a>
+  </div>
 
-  {{>titlebar-title}}
+  <div class='md-actionbar__title'>
+    {{>titlebar-title}}
+  </div>
 
-  <!--a href='/' class='md-btn-logo'>
-    <img src='/images/pencil.svg' alt='Jot'>
-  </a-->
-  {{>list-order}}
+  <div class='md-actionbar__actions'>
+    {{>list-order}}
+  </div>
 
 </div>
 
