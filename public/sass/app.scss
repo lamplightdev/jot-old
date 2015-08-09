@@ -61,6 +61,16 @@ header {
     }
   }
 
+  .jots__jot__edit, .groups__group__edit {
+    .edit {
+      display: block;
+    }
+
+    .cancel {
+      display: none;
+    }
+  }
+
   &.edit {
 
     .jots__jot__forms, .groups__group__forms {
@@ -69,6 +79,16 @@ header {
 
     .jots__jot__item, .groups__group__item {
       display: none;
+    }
+
+    .jots__jot__edit, .groups__group__edit {
+      .edit {
+        display: none;
+      }
+
+      .cancel {
+        display: block;
+      }
     }
   }
 }
