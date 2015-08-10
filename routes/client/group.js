@@ -58,7 +58,8 @@ class GroupClientRoutes {
       return Promise.resolve().then(() => {
         return {
           params: {
-            id: ctx.params.id
+            id: ctx.params.id,
+            done: ctx.params.status === 'done'
           },
 
           resolve: (group) => {
@@ -68,6 +69,7 @@ class GroupClientRoutes {
               queryObject[vals[0]] = vals[1];
             });
 
+            this.groupView.setShowDone(ctx.params.status === 'done');
             this.groupView.render(false, {
               group,
               editID: queryObject.edit,
@@ -93,12 +95,13 @@ class GroupClientRoutes {
                 current: false
               }],
               tabs: [{
-                url: '/group/' + group.id,
+                link: '/group/' + group.id,
                 title: 'undone',
-                current: true
+                current: ctx.params.status !== 'done'
               }, {
-                url: '/group/' + group.id,
-                title: 'done'
+                link: '/group/' + group.id + '/done',
+                title: 'done',
+                current: ctx.params.status === 'done'
               }]
             });
           },

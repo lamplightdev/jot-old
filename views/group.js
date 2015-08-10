@@ -14,6 +14,12 @@ class ViewGroup extends View {
     super(container);
 
     this.registerWidget(ColourSelectorWidget);
+
+    this._showDone = false;
+  }
+
+  setShowDone(done) {
+    this._showDone = done;
   }
 
   render(preRendered, params) {
@@ -22,10 +28,7 @@ class ViewGroup extends View {
     this._subscriptions.push(PubSub.subscribe('update', (topic, args) => {
       if (args.changes && args.changes.length) {
         Group.load(params.group.id).then(group => {
-          this.renderPartial('jot-list', {
-            jots: group.jots,
-            group
-          });
+          this.renderJotList(group);
         });
       }
     }));
@@ -34,10 +37,7 @@ class ViewGroup extends View {
       console.log('orderChanged group', args);
 
       Group.load(params.group.id, true, args.type, args.direction).then(group => {
-        this.renderPartial('jot-list', {
-          jots: group.jots,
-          group
-        });
+        this.renderJotList(group);
       });
     }));
 
@@ -57,6 +57,13 @@ class ViewGroup extends View {
         this.initWidgets(el);
         break;
     }
+  }
+
+  renderJotList(group) {
+    this.renderPartial('jot-list', {
+      jots: group.getJots(this._showDone),
+      group
+    });
   }
 
   initEvents() {
@@ -91,10 +98,7 @@ class ViewGroup extends View {
         contentField.value = '';
         contentField.focus();
         Group.load(group).then(group => {
-          this.renderPartial('jot-list', {
-            jots: group.jots,
-            group
-          });
+          this.renderJotList(group);
         });
       });
     });
@@ -160,10 +164,7 @@ class ViewGroup extends View {
 
         Jot.remove(id).then(() => {
           Group.load(group).then(group => {
-            this.renderPartial('jot-list', {
-              jots: group.jots,
-              group
-            });
+            this.renderJotList(group);
           });
         });
       });
@@ -223,10 +224,7 @@ class ViewGroup extends View {
 
           jot.save().then(() => {
             Group.load(group).then(group => {
-              this.renderPartial('jot-list', {
-                jots: group.jots,
-                group
-              });
+              this.renderJotList(group);
             });
           });
         });

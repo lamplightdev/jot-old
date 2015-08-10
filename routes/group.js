@@ -17,10 +17,13 @@ class GroupRoutes extends Routes {
     };
 
     this._routes.view = {
-      _path: '/:id',
+      _path: '/:id/:status?',
       _method: ['get'],
       _action: params => {
-        return Group.load(params.id);
+        return Group.load(params.id).then(group => {
+          group._jots = group.getJots(params.done);
+          return group;
+        });
       }
     };
 

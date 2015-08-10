@@ -31,6 +31,16 @@ class Group extends Model {
     return this._jots;
   }
 
+  getJots(done = null) {
+    if (done === null) {
+      return this.jots;
+    } else if (done) {
+      return this.jots.filter(jot => !!jot.fields.done);
+    } else {
+      return this.jots.filter(jot => !jot.fields.done);
+    }
+  }
+
   get jotCount() {
     return this._jots.length;
   }

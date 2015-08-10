@@ -46,7 +46,8 @@ class GroupsServerRoutes {
       return Promise.resolve().then(() => {
         return {
           params: {
-            id: req.params.id
+            id: req.params.id,
+            done: req.params.status === 'done'
           },
 
           resolve: (group) => {
@@ -56,12 +57,13 @@ class GroupsServerRoutes {
               group,
               editID: req.query.edit,
               tabs: [{
-                url: '/group/' + req.params.id,
+                link: '/group/' + req.params.id,
                 title: 'undone',
-                current: true
+                current: req.params.status !== 'done'
               }, {
-                url: '/group/' + req.params.id,
-                title: 'done'
+                link: '/group/' + req.params.id + '/done',
+                title: 'done',
+                current: req.params.status === 'done'
               }]
             });
           },

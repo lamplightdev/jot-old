@@ -133,7 +133,7 @@ module.exports = function (options) {
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x11, _x12, _x13) { var _again = true; _function: while (_again) { var object = _x11, property = _x12, receiver = _x13; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x11 = parent; _x12 = property; _x13 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x12, _x13, _x14) { var _again = true; _function: while (_again) { var object = _x12, property = _x13, receiver = _x14; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x12 = parent; _x13 = property; _x14 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
@@ -154,6 +154,23 @@ var Group = (function (_Model) {
   }
 
   _createClass(Group, [{
+    key: 'getJots',
+    value: function getJots() {
+      var done = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
+      if (done === null) {
+        return this.jots;
+      } else if (done) {
+        return this.jots.filter(function (jot) {
+          return !!jot.fields.done;
+        });
+      } else {
+        return this.jots.filter(function (jot) {
+          return !jot.fields.done;
+        });
+      }
+    }
+  }, {
     key: 'loadJots',
     value: function loadJots() {
       var _this = this;
@@ -6512,7 +6529,8 @@ var GroupClientRoutes = (function () {
         return Promise.resolve().then(function () {
           return {
             params: {
-              id: ctx.params.id
+              id: ctx.params.id,
+              done: ctx.params.status === 'done'
             },
 
             resolve: function resolve(group) {
@@ -6522,6 +6540,7 @@ var GroupClientRoutes = (function () {
                 queryObject[vals[0]] = vals[1];
               });
 
+              _this.groupView.setShowDone(ctx.params.status === 'done');
               _this.groupView.render(false, {
                 group: group,
                 editID: queryObject.edit,
@@ -6547,12 +6566,13 @@ var GroupClientRoutes = (function () {
                   current: false
                 }],
                 tabs: [{
-                  url: '/group/' + group.id,
+                  link: '/group/' + group.id,
                   title: 'undone',
-                  current: true
+                  current: ctx.params.status !== 'done'
                 }, {
-                  url: '/group/' + group.id,
-                  title: 'done'
+                  link: '/group/' + group.id + '/done',
+                  title: 'done',
+                  current: ctx.params.status === 'done'
                 }]
               });
             },
@@ -6748,10 +6768,13 @@ var GroupRoutes = (function (_Routes) {
     };
 
     this._routes.view = {
-      _path: '/:id',
+      _path: '/:id/:status?',
       _method: ['get'],
       _action: function _action(params) {
-        return Group.load(params.id);
+        return Group.load(params.id).then(function (group) {
+          group._jots = group.getJots(params.done);
+          return group;
+        });
       }
     };
 
@@ -7292,9 +7315,16 @@ var ViewGroup = (function (_View) {
     _get(Object.getPrototypeOf(ViewGroup.prototype), 'constructor', this).call(this, container);
 
     this.registerWidget(ColourSelectorWidget);
+
+    this._showDone = false;
   }
 
   _createClass(ViewGroup, [{
+    key: 'setShowDone',
+    value: function setShowDone(done) {
+      this._showDone = done;
+    }
+  }, {
     key: 'render',
     value: function render(preRendered, params) {
       var _this = this;
@@ -7304,10 +7334,7 @@ var ViewGroup = (function (_View) {
       this._subscriptions.push(PubSub.subscribe('update', function (topic, args) {
         if (args.changes && args.changes.length) {
           Group.load(params.group.id).then(function (group) {
-            _this.renderPartial('jot-list', {
-              jots: group.jots,
-              group: group
-            });
+            _this.renderJotList(group);
           });
         }
       }));
@@ -7316,10 +7343,7 @@ var ViewGroup = (function (_View) {
         console.log('orderChanged group', args);
 
         Group.load(params.group.id, true, args.type, args.direction).then(function (group) {
-          _this.renderPartial('jot-list', {
-            jots: group.jots,
-            group: group
-          });
+          _this.renderJotList(group);
         });
       }));
 
@@ -7340,6 +7364,14 @@ var ViewGroup = (function (_View) {
           this.initWidgets(el);
           break;
       }
+    }
+  }, {
+    key: 'renderJotList',
+    value: function renderJotList(group) {
+      this.renderPartial('jot-list', {
+        jots: group.getJots(this._showDone),
+        group: group
+      });
     }
   }, {
     key: 'initEvents',
@@ -7378,10 +7410,7 @@ var ViewGroup = (function (_View) {
           contentField.value = '';
           contentField.focus();
           Group.load(group).then(function (group) {
-            _this2.renderPartial('jot-list', {
-              jots: group.jots,
-              group: group
-            });
+            _this2.renderJotList(group);
           });
         });
       });
@@ -7528,10 +7557,7 @@ var ViewGroup = (function (_View) {
 
             Jot.remove(id).then(function () {
               Group.load(group).then(function (group) {
-                _this4.renderPartial('jot-list', {
-                  jots: group.jots,
-                  group: group
-                });
+                _this4.renderJotList(group);
               });
             });
           });
@@ -7619,10 +7645,7 @@ var ViewGroup = (function (_View) {
 
               jot.save().then(function () {
                 Group.load(group).then(function (group) {
-                  _this5.renderPartial('jot-list', {
-                    jots: group.jots,
-                    group: group
-                  });
+                  _this5.renderJotList(group);
                 });
               });
             });
