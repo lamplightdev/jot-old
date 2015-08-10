@@ -19,17 +19,17 @@ class HomeRouter {
             this.homeView.render(false, {});
 
             PubSub.publish('routeChanged', {
-              name: 'Home',
+              name: 'Jot',
               order: [],
               tabs: [{
                 title: 'Home',
                 link: '/',
                 current: true
               }, {
-                title: 'Jots',
+                title: 'All',
                 link: '/jot'
               }, {
-                title: 'Groups',
+                title: 'Lists',
                 link: '/group'
               }]
             });

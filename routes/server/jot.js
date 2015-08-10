@@ -12,11 +12,11 @@ class JotServerRoutes {
         title: 'Home',
         link: '/'
       }, {
-        title: 'Jots',
+        title: 'All',
         link: '/jot',
         current: true
       }, {
-        title: 'Groups',
+        title: 'Lists',
         link: '/group'
       }]
     };
@@ -28,7 +28,7 @@ class JotServerRoutes {
 
           resolve: (jots) => {
             res.render('app', Object.assign(routeParams, {
-              name: 'Jots',
+              name: 'Jot',
               content: 'jots',
               jots,
               editID: req.query.edit

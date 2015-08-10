@@ -26,7 +26,7 @@ class GroupClientRoutes {
             });
 
             PubSub.publish('routeChanged', {
-              name: 'Groups',
+              name: 'Jot',
               order: [{
                 name: 'Alpha',
                 type: 'alpha',
@@ -37,10 +37,10 @@ class GroupClientRoutes {
                 title: 'Home',
                 link: '/'
               }, {
-                title: 'Jots',
+                title: 'All',
                 link: '/jot'
               }, {
-                title: 'Groups',
+                title: 'Lists',
                 link: '/group',
                 current: true
               }]

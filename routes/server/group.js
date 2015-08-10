@@ -13,10 +13,10 @@ class GroupsServerRoutes {
         title: 'Home',
         link: '/'
       }, {
-        title: 'Jots',
+        title: 'All',
         link: '/jot'
       }, {
-        title: 'Groups',
+        title: 'Lists',
         link: '/group',
         current: true
       }]
@@ -29,7 +29,7 @@ class GroupsServerRoutes {
 
           resolve: (groups) => {
             res.render('app', Object.assign(routeParams, {
-              name: 'Groups',
+              name: 'Jot',
               content: 'groups',
               colours: Group.getColours(),
               groups,

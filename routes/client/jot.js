@@ -22,7 +22,7 @@ class JotClientRoutes {
             });
 
             PubSub.publish('routeChanged', {
-              name: 'Jots',
+              name: 'Jot',
               order: [{
                 name: 'Alpha',
                 type: 'alpha',
@@ -43,11 +43,11 @@ class JotClientRoutes {
                 title: 'Home',
                 link: '/'
               }, {
-                title: 'Jots',
+                title: 'All',
                 link: '/jot',
                 current: true
               }, {
-                title: 'Groups',
+                title: 'Lists',
                 link: '/group'
               }]
             });

@@ -6480,7 +6480,7 @@ var GroupClientRoutes = (function () {
               });
 
               PubSub.publish('routeChanged', {
-                name: 'Groups',
+                name: 'Jot',
                 order: [{
                   name: 'Alpha',
                   type: 'alpha',
@@ -6491,10 +6491,10 @@ var GroupClientRoutes = (function () {
                   title: 'Home',
                   link: '/'
                 }, {
-                  title: 'Jots',
+                  title: 'All',
                   link: '/jot'
                 }, {
-                  title: 'Groups',
+                  title: 'Lists',
                   link: '/group',
                   current: true
                 }]
@@ -6605,17 +6605,17 @@ var HomeRouter = (function () {
               _this.homeView.render(false, {});
 
               PubSub.publish('routeChanged', {
-                name: 'Home',
+                name: 'Jot',
                 order: [],
                 tabs: [{
                   title: 'Home',
                   link: '/',
                   current: true
                 }, {
-                  title: 'Jots',
+                  title: 'All',
                   link: '/jot'
                 }, {
-                  title: 'Groups',
+                  title: 'Lists',
                   link: '/group'
                 }]
               });
@@ -6671,7 +6671,7 @@ var JotClientRoutes = (function () {
               });
 
               PubSub.publish('routeChanged', {
-                name: 'Jots',
+                name: 'Jot',
                 order: [{
                   name: 'Alpha',
                   type: 'alpha',
@@ -6692,11 +6692,11 @@ var JotClientRoutes = (function () {
                   title: 'Home',
                   link: '/'
                 }, {
-                  title: 'Jots',
+                  title: 'All',
                   link: '/jot',
                   current: true
                 }, {
-                  title: 'Groups',
+                  title: 'Lists',
                   link: '/group'
                 }]
               });

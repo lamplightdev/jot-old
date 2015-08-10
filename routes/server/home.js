@@ -13,10 +13,10 @@ class HomeRouter {
         link: '/',
         current: true
       }, {
-        title: 'Jots',
+        title: 'All',
         link: '/jot'
       }, {
-        title: 'Groups',
+        title: 'Lists',
         link: '/group'
       }]
     };
@@ -28,7 +28,7 @@ class HomeRouter {
 
           resolve: (events) => {
             res.render('app', Object.assign(routeParams, {
-              name: 'Home',
+              name: 'Jot',
               content: 'home'
             }));
           },
