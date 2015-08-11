@@ -62,12 +62,12 @@ class Jot extends Model {
 
   static loadAll(loadGroups = true, order = 'date', direction = 'desc') {
     return super.loadAll().then(jots => {
+      const Group = require('./group');
+
       const promises = [];
 
       if (loadGroups) {
-        jots.forEach(jot => {
-          promises.push(jot.loadGroup());
-        });
+        promises.push(Group.loadForJots(jots));
       }
 
       return Promise.all(promises).then(() => {
@@ -157,6 +157,34 @@ class Jot extends Model {
         });
 
         return this.order(jots, order, direction);
+      });
+    });
+  }
+
+  static loadForGroups(groups, order = 'date', direction = 'desc') {
+    return Promise.resolve().then(() => {
+      const db = require('../db/db')();
+
+      const groupIds = groups.map(group => group.id);
+
+      return db.query('index/group', {
+        descending: true,
+        keys: groupIds,
+        include_docs: true
+      }).then(result => {
+        const groupJots = {};
+
+        groupIds.forEach(groupId => {
+          groupJots[groupId] = [];
+        });
+
+        result.rows.forEach(row => {
+          groupJots[row.doc.fields.group].push(new this(row.doc));
+        });
+
+        groups.forEach(group => {
+          group._jots = groupJots[group.id];
+        });
       });
     });
   }

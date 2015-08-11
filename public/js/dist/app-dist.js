@@ -241,13 +241,40 @@ var Group = (function (_Model) {
         var promises = [];
 
         if (loadJots) {
-          groups.forEach(function (group) {
-            promises.push(group.loadJots());
-          });
+          promises.push(Jot.loadForGroups(groups));
         }
 
         return Promise.all(promises).then(function () {
           return _this2.order(groups, order, direction);
+        });
+      });
+    }
+  }, {
+    key: 'loadForJots',
+    value: function loadForJots(jots) {
+      var _this3 = this;
+
+      return Promise.resolve().then(function () {
+        var db = require('../db/db')();
+
+        var groupIds = jots.map(function (jot) {
+          return jot.fields.group;
+        });
+
+        return db.allDocs({
+          descending: true,
+          keys: groupIds,
+          include_docs: true
+        }).then(function (result) {
+          var jotGroups = {};
+
+          result.rows.forEach(function (row) {
+            jotGroups[row.doc._id] = new _this3(row.doc);
+          });
+
+          jots.forEach(function (jot) {
+            jot._group = jotGroups[jot.fields.group];
+          });
         });
       });
     }
@@ -328,7 +355,7 @@ module.exports = Group;
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x9, _x10, _x11) { var _again = true; _function: while (_again) { var object = _x9, property = _x10, receiver = _x11; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x9 = parent; _x10 = property; _x11 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x11, _x12, _x13) { var _again = true; _function: while (_again) { var object = _x11, property = _x12, receiver = _x13; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x11 = parent; _x12 = property; _x13 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
@@ -411,12 +438,12 @@ var Jot = (function (_Model) {
       var direction = arguments.length <= 2 || arguments[2] === undefined ? 'desc' : arguments[2];
 
       return _get(Object.getPrototypeOf(Jot), 'loadAll', this).call(this).then(function (jots) {
+        var Group = require('./group');
+
         var promises = [];
 
         if (loadGroups) {
-          jots.forEach(function (jot) {
-            promises.push(jot.loadGroup());
-          });
+          promises.push(Group.loadForJots(jots));
         }
 
         return Promise.all(promises).then(function () {
@@ -515,6 +542,42 @@ var Jot = (function (_Model) {
           });
 
           return _this3.order(jots, order, direction);
+        });
+      });
+    }
+  }, {
+    key: 'loadForGroups',
+    value: function loadForGroups(groups) {
+      var _this4 = this;
+
+      var order = arguments.length <= 1 || arguments[1] === undefined ? 'date' : arguments[1];
+      var direction = arguments.length <= 2 || arguments[2] === undefined ? 'desc' : arguments[2];
+
+      return Promise.resolve().then(function () {
+        var db = require('../db/db')();
+
+        var groupIds = groups.map(function (group) {
+          return group.id;
+        });
+
+        return db.query('index/group', {
+          descending: true,
+          keys: groupIds,
+          include_docs: true
+        }).then(function (result) {
+          var groupJots = {};
+
+          groupIds.forEach(function (groupId) {
+            groupJots[groupId] = [];
+          });
+
+          result.rows.forEach(function (row) {
+            groupJots[row.doc.fields.group].push(new _this4(row.doc));
+          });
+
+          groups.forEach(function (group) {
+            group._jots = groupJots[group.id];
+          });
         });
       });
     }

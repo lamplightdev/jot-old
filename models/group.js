@@ -73,13 +73,35 @@ class Group extends Model {
       const promises = [];
 
       if (loadJots) {
-        groups.forEach(group => {
-          promises.push(group.loadJots());
-        });
+        promises.push(Jot.loadForGroups(groups));
       }
 
       return Promise.all(promises).then(() => {
         return this.order(groups, order, direction);
+      });
+    });
+  }
+
+  static loadForJots(jots) {
+    return Promise.resolve().then(() => {
+      const db = require('../db/db')();
+
+      const groupIds = jots.map(jot => jot.fields.group);
+
+      return db.allDocs({
+        descending: true,
+        keys: groupIds,
+        include_docs: true
+      }).then(result => {
+        const jotGroups = {};
+
+        result.rows.forEach(row => {
+          jotGroups[row.doc._id] = new this(row.doc);
+        });
+
+        jots.forEach(jot => {
+          jot._group = jotGroups[jot.fields.group];
+        });
       });
     });
   }
