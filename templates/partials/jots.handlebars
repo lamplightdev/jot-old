@@ -6,7 +6,7 @@
       <div class='img colour-{{group.fields.colour}} priority-{{fields.priority}}'></div>
     </a>
 
-    <a class='md-list-item__content md-list-item__content--no-action' href='/group/{{fields.group}}#{{id}}'>
+    <a class='md-list-item__content md-list-item__content--no-action' href='/group/{{fields.group}}?edit={{id}}#{{id}}'>
       <div class='md-list-item__primary-content {{#if fields.done}}jots__jot__item--done{{/if}}'>
         {{fields.content}}
       </div>
