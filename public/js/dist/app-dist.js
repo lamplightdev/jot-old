@@ -29,82 +29,108 @@ var DB = (function () {
         dbName: null
       };
 
-      this._remoteCouch = options.protocol + '://';
+      if (options.domain) {
+        this._remoteCouch = options.protocol + '://';
 
-      if (options.username) {
-        this._remoteCouch += options.username;
+        if (options.username) {
+          this._remoteCouch += options.username;
+        }
+
+        if (options.password) {
+          this._remoteCouch += ':' + options.password;
+        }
+
+        if (options.username || options.password) {
+          this._remoteCouch += '@';
+        }
+
+        this._remoteCouch += options.domain;
+
+        if (options.port) {
+          this._remoteCouch += ':' + options.port;
+        }
+
+        this._remoteCouch += '/' + options.dbName;
+      } else {
+        this._remoteCouch = null;
       }
-
-      if (options.password) {
-        this._remoteCouch += ':' + options.password;
-      }
-
-      if (options.username || options.password) {
-        this._remoteCouch += '@';
-      }
-
-      this._remoteCouch += options.domain;
-
-      if (options.port) {
-        this._remoteCouch += ':' + options.port;
-      }
-
-      this._remoteCouch += '/' + options.dbName;
 
       if (typeof PouchDB !== 'undefined') {
-        (function () {
-          //browser
-          PouchDB.debug.disable();
-          _this._db = new PouchDB(options.dbName, {
-            auto_compaction: true
-          });
+        //browser
+        PouchDB.debug.disable();
+        this._db = new PouchDB(options.dbName, {
+          auto_compaction: true
+        });
 
-          var opts = { live: true, retry: true };
+        if (this._remoteCouch) {
+          (function () {
 
-          _this._db.replicate.to(_this._remoteCouch, opts).on('change', function (info) {
-            console.log('browser replicate to change');
-          }).on('paused', function () {
-            console.log('browser replicate to paused');
-          }).on('active', function () {
-            console.log('browser replicate to active');
-          }).on('denied', function (info) {
-            console.log('browser replicate to denied', info);
-          }).on('complete', function (info) {
-            console.log('browser replicate to complete');
-          }).on('error', function (err) {
-            console.log('browser replicate to error', err);
-          });
+            var opts = { live: true, retry: true };
 
-          var changes = [];
-
-          _this._db.replicate.from(_this._remoteCouch, opts).on('change', function (info) {
-            console.log('browser replicate from change', info);
-            changes = changes.concat(info.docs);
-          }).on('paused', function () {
-            console.log('browser replicate from paused');
-
-            PubSub.publish('update', {
-              changes: changes
+            _this._db.replicate.to(_this._remoteCouch, opts).on('change', function (info) {
+              console.log('browser replicate to change');
+            }).on('paused', function () {
+              console.log('browser replicate to paused');
+            }).on('active', function () {
+              console.log('browser replicate to active');
+            }).on('denied', function (info) {
+              console.log('browser replicate to denied', info);
+            }).on('complete', function (info) {
+              console.log('browser replicate to complete');
+            }).on('error', function (err) {
+              console.log('browser replicate to error', err);
             });
 
-            changes = [];
-          }).on('active', function () {
-            console.log('browser replicate from active');
-          }).on('denied', function (info) {
-            console.log('browser replicate from denied', info);
-          }).on('complete', function (info) {
-            console.log('browser replicate from complete', info);
-          }).on('error', function (err) {
-            console.log('browser replicate from error', err);
-          });
-        })();
-      } else {
-        var _PouchDB = require('pouchdb');
-        //PouchDB.plugin(require('pouchdb-find'));
-        _PouchDB.debug.disable();
+            var changes = [];
 
-        this._db = new _PouchDB(this._remoteCouch);
-      }
+            _this._db.replicate.from(_this._remoteCouch, opts).on('change', function (info) {
+              console.log('browser replicate from change', info);
+              changes = changes.concat(info.docs);
+            }).on('paused', function () {
+              console.log('browser replicate from paused');
+
+              PubSub.publish('update', {
+                changes: changes
+              });
+
+              changes = [];
+            }).on('active', function () {
+              console.log('browser replicate from active');
+            }).on('denied', function (info) {
+              console.log('browser replicate from denied', info);
+            }).on('complete', function (info) {
+              console.log('browser replicate from complete', info);
+            }).on('error', function (err) {
+              console.log('browser replicate from error', err);
+            });
+          })();
+        } else {
+          var ddoc = {
+            _id: '_design/index',
+            views: {
+              group: {
+                map: (function (doc) {
+                  if (doc.fields.group) {
+                    emit(doc.fields.group);
+                  }
+                }).toString()
+              }
+            }
+          };
+
+          this._db.put(ddoc).then(function () {
+            // kick off an initial build, return immediately
+            return _this._db.query('index/group', { stale: 'update_after' });
+          })['catch'](function (err) {
+            //conflict occured, i.e. ddoc already existed
+          });
+        }
+      } else {
+          var _PouchDB = require('pouchdb');
+          _PouchDB.debug.disable();
+
+          this._db = new _PouchDB(this._remoteCouch);
+        }
     }
   }, {
     key: 'db',
@@ -6294,13 +6320,19 @@ module.exports = Array.isArray || function (arr) {
 },{}],13:[function(require,module,exports){
 'use strict';
 
-require('../../db/db')({
-  protocol: JotApp.server.protocol,
-  domain: JotApp.server.domain,
-  username: JotApp.user.credentials.key,
-  password: JotApp.user.credentials.password,
-  dbName: 'jot-' + JotApp.user._id
-});
+if (JotApp.user) {
+  require('../../db/db')({
+    protocol: JotApp.server.protocol,
+    domain: JotApp.server.domain,
+    username: JotApp.user.credentials.key,
+    password: JotApp.user.credentials.password,
+    dbName: 'jot-' + JotApp.user._id
+  });
+} else {
+  require('../../db/db')({
+    dbName: 'jot-local'
+  });
+}
 
 var attachFastClick = require('fastclick');
 

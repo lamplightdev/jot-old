@@ -23,7 +23,10 @@ class GroupsServerRoutes {
     };
 
     this.routes.registerRoute('all', (req, res, next) => {
+
       return Promise.resolve().then(() => {
+        if (!req.user) return res.redirect('/');
+
         return {
           params: {},
 
@@ -44,6 +47,8 @@ class GroupsServerRoutes {
 
     this.routes.registerRoute('view', (req, res, next) => {
       return Promise.resolve().then(() => {
+        if (!req.user) return res.redirect('/');
+
         return {
           params: {
             id: req.params.id,

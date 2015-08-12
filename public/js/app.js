@@ -1,12 +1,18 @@
 'use strict';
 
-require('../../db/db')({
-  protocol: JotApp.server.protocol,
-  domain: JotApp.server.domain,
-  username: JotApp.user.credentials.key,
-  password: JotApp.user.credentials.password,
-  dbName: 'jot-' + JotApp.user._id
-});
+if (JotApp.user) {
+  require('../../db/db')({
+    protocol: JotApp.server.protocol,
+    domain: JotApp.server.domain,
+    username: JotApp.user.credentials.key,
+    password: JotApp.user.credentials.password,
+    dbName: 'jot-' + JotApp.user._id
+  });
+} else {
+  require('../../db/db')({
+    dbName: 'jot-local'
+  });
+}
 
 const attachFastClick = require('fastclick');
 
