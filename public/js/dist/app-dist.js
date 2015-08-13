@@ -666,7 +666,7 @@ var Model = (function () {
             return {
               v: _this._db.allDocs({
                 startkey: slug + '￿',
-                endKey: slug,
+                endkey: slug,
                 descending: true,
                 limit: 1
               }).then(function (result) {

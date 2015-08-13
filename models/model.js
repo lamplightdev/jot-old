@@ -92,7 +92,7 @@ class Model {
 
         return this._db.allDocs({
           startkey: slug + '\uffff',
-          endKey: slug,
+          endkey: slug,
           descending: true,
           limit: 1
         }).then(result => {
