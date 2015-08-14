@@ -26,14 +26,24 @@ class HomeRouter {
         return {
           params: {},
 
-          resolve: (events) => {
+          resolve: stats => {
             res.render('app', Object.assign(routeParams, {
               name: 'Jot',
-              content: 'home'
+              content: 'home',
+              segment: stats.segment
             }));
           },
 
-          reject: next
+          reject: err => {
+            if (!req.user) {
+              res.render('app', Object.assign(routeParams, {
+                name: 'Jot',
+                content: 'home'
+              }));
+            } else {
+              next(err);
+            }
+          }
         };
       });
     });

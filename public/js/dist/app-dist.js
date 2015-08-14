@@ -401,6 +401,11 @@ var Jot = (function (_Model) {
   }
 
   _createClass(Jot, [{
+    key: 'isDone',
+    value: function isDone() {
+      return this.fields.done;
+    }
+  }, {
     key: 'loadGroup',
     value: function loadGroup() {
       var _this = this;
@@ -437,6 +442,21 @@ var Jot = (function (_Model) {
     key: 'getPriorities',
     value: function getPriorities() {
       return ['2', '1', '0'];
+    }
+  }, {
+    key: 'getPercentageDone',
+    value: function getPercentageDone() {
+      return this.loadAll().then(function (jots) {
+        var numDone = jots.reduce(function (prevVal, jot) {
+          if (jot.isDone()) {
+            return prevVal + 1;
+          } else {
+            return prevVal;
+          }
+        }, 0);
+
+        return parseInt(numDone / jots.length * 100, 10);
+      });
     }
   }, {
     key: 'load',
@@ -643,11 +663,6 @@ var Model = (function () {
     key: 'isNew',
     value: function isNew() {
       return !this.id;
-    }
-  }, {
-    key: 'isDone',
-    value: function isDone() {
-      return this.fields.done;
     }
   }, {
     key: 'getSlug',
@@ -6716,8 +6731,10 @@ var HomeRouter = (function () {
           return {
             params: {},
 
-            resolve: function resolve(events) {
-              _this.homeView.render(false, {});
+            resolve: function resolve(stats) {
+              _this.homeView.render(false, {
+                segment: stats.segment
+              });
 
               PubSub.publish('routeChanged', {
                 name: 'Jot',
@@ -6933,6 +6950,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
 
 var Routes = require('./routes');
 
+var Jot = require('../models/jot');
+
 var HomeRoutes = (function (_Routes) {
   _inherits(HomeRoutes, _Routes);
 
@@ -6947,7 +6966,39 @@ var HomeRoutes = (function (_Routes) {
       _path: '/',
       _method: ['get'],
       _action: function _action() {
-        return Promise.resolve();
+        return Jot.getPercentageDone().then(function (done) {
+          var segment = {
+            one: 90,
+            two: 90,
+            three: 90,
+            four: 90,
+            done: done
+          };
+
+          if (done <= 25) {
+            segment.one = 90 - done / 25 * 90;
+          } else {
+            segment.one = 0;
+
+            if (done <= 50) {
+              segment.two = 90 - (done - 25) / 25 * 90;
+            } else {
+              segment.two = 0;
+
+              if (done <= 75) {
+                segment.three = 90 - (done - 50) / 25 * 90;
+              } else {
+                segment.three = 0;
+
+                segment.four = 90 - (done - 75) / 25 * 90;
+              }
+            }
+          }
+
+          return {
+            segment: segment
+          };
+        });
       }
     };
   }
@@ -6957,7 +7008,7 @@ var HomeRoutes = (function (_Routes) {
 
 module.exports = HomeRoutes;
 
-},{"./routes":23}],22:[function(require,module,exports){
+},{"../models/jot":3,"./routes":23}],22:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };

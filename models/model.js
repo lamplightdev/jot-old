@@ -77,10 +77,6 @@ class Model {
     return !this.id;
   }
 
-  isDone() {
-    return this.fields.done;
-  }
-
   getSlug() {
     return Promise.resolve().then(() => {
       if (!this.isNew()) {

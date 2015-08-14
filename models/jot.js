@@ -37,6 +37,10 @@ class Jot extends Model {
     }
   }
 
+  isDone() {
+    return this.fields.done;
+  }
+
   loadGroup() {
     return Promise.resolve().then(() => {
       const Group = require('./group');
@@ -45,6 +49,20 @@ class Jot extends Model {
         this._group = group;
         return this;
       });
+    });
+  }
+
+  static getPercentageDone() {
+    return this.loadAll().then(jots => {
+      let numDone = jots.reduce((prevVal, jot) => {
+        if (jot.isDone()) {
+          return prevVal + 1;
+        } else {
+          return prevVal;
+        }
+      }, 0);
+
+      return parseInt((numDone / jots.length) * 100, 10);
     });
   }
 

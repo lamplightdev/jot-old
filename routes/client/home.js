@@ -15,8 +15,10 @@ class HomeRouter {
         return {
           params: {},
 
-          resolve: (events) => {
-            this.homeView.render(false, {});
+          resolve: stats => {
+            this.homeView.render(false, {
+              segment: stats.segment
+            });
 
             PubSub.publish('routeChanged', {
               name: 'Jot',
