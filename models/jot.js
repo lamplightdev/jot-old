@@ -53,7 +53,7 @@ class Jot extends Model {
   }
 
   static getPercentageDone() {
-    return this.loadAll().then(jots => {
+    return this.loadAll(false).then(jots => {
       let numDone = jots.reduce((prevVal, jot) => {
         if (jot.isDone()) {
           return prevVal + 1;
