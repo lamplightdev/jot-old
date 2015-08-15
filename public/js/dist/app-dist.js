@@ -446,7 +446,7 @@ var Jot = (function (_Model) {
   }, {
     key: 'getPercentageDone',
     value: function getPercentageDone() {
-      return this.loadAll().then(function (jots) {
+      return this.loadAll(false).then(function (jots) {
         var numDone = jots.reduce(function (prevVal, jot) {
           if (jot.isDone()) {
             return prevVal + 1;
@@ -455,7 +455,17 @@ var Jot = (function (_Model) {
           }
         }, 0);
 
-        return parseInt(numDone / jots.length * 100, 10);
+        return {
+          percent: parseInt(numDone / jots.length * 100, 10)
+        };
+      }).then(function (stats) {
+        var Group = require('./group');
+
+        return Group.loadAll(false).then(function (groups) {
+          stats.numGroups = groups.length;
+
+          return stats;
+        });
       });
     }
   }, {
@@ -606,8 +616,8 @@ var Jot = (function (_Model) {
           return group.id;
         });
 
+        //console.log('l4g');
         return db.query('index/group', {
-          descending: true,
           keys: groupIds,
           include_docs: true
         }).then(function (result) {
@@ -6601,11 +6611,6 @@ var GroupClientRoutes = (function () {
             params: {},
 
             resolve: function resolve(groups) {
-              _this.groupsView.render(false, {
-                colours: Group.getColours(),
-                groups: groups
-              });
-
               PubSub.publish('routeChanged', {
                 name: 'Jot',
                 order: [{
@@ -6625,6 +6630,13 @@ var GroupClientRoutes = (function () {
                   link: '/group',
                   current: true
                 }]
+              });
+
+              Group.loadAll().then(function (groups) {
+                _this.groupsView.render(false, {
+                  colours: Group.getColours(),
+                  groups: groups
+                });
               });
             },
 
@@ -6733,7 +6745,7 @@ var HomeRouter = (function () {
 
             resolve: function resolve(stats) {
               _this.homeView.render(false, {
-                segment: stats.segment
+                stats: stats
               });
 
               PubSub.publish('routeChanged', {
@@ -6875,7 +6887,7 @@ var GroupRoutes = (function (_Routes) {
       _path: '/',
       _method: ['get'],
       _action: function _action() {
-        return Group.loadAll();
+        return Promise.resolve();
       }
     };
 
@@ -6966,38 +6978,37 @@ var HomeRoutes = (function (_Routes) {
       _path: '/',
       _method: ['get'],
       _action: function _action() {
-        return Jot.getPercentageDone().then(function (done) {
-          var segment = {
+        return Jot.getPercentageDone().then(function (stats) {
+          var segments = {
             one: 90,
             two: 90,
             three: 90,
-            four: 90,
-            done: done
+            four: 90
           };
 
-          if (done <= 25) {
-            segment.one = 90 - done / 25 * 90;
+          if (stats.percent <= 25) {
+            segments.one = 90 - stats.percent / 25 * 90;
           } else {
-            segment.one = 0;
+            segments.one = 0;
 
-            if (done <= 50) {
-              segment.two = 90 - (done - 25) / 25 * 90;
+            if (stats.percent <= 50) {
+              segments.two = 90 - (stats.percent - 25) / 25 * 90;
             } else {
-              segment.two = 0;
+              segments.two = 0;
 
-              if (done <= 75) {
-                segment.three = 90 - (done - 50) / 25 * 90;
+              if (stats.percent <= 75) {
+                segments.three = 90 - (stats.percent - 50) / 25 * 90;
               } else {
-                segment.three = 0;
+                segments.three = 0;
 
-                segment.four = 90 - (done - 75) / 25 * 90;
+                segments.four = 90 - (stats.percent - 75) / 25 * 90;
               }
             }
           }
 
-          return {
-            segment: segment
-          };
+          stats.segments = segments;
+
+          return stats;
         });
       }
     };
@@ -7486,7 +7497,7 @@ var ViewGroup = (function (_View) {
       }));
 
       this._subscriptions.push(PubSub.subscribe('orderChanged', function (topic, args) {
-        console.log('orderChanged group', args);
+        //console.log('orderChanged group', args);
 
         Group.load(params.group.id, true, args.type, args.direction).then(function (group) {
           _this.renderJotList(group);
@@ -7871,7 +7882,7 @@ var ViewGroups = (function (_View) {
       }));
 
       this._subscriptions.push(PubSub.subscribe('orderChanged', function (topic, args) {
-        console.log('orderChanged', args);
+        //console.log('orderChanged', args);
 
         Group.loadAll(true, args.type, args.direction).then(function (groups) {
           _this.renderPartial('group-list', {
@@ -8234,7 +8245,7 @@ var ViewJots = (function (_View) {
       _get(Object.getPrototypeOf(ViewJots.prototype), 'render', this).call(this, preRendered, params);
 
       this._subscriptions.push(PubSub.subscribe('update', function (topic, args) {
-        console.log(args);
+        //console.log(args);
 
         if (args.changes && args.changes.length) {
           Jot.loadAll().then(function (jots) {
@@ -8246,7 +8257,7 @@ var ViewJots = (function (_View) {
       }));
 
       this._subscriptions.push(PubSub.subscribe('orderChanged', function (topic, args) {
-        console.log('orderChanged jots', args);
+        //console.log('orderChanged jots', args);
 
         Jot.loadAll(true, args.type, args.direction).then(function (jots) {
           _this.render(false, {
@@ -8406,6 +8417,7 @@ var TitleBarView = (function (_View) {
       _get(Object.getPrototypeOf(TitleBarView.prototype), 'render', this).call(this, preRendered, params);
 
       this._subscriptions.push(PubSub.subscribe('routeChanged', function (topic, args) {
+        //console.log('test');
         _this.renderPartial('titlebar-title', args);
         _this.renderPartial('titlebar-tabs', args);
 
@@ -8578,7 +8590,7 @@ var View = (function () {
   }, {
     key: 'cleanup',
     value: function cleanup() {
-      console.log('view cleaup', this);
+      //console.log('view cleaup', this);
 
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;

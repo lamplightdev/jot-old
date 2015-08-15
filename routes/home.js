@@ -12,38 +12,37 @@ class HomeRoutes extends Routes {
       _path: '/',
       _method: ['get'],
       _action: () => {
-        return Jot.getPercentageDone().then(done => {
-          const segment = {
+        return Jot.getPercentageDone().then(stats => {
+          const segments = {
             one: 90,
             two: 90,
             three: 90,
-            four: 90,
-            done
+            four: 90
           };
 
-          if (done <= 25) {
-            segment.one = 90 - (done / 25) * 90;
+          if (stats.percent <= 25) {
+            segments.one = 90 - (stats.percent / 25) * 90;
           } else {
-            segment.one = 0;
+            segments.one = 0;
 
-            if (done <= 50) {
-              segment.two = 90 - ((done - 25) / 25) * 90;
+            if (stats.percent <= 50) {
+              segments.two = 90 - ((stats.percent - 25) / 25) * 90;
             } else {
-              segment.two = 0;
+              segments.two = 0;
 
-              if (done <= 75) {
-                segment.three = 90 - ((done - 50) / 25) * 90;
+              if (stats.percent <= 75) {
+                segments.three = 90 - ((stats.percent - 50) / 25) * 90;
               } else {
-                segment.three = 0;
+                segments.three = 0;
 
-                segment.four = 90 - ((done - 75) / 25) * 90;
+                segments.four = 90 - ((stats.percent - 75) / 25) * 90;
               }
             }
           }
 
-          return {
-            segment
-          };
+          stats.segments = segments;
+
+          return stats;
         });
       }
     };

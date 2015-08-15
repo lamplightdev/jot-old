@@ -11,7 +11,7 @@ class ViewJots extends View {
     super.render(preRendered, params);
 
     this._subscriptions.push(PubSub.subscribe('update', (topic, args) => {
-      console.log(args);
+      //console.log(args);
 
       if (args.changes && args.changes.length) {
         Jot.loadAll().then(jots => {
@@ -23,7 +23,7 @@ class ViewJots extends View {
     }));
 
     this._subscriptions.push(PubSub.subscribe('orderChanged', (topic, args) => {
-      console.log('orderChanged jots', args);
+      //console.log('orderChanged jots', args);
 
       Jot.loadAll(true, args.type, args.direction).then(jots => {
         this.render(false, {

@@ -30,7 +30,7 @@ class HomeRouter {
             res.render('app', Object.assign(routeParams, {
               name: 'Jot',
               content: 'home',
-              segment: stats.segment
+              stats
             }));
           },
 

@@ -1,12 +1,13 @@
-<h3>{{segment.done}}</h3>
 <div class='partial-progress'>
   <div class="progress">
       <div class="back">
-        <div class="seg seg-1" style="transform: skew(0deg, {{segment.one}}deg)"></div>
-        <div class="seg seg-2" style="transform: skew(-{{segment.two}}deg, 0deg)"></div>
-        <div class="seg seg-3" style="transform: skew(0deg, {{segment.three}}deg)"></div>
-        <div class="seg seg-4" style="transform: skew(-{{segment.four}}deg, 0deg)"></div>
+        <div class="seg seg-1" style="transform: skew(0deg, {{stats.segments.one}}deg)"></div>
+        <div class="seg seg-2" style="transform: skew(-{{stats.segments.two}}deg, 0deg)"></div>
+        <div class="seg seg-3" style="transform: skew(0deg, {{stats.segments.three}}deg)"></div>
+        <div class="seg seg-4" style="transform: skew(-{{stats.segments.four}}deg, 0deg)"></div>
       </div>
-      <div class="back-centre"></div>
+      <div class="back-centre">
+        <p>{{stats.percent}}% done in<br>{{stats.numGroups}} list{{#ifEqual stats.numGroups 1}}{{else}}s{{/ifEqual}}</p>
+      </div>
   </div>
 </div>

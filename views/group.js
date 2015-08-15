@@ -34,7 +34,7 @@ class ViewGroup extends View {
     }));
 
     this._subscriptions.push(PubSub.subscribe('orderChanged', (topic, args) => {
-      console.log('orderChanged group', args);
+      //console.log('orderChanged group', args);
 
       Group.load(params.group.id, true, args.type, args.direction).then(group => {
         this.renderJotList(group);

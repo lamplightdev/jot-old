@@ -20,11 +20,6 @@ class GroupClientRoutes {
           params: {},
 
           resolve: (groups) => {
-            this.groupsView.render(false, {
-              colours: Group.getColours(),
-              groups
-            });
-
             PubSub.publish('routeChanged', {
               name: 'Jot',
               order: [{
@@ -44,6 +39,13 @@ class GroupClientRoutes {
                 link: '/group',
                 current: true
               }]
+            });
+
+            Group.loadAll().then(groups => {
+              this.groupsView.render(false, {
+                colours: Group.getColours(),
+                groups
+              });
             });
           },
 

@@ -54,7 +54,7 @@ class View {
   }
 
   cleanup() {
-    console.log('view cleaup', this);
+    //console.log('view cleaup', this);
 
     for (let sub of this._subscriptions) {
       PubSub.unsubscribe(sub);

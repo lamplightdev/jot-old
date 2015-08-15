@@ -5,6 +5,8 @@
     height: 200px;
     margin: 0 auto;
 
+    color: $clr-blue-500;
+
     .back {
         position: absolute;
         background-color: $clr-grey-200;
@@ -25,6 +27,19 @@
         top: 10%;
         left: 10%;
         border-radius: 50%;
+
+        overflow: hidden;
+
+        display: flex;
+        align-items: center;
+
+        p {
+            flex-grow: 1;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 100;
+            line-height: 1;
+        }
     }
 
     .seg {

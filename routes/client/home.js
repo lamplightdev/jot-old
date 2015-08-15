@@ -17,7 +17,7 @@ class HomeRouter {
 
           resolve: stats => {
             this.homeView.render(false, {
-              segment: stats.segment
+              stats
             });
 
             PubSub.publish('routeChanged', {

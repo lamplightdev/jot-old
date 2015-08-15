@@ -62,7 +62,19 @@ class Jot extends Model {
         }
       }, 0);
 
-      return parseInt((numDone / jots.length) * 100, 10);
+      return {
+        percent: parseInt((numDone / jots.length) * 100, 10)
+      };
+    })
+
+    .then(stats => {
+      const Group = require('./group');
+
+      return Group.loadAll(false).then(groups => {
+        stats.numGroups = groups.length;
+
+        return stats;
+      });
     });
   }
 
@@ -185,8 +197,8 @@ class Jot extends Model {
 
       const groupIds = groups.map(group => group.id);
 
+      //console.log('l4g');
       return db.query('index/group', {
-        descending: true,
         keys: groupIds,
         include_docs: true
       }).then(result => {
