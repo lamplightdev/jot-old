@@ -31,15 +31,13 @@ class GroupsServerRoutes {
           params: {},
 
           resolve: (groups) => {
-            Group.loadAll().then(groups => {
-              res.render('app', Object.assign(routeParams, {
-                name: 'Jot',
-                content: 'groups',
-                colours: Group.getColours(),
-                groups,
-                editID: req.query.edit
-              }));
-            });
+            res.render('app', Object.assign(routeParams, {
+              name: 'Jot',
+              content: 'groups',
+              colours: Group.getColours(),
+              groups,
+              editID: req.query.edit
+            }));
           },
 
           reject: next

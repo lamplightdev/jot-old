@@ -108,7 +108,8 @@ $colours: (
   teal: $list-teal,
   yellow: $list-yellow,
   orange: $list-orange,
-  brown: $list-brown
+  brown: $list-brown,
+  grey: $list-grey
 );
 
 @each $colour, $list in $colours {

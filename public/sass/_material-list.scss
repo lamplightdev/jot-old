@@ -1,5 +1,9 @@
 .md-list {
   padding: 0.6rem 0;
+
+  &.loading {
+    opacity: 0.5;
+  }
 }
 
 .md-list-item {

@@ -12,7 +12,7 @@ class GroupRoutes extends Routes {
       _path: '/',
       _method: ['get'],
       _action: () => {
-        return Promise.resolve();
+        return Group.loadAll();
       }
     };
 
@@ -21,6 +21,10 @@ class GroupRoutes extends Routes {
       _method: ['get'],
       _action: params => {
         return Group.load(params.id).then(group => {
+          if (params.postLoadGroup) {
+            params.postLoadGroup(group);
+          }
+
           group._jots = group.getJots(params.done);
           return group;
         });

@@ -1,5 +1,6 @@
 const JotRoutes = require('../jot');
 const JotsView = require('../../views/jots');
+const LoadingView = require('../../views/loading');
 const PubSub = require('../../utility/pubsub');
 
 class JotClientRoutes {
@@ -7,6 +8,7 @@ class JotClientRoutes {
     this.routes = new JotRoutes(router, prefix);
 
     this.jotsView = new JotsView(viewContainer);
+    this.loadingView = new LoadingView(viewContainer);
   }
 
   registerRoutes() {
@@ -16,11 +18,7 @@ class JotClientRoutes {
         return {
           params: {},
 
-          resolve: (jots) => {
-            this.jotsView.render(false, {
-              jots
-            });
-
+          preAction: () => {
             PubSub.publish('routeChanged', {
               name: 'Jot',
               order: [{
@@ -50,6 +48,16 @@ class JotClientRoutes {
                 title: 'Lists',
                 link: '/group'
               }]
+            });
+
+            this.loadingView.render(false, {
+              jots: [0, 0, 0, 0, 0]
+            });
+          },
+
+          resolve: (jots) => {
+            this.jotsView.render(false, {
+              jots
             });
           },
 

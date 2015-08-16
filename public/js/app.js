@@ -44,7 +44,8 @@ const containerMain = new ViewContainer('view', {
   home: JotApp.templates.home,
   group: JotApp.templates.group,
   groups: JotApp.templates.groups,
-  jots: JotApp.templates.jots
+  jots: JotApp.templates.jots,
+  loading: JotApp.templates.loading
 }, {
   'group-list': JotApp.templates['group-list'],
   'jot-list': JotApp.templates['jot-list']

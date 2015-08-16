@@ -6410,7 +6410,8 @@ var containerMain = new ViewContainer('view', {
   home: JotApp.templates.home,
   group: JotApp.templates.group,
   groups: JotApp.templates.groups,
-  jots: JotApp.templates.jots
+  jots: JotApp.templates.jots,
+  loading: JotApp.templates.loading
 }, {
   'group-list': JotApp.templates['group-list'],
   'jot-list': JotApp.templates['jot-list']
@@ -6439,7 +6440,7 @@ var titleBar = new TitleBarView(containerHeader);
 titleBar.render(true);
 router.activate();
 
-},{"../../db/db":1,"../../routers/path":14,"../../routes/client/auth":16,"../../routes/client/group":17,"../../routes/client/home":18,"../../routes/client/jot":19,"../../templates/helpers":24,"../../views/titlebar":33,"../../views/view-container":34,"fastclick":8,"handlebars/dist/handlebars.runtime":9}],14:[function(require,module,exports){
+},{"../../db/db":1,"../../routers/path":14,"../../routes/client/auth":16,"../../routes/client/group":17,"../../routes/client/home":18,"../../routes/client/jot":19,"../../templates/helpers":24,"../../views/titlebar":34,"../../views/view-container":35,"fastclick":8,"handlebars/dist/handlebars.runtime":9}],14:[function(require,module,exports){
 'use strict';
 
 var page = require('page');
@@ -6610,7 +6611,7 @@ var GroupClientRoutes = (function () {
           return {
             params: {},
 
-            resolve: function resolve(groups) {
+            preAction: function preAction() {
               PubSub.publish('routeChanged', {
                 name: 'Jot',
                 order: [{
@@ -6631,12 +6632,12 @@ var GroupClientRoutes = (function () {
                   current: true
                 }]
               });
+            },
 
-              Group.loadAll().then(function (groups) {
-                _this.groupsView.render(false, {
-                  colours: Group.getColours(),
-                  groups: groups
-                });
+            resolve: function resolve(groups) {
+              _this.groupsView.render(false, {
+                colours: Group.getColours(),
+                groups: groups
               });
             },
 
@@ -6652,7 +6653,37 @@ var GroupClientRoutes = (function () {
           return {
             params: {
               id: ctx.params.id,
-              done: ctx.params.status === 'done'
+              done: ctx.params.status === 'done',
+              postLoadGroup: function postLoadGroup(group) {
+                PubSub.publish('routeChanged', {
+                  name: group.fields.name,
+                  order: [{
+                    name: 'Alpha',
+                    type: 'alpha',
+                    direction: 'asc',
+                    current: false
+                  }, {
+                    name: 'Date',
+                    type: 'date',
+                    direction: 'desc',
+                    current: false
+                  }, {
+                    name: 'Priority',
+                    type: 'priority',
+                    direction: 'asc',
+                    current: false
+                  }],
+                  tabs: [{
+                    link: '/group/' + group.id,
+                    title: 'undone',
+                    current: ctx.params.status !== 'done'
+                  }, {
+                    link: '/group/' + group.id + '/done',
+                    title: 'done',
+                    current: ctx.params.status === 'done'
+                  }]
+                });
+              }
             },
 
             resolve: function resolve(group) {
@@ -6667,35 +6698,6 @@ var GroupClientRoutes = (function () {
                 group: group,
                 editID: queryObject.edit,
                 priorities: Jot.getPriorities()
-              });
-
-              PubSub.publish('routeChanged', {
-                name: group.fields.name,
-                order: [{
-                  name: 'Alpha',
-                  type: 'alpha',
-                  direction: 'asc',
-                  current: false
-                }, {
-                  name: 'Date',
-                  type: 'date',
-                  direction: 'desc',
-                  current: false
-                }, {
-                  name: 'Priority',
-                  type: 'priority',
-                  direction: 'asc',
-                  current: false
-                }],
-                tabs: [{
-                  link: '/group/' + group.id,
-                  title: 'undone',
-                  current: ctx.params.status !== 'done'
-                }, {
-                  link: '/group/' + group.id + '/done',
-                  title: 'done',
-                  current: ctx.params.status === 'done'
-                }]
               });
             },
 
@@ -6743,11 +6745,7 @@ var HomeRouter = (function () {
           return {
             params: {},
 
-            resolve: function resolve(stats) {
-              _this.homeView.render(false, {
-                stats: stats
-              });
-
+            preAction: function preAction() {
               PubSub.publish('routeChanged', {
                 name: 'Jot',
                 order: [],
@@ -6762,6 +6760,12 @@ var HomeRouter = (function () {
                   title: 'Lists',
                   link: '/group'
                 }]
+              });
+            },
+
+            resolve: function resolve(stats) {
+              _this.homeView.render(false, {
+                stats: stats
               });
             },
 
@@ -6788,6 +6792,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var JotRoutes = require('../jot');
 var JotsView = require('../../views/jots');
+var LoadingView = require('../../views/loading');
 var PubSub = require('../../utility/pubsub');
 
 var JotClientRoutes = (function () {
@@ -6797,6 +6802,7 @@ var JotClientRoutes = (function () {
     this.routes = new JotRoutes(router, prefix);
 
     this.jotsView = new JotsView(viewContainer);
+    this.loadingView = new LoadingView(viewContainer);
   }
 
   _createClass(JotClientRoutes, [{
@@ -6809,11 +6815,7 @@ var JotClientRoutes = (function () {
           return {
             params: {},
 
-            resolve: function resolve(jots) {
-              _this.jotsView.render(false, {
-                jots: jots
-              });
-
+            preAction: function preAction() {
               PubSub.publish('routeChanged', {
                 name: 'Jot',
                 order: [{
@@ -6844,6 +6846,16 @@ var JotClientRoutes = (function () {
                   link: '/group'
                 }]
               });
+
+              _this.loadingView.render(false, {
+                jots: [0, 0, 0, 0, 0]
+              });
+            },
+
+            resolve: function resolve(jots) {
+              _this.jotsView.render(false, {
+                jots: jots
+              });
             },
 
             reject: function reject(err) {
@@ -6860,7 +6872,7 @@ var JotClientRoutes = (function () {
 
 module.exports = JotClientRoutes;
 
-},{"../../utility/pubsub":26,"../../views/jots":31,"../jot":22}],20:[function(require,module,exports){
+},{"../../utility/pubsub":26,"../../views/jots":31,"../../views/loading":33,"../jot":22}],20:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -6887,7 +6899,7 @@ var GroupRoutes = (function (_Routes) {
       _path: '/',
       _method: ['get'],
       _action: function _action() {
-        return Promise.resolve();
+        return Group.loadAll();
       }
     };
 
@@ -6896,6 +6908,10 @@ var GroupRoutes = (function (_Routes) {
       _method: ['get'],
       _action: function _action(params) {
         return Group.load(params.id).then(function (group) {
+          if (params.postLoadGroup) {
+            params.postLoadGroup(group);
+          }
+
           group._jots = group.getJots(params.done);
           return group;
         });
@@ -7134,7 +7150,19 @@ var Routes = (function () {
       route._method.forEach(function (method) {
         _this._router[method](_this._prefix + route._path, function () {
           config.apply(undefined, arguments).then(function (result) {
-            return route._action(result.params).then(result.resolve)['catch'](result.reject);
+            return Promise.resolve().then(function () {
+              if (result.preAction) {
+                result.preAction();
+              }
+
+              return route._action(result.params).then(result.resolve);
+            })['catch'](result.reject);
+
+            /*
+            return route._action(result.params)
+              .then(result.resolve)
+              .catch(result.reject);
+            */
           });
         });
       });
@@ -7443,7 +7471,7 @@ var ColourSelector = (function (_Widget) {
 
 module.exports = ColourSelector;
 
-},{"./widget":36}],28:[function(require,module,exports){
+},{"./widget":37}],28:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7834,7 +7862,7 @@ var ViewGroup = (function (_View) {
 
 module.exports = ViewGroup;
 
-},{"../models/group":2,"../models/jot":3,"../utility/pubsub":26,"./colour-selector":27,"./view":35}],29:[function(require,module,exports){
+},{"../models/group":2,"../models/jot":3,"../utility/pubsub":26,"./colour-selector":27,"./view":36}],29:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8186,7 +8214,7 @@ var ViewGroups = (function (_View) {
 
 module.exports = ViewGroups;
 
-},{"../models/group":2,"../utility/pubsub":26,"./colour-selector":27,"./view":35}],30:[function(require,module,exports){
+},{"../models/group":2,"../utility/pubsub":26,"./colour-selector":27,"./view":36}],30:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -8211,7 +8239,7 @@ var ViewHome = (function (_View) {
 
 module.exports = ViewHome;
 
-},{"./view":35}],31:[function(require,module,exports){
+},{"./view":36}],31:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8273,7 +8301,7 @@ var ViewJots = (function (_View) {
 
 module.exports = ViewJots;
 
-},{"../models/jot":3,"../utility/pubsub":26,"./view":35}],32:[function(require,module,exports){
+},{"../models/jot":3,"../utility/pubsub":26,"./view":36}],32:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8382,7 +8410,32 @@ var ListOrder = (function (_Widget) {
 
 module.exports = ListOrder;
 
-},{"../utility/pubsub":26,"./widget":36}],33:[function(require,module,exports){
+},{"../utility/pubsub":26,"./widget":37}],33:[function(require,module,exports){
+'use strict';
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var View = require('./view');
+
+var ViewLoading = (function (_View) {
+  _inherits(ViewLoading, _View);
+
+  function ViewLoading() {
+    _classCallCheck(this, ViewLoading);
+
+    _get(Object.getPrototypeOf(ViewLoading.prototype), 'constructor', this).apply(this, arguments);
+  }
+
+  return ViewLoading;
+})(View);
+
+module.exports = ViewLoading;
+
+},{"./view":36}],34:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8488,7 +8541,7 @@ var TitleBarView = (function (_View) {
 
 module.exports = TitleBarView;
 
-},{"../utility/pubsub":26,"./list-order":32,"./view":35}],34:[function(require,module,exports){
+},{"../utility/pubsub":26,"./list-order":32,"./view":36}],35:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8524,7 +8577,7 @@ var ViewContainer = (function () {
 
 module.exports = ViewContainer;
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8660,7 +8713,7 @@ var View = (function () {
 
 module.exports = View;
 
-},{"../utility/pubsub":26,"handlebars/dist/handlebars.runtime":9}],36:[function(require,module,exports){
+},{"../utility/pubsub":26,"handlebars/dist/handlebars.runtime":9}],37:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();

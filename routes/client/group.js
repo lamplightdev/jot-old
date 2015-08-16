@@ -19,7 +19,7 @@ class GroupClientRoutes {
         return {
           params: {},
 
-          resolve: (groups) => {
+          preAction: () => {
             PubSub.publish('routeChanged', {
               name: 'Jot',
               order: [{
@@ -40,12 +40,12 @@ class GroupClientRoutes {
                 current: true
               }]
             });
+          },
 
-            Group.loadAll().then(groups => {
-              this.groupsView.render(false, {
-                colours: Group.getColours(),
-                groups
-              });
+          resolve: (groups) => {
+            this.groupsView.render(false, {
+              colours: Group.getColours(),
+              groups
             });
           },
 
@@ -61,7 +61,37 @@ class GroupClientRoutes {
         return {
           params: {
             id: ctx.params.id,
-            done: ctx.params.status === 'done'
+            done: ctx.params.status === 'done',
+            postLoadGroup: (group) => {
+              PubSub.publish('routeChanged', {
+                name: group.fields.name,
+                order: [{
+                  name: 'Alpha',
+                  type: 'alpha',
+                  direction: 'asc',
+                  current: false
+                }, {
+                  name: 'Date',
+                  type: 'date',
+                  direction: 'desc',
+                  current: false
+                }, {
+                  name: 'Priority',
+                  type: 'priority',
+                  direction: 'asc',
+                  current: false
+                }],
+                tabs: [{
+                  link: '/group/' + group.id,
+                  title: 'undone',
+                  current: ctx.params.status !== 'done'
+                }, {
+                  link: '/group/' + group.id + '/done',
+                  title: 'done',
+                  current: ctx.params.status === 'done'
+                }]
+              });
+            }
           },
 
           resolve: (group) => {
@@ -76,35 +106,6 @@ class GroupClientRoutes {
               group,
               editID: queryObject.edit,
               priorities: Jot.getPriorities()
-            });
-
-            PubSub.publish('routeChanged', {
-              name: group.fields.name,
-              order: [{
-                name: 'Alpha',
-                type: 'alpha',
-                direction: 'asc',
-                current: false
-              }, {
-                name: 'Date',
-                type: 'date',
-                direction: 'desc',
-                current: false
-              }, {
-                name: 'Priority',
-                type: 'priority',
-                direction: 'asc',
-                current: false
-              }],
-              tabs: [{
-                link: '/group/' + group.id,
-                title: 'undone',
-                current: ctx.params.status !== 'done'
-              }, {
-                link: '/group/' + group.id + '/done',
-                title: 'done',
-                current: ctx.params.status === 'done'
-              }]
             });
           },
 

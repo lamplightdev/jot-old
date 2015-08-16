@@ -15,11 +15,7 @@ class HomeRouter {
         return {
           params: {},
 
-          resolve: stats => {
-            this.homeView.render(false, {
-              stats
-            });
-
+          preAction: () => {
             PubSub.publish('routeChanged', {
               name: 'Jot',
               order: [],
@@ -34,6 +30,12 @@ class HomeRouter {
                 title: 'Lists',
                 link: '/group'
               }]
+            });
+          },
+
+          resolve: stats => {
+            this.homeView.render(false, {
+              stats
             });
           },
 

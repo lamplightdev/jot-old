@@ -12,9 +12,20 @@ class Routes {
     route._method.forEach(method => {
       this._router[method](this._prefix + route._path, (...params) => {
         config(...params).then(result => {
+          return Promise.resolve().then(() => {
+            if (result.preAction) {
+              result.preAction();
+            }
+
+            return route._action(result.params)
+            .then(result.resolve);
+          }).catch(result.reject);
+
+          /*
           return route._action(result.params)
             .then(result.resolve)
             .catch(result.reject);
+          */
         });
       });
     });
