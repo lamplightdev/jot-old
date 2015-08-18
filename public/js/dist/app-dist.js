@@ -6411,7 +6411,8 @@ var containerMain = new ViewContainer('view', {
   group: JotApp.templates.group,
   groups: JotApp.templates.groups,
   jots: JotApp.templates.jots,
-  loading: JotApp.templates.loading
+  loading: JotApp.templates.loading,
+  loadinggroups: JotApp.templates.loadinggroups
 }, {
   'group-list': JotApp.templates['group-list'],
   'jot-list': JotApp.templates['jot-list']
@@ -6440,7 +6441,7 @@ var titleBar = new TitleBarView(containerHeader);
 titleBar.render(true);
 router.activate();
 
-},{"../../db/db":1,"../../routers/path":14,"../../routes/client/auth":16,"../../routes/client/group":17,"../../routes/client/home":18,"../../routes/client/jot":19,"../../templates/helpers":24,"../../views/titlebar":34,"../../views/view-container":35,"fastclick":8,"handlebars/dist/handlebars.runtime":9}],14:[function(require,module,exports){
+},{"../../db/db":1,"../../routers/path":14,"../../routes/client/auth":16,"../../routes/client/group":17,"../../routes/client/home":18,"../../routes/client/jot":19,"../../templates/helpers":24,"../../views/titlebar":35,"../../views/view-container":36,"fastclick":8,"handlebars/dist/handlebars.runtime":9}],14:[function(require,module,exports){
 'use strict';
 
 var page = require('page');
@@ -6589,6 +6590,7 @@ var Group = require('../../models/group');
 var GroupRoutes = require('../group');
 var GroupsView = require('../../views/groups');
 var GroupView = require('../../views/group');
+var LoadingGroupsView = require('../../views/loadinggroups');
 var PubSub = require('../../utility/pubsub');
 
 var GroupClientRoutes = (function () {
@@ -6599,6 +6601,7 @@ var GroupClientRoutes = (function () {
 
     this.groupsView = new GroupsView(viewContainer);
     this.groupView = new GroupView(viewContainer);
+    this.loadingGroupsView = new LoadingGroupsView(viewContainer);
   }
 
   _createClass(GroupClientRoutes, [{
@@ -6631,6 +6634,10 @@ var GroupClientRoutes = (function () {
                   link: '/group',
                   current: true
                 }]
+              });
+
+              _this.loadingGroupsView.render(false, {
+                items: [0, 0, 0, 0, 0, 0, 0]
               });
             },
 
@@ -6715,7 +6722,7 @@ var GroupClientRoutes = (function () {
 
 module.exports = GroupClientRoutes;
 
-},{"../../models/group":2,"../../models/jot":3,"../../utility/pubsub":26,"../../views/group":28,"../../views/groups":29,"../group":20}],18:[function(require,module,exports){
+},{"../../models/group":2,"../../models/jot":3,"../../utility/pubsub":26,"../../views/group":28,"../../views/groups":29,"../../views/loadinggroups":34,"../group":20}],18:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6760,6 +6767,10 @@ var HomeRouter = (function () {
                   title: 'Lists',
                   link: '/group'
                 }]
+              });
+
+              _this.homeView.render(false, {
+                loading: true
               });
             },
 
@@ -6848,7 +6859,7 @@ var JotClientRoutes = (function () {
               });
 
               _this.loadingView.render(false, {
-                jots: [0, 0, 0, 0, 0]
+                items: [0, 0, 0, 0, 0, 0, 0]
               });
             },
 
@@ -7471,7 +7482,7 @@ var ColourSelector = (function (_Widget) {
 
 module.exports = ColourSelector;
 
-},{"./widget":37}],28:[function(require,module,exports){
+},{"./widget":38}],28:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7862,7 +7873,7 @@ var ViewGroup = (function (_View) {
 
 module.exports = ViewGroup;
 
-},{"../models/group":2,"../models/jot":3,"../utility/pubsub":26,"./colour-selector":27,"./view":36}],29:[function(require,module,exports){
+},{"../models/group":2,"../models/jot":3,"../utility/pubsub":26,"./colour-selector":27,"./view":37}],29:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8214,7 +8225,7 @@ var ViewGroups = (function (_View) {
 
 module.exports = ViewGroups;
 
-},{"../models/group":2,"../utility/pubsub":26,"./colour-selector":27,"./view":36}],30:[function(require,module,exports){
+},{"../models/group":2,"../utility/pubsub":26,"./colour-selector":27,"./view":37}],30:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -8239,7 +8250,7 @@ var ViewHome = (function (_View) {
 
 module.exports = ViewHome;
 
-},{"./view":36}],31:[function(require,module,exports){
+},{"./view":37}],31:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8301,7 +8312,7 @@ var ViewJots = (function (_View) {
 
 module.exports = ViewJots;
 
-},{"../models/jot":3,"../utility/pubsub":26,"./view":36}],32:[function(require,module,exports){
+},{"../models/jot":3,"../utility/pubsub":26,"./view":37}],32:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8410,7 +8421,7 @@ var ListOrder = (function (_Widget) {
 
 module.exports = ListOrder;
 
-},{"../utility/pubsub":26,"./widget":37}],33:[function(require,module,exports){
+},{"../utility/pubsub":26,"./widget":38}],33:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -8435,7 +8446,32 @@ var ViewLoading = (function (_View) {
 
 module.exports = ViewLoading;
 
-},{"./view":36}],34:[function(require,module,exports){
+},{"./view":37}],34:[function(require,module,exports){
+'use strict';
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var LoadingView = require('./loading.js');
+
+var ViewLoadingGroups = (function (_LoadingView) {
+  _inherits(ViewLoadingGroups, _LoadingView);
+
+  function ViewLoadingGroups() {
+    _classCallCheck(this, ViewLoadingGroups);
+
+    _get(Object.getPrototypeOf(ViewLoadingGroups.prototype), 'constructor', this).apply(this, arguments);
+  }
+
+  return ViewLoadingGroups;
+})(LoadingView);
+
+module.exports = ViewLoadingGroups;
+
+},{"./loading.js":33}],35:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8541,7 +8577,7 @@ var TitleBarView = (function (_View) {
 
 module.exports = TitleBarView;
 
-},{"../utility/pubsub":26,"./list-order":32,"./view":36}],35:[function(require,module,exports){
+},{"../utility/pubsub":26,"./list-order":32,"./view":37}],36:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8577,7 +8613,7 @@ var ViewContainer = (function () {
 
 module.exports = ViewContainer;
 
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8713,7 +8749,7 @@ var View = (function () {
 
 module.exports = View;
 
-},{"../utility/pubsub":26,"handlebars/dist/handlebars.runtime":9}],37:[function(require,module,exports){
+},{"../utility/pubsub":26,"handlebars/dist/handlebars.runtime":9}],38:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();

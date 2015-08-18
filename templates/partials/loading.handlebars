@@ -1,18 +1,9 @@
-<div class='partial-loading-jot-list'>
-  <div class='md-list jot-list loading'>
-  {{#each jots}}
-    <div class='md-list-item jots__jot'>
-      <div class='md-list-item__avatar jots__jot__edit'>
+<div class='partial-loading'>
+  <div class='md-list md-list--loading'>
+  {{#each items}}
+    <div class='md-list-item'>
+      <div class='md-list-item__avatar'>
         <div class='img colour-grey priority-1'></div>
-      </div>
-
-      <div class='md-list-item__content jots__jot__edit jots__jot__itemd'>
-        <div class='md-list-item__primary-content'>
-          Name
-        </div>
-        <div class='md-list-item__secondary-content'>
-          List
-        </div>
       </div>
     </div>
   {{/each}}

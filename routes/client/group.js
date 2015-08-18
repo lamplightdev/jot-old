@@ -3,6 +3,7 @@ const Group = require('../../models/group');
 const GroupRoutes = require('../group');
 const GroupsView = require('../../views/groups');
 const GroupView = require('../../views/group');
+const LoadingGroupsView = require('../../views/loadinggroups');
 const PubSub = require('../../utility/pubsub');
 
 class GroupClientRoutes {
@@ -11,6 +12,7 @@ class GroupClientRoutes {
 
     this.groupsView = new GroupsView(viewContainer);
     this.groupView = new GroupView(viewContainer);
+    this.loadingGroupsView = new LoadingGroupsView(viewContainer);
   }
 
   registerRoutes() {
@@ -39,6 +41,10 @@ class GroupClientRoutes {
                 link: '/group',
                 current: true
               }]
+            });
+
+            this.loadingGroupsView.render(false, {
+              items: [0, 0, 0, 0, 0, 0, 0]
             });
           },
 

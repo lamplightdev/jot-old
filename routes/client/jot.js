@@ -51,7 +51,7 @@ class JotClientRoutes {
             });
 
             this.loadingView.render(false, {
-              jots: [0, 0, 0, 0, 0]
+              items: [0, 0, 0, 0, 0, 0, 0]
             });
           },
 

@@ -1,1 +1,7 @@
-<a href='/group'>{{>progress}}</a>
+<a href='/group'>
+{{#if loading}}
+{{>loadingprogress}}
+{{else}}
+{{>progress}}
+{{/if}}
+</a>

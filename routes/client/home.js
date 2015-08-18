@@ -31,6 +31,10 @@ class HomeRouter {
                 link: '/group'
               }]
             });
+
+            this.homeView.render(false, {
+              loading: true
+            });
           },
 
           resolve: stats => {
