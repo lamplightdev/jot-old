@@ -42,6 +42,13 @@ class HomeRoutes extends Routes {
 
           stats.segments = segments;
 
+          if (stats.numGroups > 0) {
+            const plural = stats.numGroups === 1 ? '' : 's';
+            stats.message = `${stats.percent}% done in ${stats.numGroups} list${plural}`;
+          } else {
+            stats.message = 'No lists. Add one now';
+          }
+
           return stats;
         });
       }
