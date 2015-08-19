@@ -79,6 +79,10 @@
     -webkit-flex-basis: 0;
     flex-basis: 0;
 
+    &.center {
+      text-align: center;
+    }
+
     &.md-list-item__content--no-avatar {
       padding-left: 1.2rem;
     }

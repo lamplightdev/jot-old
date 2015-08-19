@@ -1,5 +1,6 @@
 <div class='partial-jot-list'>
   <div class='md-list jot-list'>
+  {{#if jots}}
   {{#each jots}}
     <div class='md-list-item jots__jot jots__jot-{{id}} {{#ifEqual id @root.editID}}edit{{/ifEqual}}'>
       <a name='{{id}}' id='{{id}}'></a>
@@ -47,5 +48,14 @@
 
     </div>
   {{/each}}
+  {{else}}
+  <div class='md-list-item'>
+    <div class='md-list-item__content center'>
+      <div class='md-list-item__primary-content'>
+        No jots
+      </div>
+    </div>
+  </div>
+  {{/if}}
   </div>
 </div>

@@ -1,5 +1,6 @@
 <div class='partial-group-list'>
   <div class='md-list group-list'>
+  {{#if groups}}
   {{#each groups}}
     <div class='md-list-item groups__group groups__group-{{id}} {{#ifEqual id @root.editID}}edit{{/ifEqual}}'>
       <a name='{{id}}' id='{{id}}'></a>
@@ -41,5 +42,15 @@
 
     </div>
   {{/each}}
+  {{else}}
+  <div class='md-list-item'>
+    <div class='md-list-item__content center'>
+      <div class='md-list-item__primary-content'>
+        No lists
+      </div>
+    </div>
+  </div>
+  {{/if}}
+
   </div>
 </div>
