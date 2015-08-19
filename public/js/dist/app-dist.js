@@ -6621,6 +6621,11 @@ var GroupClientRoutes = (function () {
                   name: 'Alpha',
                   type: 'alpha',
                   direction: 'asc',
+                  current: true
+                }, {
+                  name: 'Date',
+                  type: 'date',
+                  direction: 'desc',
                   current: false
                 }],
                 tabs: [{
@@ -6673,11 +6678,11 @@ var GroupClientRoutes = (function () {
                     name: 'Date',
                     type: 'date',
                     direction: 'desc',
-                    current: false
+                    current: true
                   }, {
                     name: 'Priority',
                     type: 'priority',
-                    direction: 'asc',
+                    direction: 'desc',
                     current: false
                   }],
                   tabs: [{
@@ -6838,11 +6843,11 @@ var JotClientRoutes = (function () {
                   name: 'Date',
                   type: 'date',
                   direction: 'desc',
-                  current: false
+                  current: true
                 }, {
                   name: 'Priority',
                   type: 'priority',
-                  direction: 'asc',
+                  direction: 'desc',
                   current: false
                 }],
                 tabs: [{
@@ -8365,45 +8370,25 @@ var ListOrder = (function (_Widget) {
 
           var links = widget.querySelectorAll('a');
 
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
+          var _loop = function (index) {
+            var link = links[index];
+            var nextLink = links[(index + 1) % links.length];
 
-          try {
-            var _loop = function () {
-              var link = _step2.value;
+            link.addEventListener('click', function (event) {
+              event.preventDefault();
 
-              link.addEventListener('click', function (event) {
-                event.preventDefault();
-
-                var oldDirection = link.dataset.direction;
-                var newDirection = oldDirection === 'asc' ? 'desc' : 'asc';
-
-                PubSub.publish('orderChanged', {
-                  type: link.dataset.type,
-                  direction: newDirection
-                });
-
-                link.dataset.direction = newDirection;
+              PubSub.publish('orderChanged', {
+                type: nextLink.dataset.type,
+                direction: nextLink.dataset.direction
               });
-            };
 
-            for (var _iterator2 = links[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              _loop();
-            }
-          } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2['return']) {
-                _iterator2['return']();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
-            }
+              link.classList.remove('current');
+              nextLink.classList.add('current');
+            });
+          };
+
+          for (var index = 0; index < links.length; index++) {
+            _loop(index);
           }
         }
       } catch (err) {

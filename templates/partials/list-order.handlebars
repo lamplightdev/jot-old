@@ -2,8 +2,8 @@
   {{#if order}}
     {{#each order}}
       <a
+        class='{{#if current}}current{{/if}}'
         href='#'
-        class='{{#if current}}{{current}}{{/if}}'
         data-type='{{type}}'
         data-direction='{{direction}}'
         ><img src='/images/{{type}}.svg' alt='{{name}}'></a>

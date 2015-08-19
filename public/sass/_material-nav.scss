@@ -119,6 +119,36 @@
     }
   }
 
+  .md-actionbar__actions {
+    line-height: 0;
+    margin-right: -1.1rem;
+
+    a {
+      display: inline-block;
+      display: none;
+
+      $width: 1.5rem;
+      border: 0;
+      margin: 0;
+      padding: (4rem - 1.5rem) / 2 1.25rem;
+
+      background: transparent;
+
+      width: $width + 2.5rem;
+
+      text-align: center;
+
+      img {
+        height: 1.5rem;
+        width: auto;
+      }
+
+      &.current {
+        display: inline-block;
+      }
+    }
+  }
+
 .md-nav-overlay {
   position: fixed;
   top: 0;
@@ -166,7 +196,7 @@
   display: block;
   border: 0;
   margin: 0;
-  padding: 1.4rem 1.25rem;
+  padding: 1.5rem 1.25rem;
 
   margin-left: -1.1rem;
   background: transparent;

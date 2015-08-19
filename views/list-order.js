@@ -16,19 +16,20 @@ class ListOrder extends Widget {
     for (let widget of widgets) {
       const links = widget.querySelectorAll('a');
 
-      for (let link of links) {
+      for (let index = 0; index < links.length; index++) {
+        const link = links[index];
+        const nextLink = links[(index + 1) % links.length];
+
         link.addEventListener('click', event => {
           event.preventDefault();
 
-          const oldDirection = link.dataset.direction;
-          const newDirection = oldDirection === 'asc' ? 'desc' : 'asc';
-
           PubSub.publish('orderChanged', {
-            type: link.dataset.type,
-            direction: newDirection
+            type: nextLink.dataset.type,
+            direction: nextLink.dataset.direction
           });
 
-          link.dataset.direction = newDirection;
+          link.classList.remove('current');
+          nextLink.classList.add('current');
         });
       }
     }

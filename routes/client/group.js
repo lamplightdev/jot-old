@@ -28,8 +28,13 @@ class GroupClientRoutes {
                 name: 'Alpha',
                 type: 'alpha',
                 direction: 'asc',
-                current: false
-              }],
+                current: true
+              }, {
+                  name: 'Date',
+                  type: 'date',
+                  direction: 'desc',
+                  current: false
+                }],
               tabs: [{
                 title: 'Home',
                 link: '/'
@@ -80,11 +85,11 @@ class GroupClientRoutes {
                   name: 'Date',
                   type: 'date',
                   direction: 'desc',
-                  current: false
+                  current: true
                 }, {
                   name: 'Priority',
                   type: 'priority',
-                  direction: 'asc',
+                  direction: 'desc',
                   current: false
                 }],
                 tabs: [{

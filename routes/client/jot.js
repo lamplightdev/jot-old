@@ -30,11 +30,11 @@ class JotClientRoutes {
                 name: 'Date',
                 type: 'date',
                 direction: 'desc',
-                current: false
+                current: true
               }, {
                 name: 'Priority',
                 type: 'priority',
-                direction: 'asc',
+                direction: 'desc',
                 current: false
               }],
               tabs: [{
