@@ -23,13 +23,9 @@ class ViewJots extends View {
     }));
 
     this._subscriptions.push(PubSub.subscribe('orderChanged', (topic, args) => {
-      //console.log('orderChanged jots', args);
-
-      Jot.loadAll(true, args.type, args.direction).then(jots => {
-        this.render(false, {
-          jots
-        });
-      });
+      const params = this.lastParams;
+      params.jots = Jot.order(params.jots, args.type, args.direction);
+      this.render(false, params);
     }));
   }
 

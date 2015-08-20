@@ -10,11 +10,17 @@ class View {
     this._subscriptions = [];
     this._documentListeners = {};
     this._widgets = [];
+
+    this._lastParams = null;
   }
 
   //tidy this up?
   get _el() {
     return this._container._el;
+  }
+
+  get lastParams() {
+    return this._lastParams;
   }
 
   render(preRendered, params) {
@@ -26,6 +32,8 @@ class View {
     }
 
     this.initEvents();
+
+    this._lastParams = params;
   }
 
   renderPartial(name, params) {
@@ -34,6 +42,8 @@ class View {
     var template = Handlebars.template(this._container._partials[name]);
     const view = this._el.querySelector('.partial-' + name);
     view.outerHTML = template(params);
+
+    this._lastParams = params;
 
     return this._el.querySelector('.partial-' + name);
   }

@@ -34,11 +34,9 @@ class ViewGroup extends View {
     }));
 
     this._subscriptions.push(PubSub.subscribe('orderChanged', (topic, args) => {
-      //console.log('orderChanged group', args);
-
-      Group.load(params.group.id, true, args.type, args.direction).then(group => {
-        this.renderJotList(group);
-      });
+      const params = this.lastParams;
+      params.group.jots = Jot.order(params.group.jots, args.type, args.direction);
+      this.renderJotList(params.group);
     }));
 
     this._addDocumentListener('unselectAll', 'click', () => {
@@ -61,8 +59,8 @@ class ViewGroup extends View {
 
   renderJotList(group) {
     this.renderPartial('jot-list', {
-      jots: group.getJots(this._showDone),
-      group
+      group,
+      jots: group.getJots(this._showDone)
     });
   }
 

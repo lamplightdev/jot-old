@@ -218,6 +218,9 @@ var Group = (function (_Model) {
     key: 'jots',
     get: function get() {
       return this._jots;
+    },
+    set: function set(jots) {
+      this._jots = jots;
     }
   }, {
     key: 'jotCount',
@@ -7554,11 +7557,9 @@ var ViewGroup = (function (_View) {
       }));
 
       this._subscriptions.push(PubSub.subscribe('orderChanged', function (topic, args) {
-        //console.log('orderChanged group', args);
-
-        Group.load(params.group.id, true, args.type, args.direction).then(function (group) {
-          _this.renderJotList(group);
-        });
+        var params = _this.lastParams;
+        params.group.jots = Jot.order(params.group.jots, args.type, args.direction);
+        _this.renderJotList(params.group);
       }));
 
       this._addDocumentListener('unselectAll', 'click', function () {
@@ -7583,8 +7584,8 @@ var ViewGroup = (function (_View) {
     key: 'renderJotList',
     value: function renderJotList(group) {
       this.renderPartial('jot-list', {
-        jots: group.getJots(this._showDone),
-        group: group
+        group: group,
+        jots: group.getJots(this._showDone)
       });
     }
   }, {
@@ -7939,13 +7940,9 @@ var ViewGroups = (function (_View) {
       }));
 
       this._subscriptions.push(PubSub.subscribe('orderChanged', function (topic, args) {
-        //console.log('orderChanged', args);
-
-        Group.loadAll(true, args.type, args.direction).then(function (groups) {
-          _this.renderPartial('group-list', {
-            groups: groups
-          });
-        });
+        var params = _this.lastParams;
+        params.groups = Group.order(params.groups, args.type, args.direction);
+        _this.renderPartial('group-list', params);
       }));
 
       this._addDocumentListener('unselectAll', 'click', function () {
@@ -8314,13 +8311,9 @@ var ViewJots = (function (_View) {
       }));
 
       this._subscriptions.push(PubSub.subscribe('orderChanged', function (topic, args) {
-        //console.log('orderChanged jots', args);
-
-        Jot.loadAll(true, args.type, args.direction).then(function (jots) {
-          _this.render(false, {
-            jots: jots
-          });
-        });
+        var params = _this.lastParams;
+        params.jots = Jot.order(params.jots, args.type, args.direction);
+        _this.render(false, params);
       }));
     }
   }]);
@@ -8630,6 +8623,8 @@ var View = (function () {
     this._subscriptions = [];
     this._documentListeners = {};
     this._widgets = [];
+
+    this._lastParams = null;
   }
 
   //tidy this up?
@@ -8645,6 +8640,8 @@ var View = (function () {
       }
 
       this.initEvents();
+
+      this._lastParams = params;
     }
   }, {
     key: 'renderPartial',
@@ -8654,6 +8651,8 @@ var View = (function () {
       var template = Handlebars.template(this._container._partials[name]);
       var view = this._el.querySelector('.partial-' + name);
       view.outerHTML = template(params);
+
+      this._lastParams = params;
 
       return this._el.querySelector('.partial-' + name);
     }
@@ -8739,6 +8738,11 @@ var View = (function () {
     key: '_el',
     get: function get() {
       return this._container._el;
+    }
+  }, {
+    key: 'lastParams',
+    get: function get() {
+      return this._lastParams;
     }
   }]);
 

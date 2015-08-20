@@ -31,6 +31,10 @@ class Group extends Model {
     return this._jots;
   }
 
+  set jots(jots) {
+    this._jots = jots;
+  }
+
   getJots(done = null) {
     if (done === null) {
       return this.jots;
