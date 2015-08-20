@@ -31,11 +31,11 @@
 }
 
 .md-nav {
-  $width: 380px;
+  $width: 280px;
 
   position: fixed;
   top: 0;
-  left: -$width;
+  left: -$width - 50px;
   bottom: 0;
 
   z-index: 40;
@@ -53,8 +53,8 @@
   transition: transform 0.3s ease-in-out 0s;
 
   &.show {
-    -webkit-transform: translateX($width);
-    transform: translateX($width);
+    -webkit-transform: translateX($width + 50px);
+    transform: translateX($width + 50px);
   }
 }
 
