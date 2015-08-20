@@ -36,8 +36,12 @@
       </div>
 
       <a class='md-list-item__action groups__group__edit' href='/group?edit={{id}}' data-id='{{id}}'>
-        <img class='edit' src='/images/edit.svg' alt='Edit'>
-        <img class='cancel' src='/images/cancel.svg' alt='Cancel'>
+        <svg class="icon edit">
+          <use xlink:href="#edit" />
+        </svg>
+        <svg class="icon cancel">
+          <use xlink:href="#cancel" />
+        </svg>
       </a>
 
     </div>

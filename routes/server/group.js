@@ -13,7 +13,7 @@ class GroupsServerRoutes {
         title: 'Home',
         link: '/'
       }, {
-        title: 'All',
+        title: 'Jots',
         link: '/jot'
       }, {
         title: 'Lists',

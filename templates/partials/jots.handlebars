@@ -1,4 +1,5 @@
 <div class='md-list'>
+{{#if jots}}
 {{#each jots}}
   {{#unless this.fields.done}}
   <div class='md-list-item jots__jot jots__jot-{{id}}'>
@@ -17,4 +18,13 @@
   </div>
   {{/unless}}
 {{/each}}
+{{else}}
+<div class='md-list-item'>
+  <div class='md-list-item__content center'>
+    <div class='md-list-item__primary-content'>
+      No jots
+    </div>
+  </div>
+</div>
+{{/if}}
 </div>

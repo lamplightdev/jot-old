@@ -6632,7 +6632,7 @@ var GroupClientRoutes = (function () {
                   title: 'Home',
                   link: '/'
                 }, {
-                  title: 'All',
+                  title: 'Jots',
                   link: '/jot'
                 }, {
                   title: 'Lists',
@@ -6766,7 +6766,7 @@ var HomeRouter = (function () {
                   link: '/',
                   current: true
                 }, {
-                  title: 'All',
+                  title: 'Jots',
                   link: '/jot'
                 }, {
                   title: 'Lists',
@@ -6854,7 +6854,7 @@ var JotClientRoutes = (function () {
                   title: 'Home',
                   link: '/'
                 }, {
-                  title: 'All',
+                  title: 'Jots',
                   link: '/jot',
                   current: true
                 }, {
@@ -7258,10 +7258,16 @@ var DateUtils = (function () {
       var day = date.getDay();
       var dayNum = date.getDate();
       var monthNum = date.getMonth();
-      var minutes = date.getMinutes();
-      var hours = date.getHours();
+      var minutes = this._pad(date.getMinutes(), 2);
+      var hours = this._pad(date.getHours(), 2);
 
       return this.getDays()[day] + ' ' + dayNum + ' ' + this.getMonths()[monthNum] + ' ' + hours + ':' + minutes;
+    }
+  }, {
+    key: '_pad',
+    value: function _pad(num, size) {
+      var s = '000000000' + num;
+      return s.substr(s.length - size);
     }
   }]);
 

@@ -6,7 +6,11 @@
         href='#'
         data-type='{{type}}'
         data-direction='{{direction}}'
-        ><img src='/images/{{type}}.svg' alt='{{name}}'></a>
+        >
+        <svg class="icon">
+          <use xlink:href="#{{type}}" />
+        </svg>
+        </a>
     {{/each}}
   {{/if}}
 </div>

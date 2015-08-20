@@ -33,10 +33,15 @@ class DateUtils {
     const day = date.getDay();
     const dayNum = date.getDate();
     const monthNum = date.getMonth();
-    const minutes = date.getMinutes();
-    const hours = date.getHours();
+    const minutes = this._pad(date.getMinutes(), 2);
+    const hours = this._pad(date.getHours(), 2);
 
     return this.getDays()[day] + ' ' + dayNum + ' ' + this.getMonths()[monthNum] + ' ' + hours + ':' + minutes;
+  }
+
+  static _pad(num, size) {
+    const s = '000000000' + num;
+    return s.substr(s.length - size);
   }
 }
 

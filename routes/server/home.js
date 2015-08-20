@@ -13,7 +13,7 @@ class HomeRouter {
         link: '/',
         current: true
       }, {
-        title: 'All',
+        title: 'Jots',
         link: '/jot'
       }, {
         title: 'Lists',

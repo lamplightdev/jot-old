@@ -36,6 +36,12 @@ header {
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 
+svg.icon {
+  width: 24px;
+  height: 24px;
+  fill: $clr-grey-600;
+}
+
 main {
   padding-top: 0.1rem;
 }

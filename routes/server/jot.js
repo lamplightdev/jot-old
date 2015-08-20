@@ -12,7 +12,7 @@ class JotServerRoutes {
         title: 'Home',
         link: '/'
       }, {
-        title: 'All',
+        title: 'Jots',
         link: '/jot',
         current: true
       }, {
