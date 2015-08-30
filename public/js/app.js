@@ -26,6 +26,7 @@ const RoutesJot = require('../../routes/client/jot');
 const RoutesGroup = require('../../routes/client/group');
 
 const TitleBarView = require('../../views/titlebar');
+const NotificationManagerView = require('../../views/notification-manager');
 
 const Handlebars = require('handlebars/dist/handlebars.runtime');
 const helpers = require('../../templates/helpers');
@@ -73,5 +74,16 @@ const containerHeader = new ViewContainer('header', {
 const titleBar = new TitleBarView(containerHeader);
 
 titleBar.render(true);
+
+const containerNotifications = new ViewContainer('notifications', {
+  notifications: JotApp.templates.notifications
+}, {
+  notification: JotApp.templates.notification
+});
+
+const notificationManager = new NotificationManagerView(containerNotifications);
+
+notificationManager.render(true);
+
 router.activate();
 

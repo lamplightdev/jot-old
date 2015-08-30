@@ -6374,6 +6374,7 @@ var RoutesJot = require('../../routes/client/jot');
 var RoutesGroup = require('../../routes/client/group');
 
 var TitleBarView = require('../../views/titlebar');
+var NotificationManagerView = require('../../views/notification-manager');
 
 var Handlebars = require('handlebars/dist/handlebars.runtime');
 var helpers = require('../../templates/helpers');
@@ -6442,9 +6443,20 @@ var containerHeader = new ViewContainer('header', {
 var titleBar = new TitleBarView(containerHeader);
 
 titleBar.render(true);
+
+var containerNotifications = new ViewContainer('notifications', {
+  notifications: JotApp.templates.notifications
+}, {
+  notification: JotApp.templates.notification
+});
+
+var notificationManager = new NotificationManagerView(containerNotifications);
+
+notificationManager.render(true);
+
 router.activate();
 
-},{"../../db/db":1,"../../routers/path":14,"../../routes/client/auth":16,"../../routes/client/group":17,"../../routes/client/home":18,"../../routes/client/jot":19,"../../templates/helpers":24,"../../views/titlebar":35,"../../views/view-container":36,"fastclick":8,"handlebars/dist/handlebars.runtime":9}],14:[function(require,module,exports){
+},{"../../db/db":1,"../../routers/path":14,"../../routes/client/auth":16,"../../routes/client/group":17,"../../routes/client/home":18,"../../routes/client/jot":19,"../../templates/helpers":24,"../../views/notification-manager":35,"../../views/titlebar":36,"../../views/view-container":37,"fastclick":8,"handlebars/dist/handlebars.runtime":9}],14:[function(require,module,exports){
 'use strict';
 
 var page = require('page');
@@ -7503,7 +7515,7 @@ var ColourSelector = (function (_Widget) {
 
 module.exports = ColourSelector;
 
-},{"./widget":38}],28:[function(require,module,exports){
+},{"./widget":39}],28:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7892,7 +7904,7 @@ var ViewGroup = (function (_View) {
 
 module.exports = ViewGroup;
 
-},{"../models/group":2,"../models/jot":3,"../utility/pubsub":26,"./colour-selector":27,"./view":37}],29:[function(require,module,exports){
+},{"../models/group":2,"../models/jot":3,"../utility/pubsub":26,"./colour-selector":27,"./view":38}],29:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8240,7 +8252,7 @@ var ViewGroups = (function (_View) {
 
 module.exports = ViewGroups;
 
-},{"../models/group":2,"../utility/pubsub":26,"./colour-selector":27,"./view":37}],30:[function(require,module,exports){
+},{"../models/group":2,"../utility/pubsub":26,"./colour-selector":27,"./view":38}],30:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -8265,7 +8277,7 @@ var ViewHome = (function (_View) {
 
 module.exports = ViewHome;
 
-},{"./view":37}],31:[function(require,module,exports){
+},{"./view":38}],31:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8323,7 +8335,7 @@ var ViewJots = (function (_View) {
 
 module.exports = ViewJots;
 
-},{"../models/jot":3,"../utility/pubsub":26,"./view":37}],32:[function(require,module,exports){
+},{"../models/jot":3,"../utility/pubsub":26,"./view":38}],32:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8383,6 +8395,10 @@ var ListOrder = (function (_Widget) {
 
               link.classList.remove('current');
               nextLink.classList.add('current');
+
+              PubSub.publish('notify', {
+                title: 'Test notification'
+              });
             });
           };
 
@@ -8412,7 +8428,7 @@ var ListOrder = (function (_Widget) {
 
 module.exports = ListOrder;
 
-},{"../utility/pubsub":26,"./widget":38}],33:[function(require,module,exports){
+},{"../utility/pubsub":26,"./widget":39}],33:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -8437,7 +8453,7 @@ var ViewLoading = (function (_View) {
 
 module.exports = ViewLoading;
 
-},{"./view":37}],34:[function(require,module,exports){
+},{"./view":38}],34:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -8463,6 +8479,101 @@ var ViewLoadingGroups = (function (_LoadingView) {
 module.exports = ViewLoadingGroups;
 
 },{"./loading.js":33}],35:[function(require,module,exports){
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var View = require('./view');
+
+var PubSub = require('../utility/pubsub');
+
+var NotificationManagerView = (function (_View) {
+  _inherits(NotificationManagerView, _View);
+
+  function NotificationManagerView(container) {
+    var _this = this;
+
+    _classCallCheck(this, NotificationManagerView);
+
+    _get(Object.getPrototypeOf(NotificationManagerView.prototype), 'constructor', this).call(this, container);
+
+    this._timer = null;
+
+    PubSub.subscribe('notify', function (topic, args) {
+      return _this.showSyncNotification(args);
+    });
+  }
+
+  _createClass(NotificationManagerView, [{
+    key: 'render',
+    value: function render(preRendered, params) {
+      var _this2 = this;
+
+      _get(Object.getPrototypeOf(NotificationManagerView.prototype), 'render', this).call(this, preRendered, params);
+
+      this._subscriptions.push(PubSub.subscribe('notify', function (topic, args) {
+        _this2.showSyncNotification(args);
+      }));
+    }
+  }, {
+    key: 'showSyncNotification',
+    value: function showSyncNotification(_ref) {
+      var _this3 = this;
+
+      var _ref$title = _ref.title;
+      var title = _ref$title === undefined ? false : _ref$title;
+      var _ref$body = _ref.body;
+      var body = _ref$body === undefined ? false : _ref$body;
+      var _ref$action = _ref.action;
+      var action = _ref$action === undefined ? false : _ref$action;
+      var _ref$duration = _ref.duration;
+      var duration = _ref$duration === undefined ? 5000 : _ref$duration;
+
+      this.renderPartial('notification', {
+        title: title,
+        actionName: action ? action.name : false
+      });
+
+      if (action && action.fn) {
+        var actionPrimary = this._el.querySelector('.md-snackbar__action--primary');
+        if (actionPrimary) {
+          actionPrimary.addEventListener('click', function (ev) {
+
+            if (_this3._timer) {
+              clearTimeout(_this3._timer);
+            }
+
+            action.fn().then(function (result) {
+              _this3._el.querySelector('.md-snackbar-container').classList.remove('has-notification');
+            });
+          });
+        }
+      }
+
+      this._el.querySelector('.md-snackbar-container').classList.add('has-notification');
+
+      if (this._timer) {
+        clearTimeout(this._timer);
+      }
+
+      this._timer = setTimeout(function () {
+        _this3._el.querySelector('.md-snackbar-container').classList.remove('has-notification');
+      }, duration);
+    }
+  }]);
+
+  return NotificationManagerView;
+})(View);
+
+module.exports = NotificationManagerView;
+
+},{"../utility/pubsub":26,"./view":38}],36:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8568,7 +8679,7 @@ var TitleBarView = (function (_View) {
 
 module.exports = TitleBarView;
 
-},{"../utility/pubsub":26,"./list-order":32,"./view":37}],36:[function(require,module,exports){
+},{"../utility/pubsub":26,"./list-order":32,"./view":38}],37:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8604,7 +8715,7 @@ var ViewContainer = (function () {
 
 module.exports = ViewContainer;
 
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8751,7 +8862,7 @@ var View = (function () {
 
 module.exports = View;
 
-},{"../utility/pubsub":26,"handlebars/dist/handlebars.runtime":9}],38:[function(require,module,exports){
+},{"../utility/pubsub":26,"handlebars/dist/handlebars.runtime":9}],39:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
