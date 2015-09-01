@@ -7789,7 +7789,7 @@ var ViewGroup = (function (_View) {
                 });
               }).then(function () {
                 PubSub.publish('notify', {
-                  title: 'Deleted',
+                  title: 'Jot deleted',
                   action: {
                     name: 'undo',
                     fn: function fn() {
@@ -7803,7 +7803,7 @@ var ViewGroup = (function (_View) {
                         });
                       });
                     },
-                    msg: 'Undeleted'
+                    msg: 'Jot undeleted'
                   }
                 });
               });
@@ -8175,10 +8175,48 @@ var ViewGroups = (function (_View) {
             var item = _this4._el.querySelector('.groups__group-' + id);
             //item.parentNode.parentNode.removeChild(item);
 
-            Group.remove(id).then(function () {
-              Group.loadAll().then(function (groups) {
-                _this4.renderPartial('group-list', {
-                  groups: groups
+            Group.load(id).then(function (group) {
+              Group.remove(id).then(function () {
+                Group.loadAll().then(function (groups) {
+                  _this4.renderPartial('group-list', {
+                    groups: groups
+                  });
+                });
+              }).then(function () {
+                PubSub.publish('notify', {
+                  title: 'List deleted',
+                  action: {
+                    name: 'undo',
+                    fn: function fn() {
+                      return Promise.resolve().then(function () {
+                        group.rev = null;
+                        group.save().then(function () {
+
+                          var docs = group.jots.map(function (jot) {
+                            return {
+                              _rev: null,
+                              _id: jot.id,
+                              dateAdded: jot._dateAdded,
+                              fields: jot.fields
+                            };
+                            jot.rev = null;
+                            return jot;
+                          });
+
+                          var db = require('../db/db')();
+                          return db.bulkDocs(docs).then(function () {
+                            return Group.loadAll().then(function (groups) {
+                              _this4.renderPartial('group-list', {
+                                groups: groups
+                              });
+                              return true;
+                            });
+                          });
+                        });
+                      });
+                    },
+                    msg: 'List undeleted'
+                  }
                 });
               });
             });
@@ -8273,7 +8311,7 @@ var ViewGroups = (function (_View) {
 
 module.exports = ViewGroups;
 
-},{"../models/group":2,"../utility/pubsub":26,"./colour-selector":27,"./view":38}],30:[function(require,module,exports){
+},{"../db/db":1,"../models/group":2,"../utility/pubsub":26,"./colour-selector":27,"./view":38}],30:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };

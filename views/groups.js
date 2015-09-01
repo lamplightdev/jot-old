@@ -146,10 +146,48 @@ class ViewGroups extends View {
         const item = this._el.querySelector('.groups__group-' + id);
         //item.parentNode.parentNode.removeChild(item);
 
-        Group.remove(id).then(() => {
-          Group.loadAll().then(groups => {
-            this.renderPartial('group-list', {
-              groups
+        Group.load(id).then(group => {
+          Group.remove(id).then(() => {
+            Group.loadAll().then(groups => {
+              this.renderPartial('group-list', {
+                groups
+              });
+            });
+          }).then(() => {
+            PubSub.publish('notify', {
+              title: 'List deleted',
+              action: {
+                name: 'undo',
+                fn: () => {
+                  return Promise.resolve().then(() => {
+                    group.rev = null;
+                    group.save().then(() => {
+
+                      const docs = group.jots.map(jot => {
+                        return {
+                          _rev: null,
+                          _id: jot.id,
+                          dateAdded: jot._dateAdded,
+                          fields: jot.fields
+                        }
+                        jot.rev = null;
+                        return jot;
+                      });
+
+                      const db = require('../db/db')();
+                      return db.bulkDocs(docs).then(() => {
+                        return Group.loadAll().then(groups => {
+                          this.renderPartial('group-list', {
+                            groups
+                          });
+                          return true;
+                        });
+                      });
+                    });
+                  });
+                },
+                msg: 'List undeleted'
+              }
             });
           });
         });

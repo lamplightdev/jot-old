@@ -167,7 +167,7 @@ class ViewGroup extends View {
             });
           }).then(() => {
             PubSub.publish('notify', {
-              title: 'Deleted',
+              title: 'Jot deleted',
               action: {
                 name: 'undo',
                 fn: () => {
@@ -181,7 +181,7 @@ class ViewGroup extends View {
                     });
                   });
                 },
-                msg: 'Undeleted'
+                msg: 'Jot undeleted'
               }
             });
           });
