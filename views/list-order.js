@@ -30,10 +30,6 @@ class ListOrder extends Widget {
 
           link.classList.remove('current');
           nextLink.classList.add('current');
-
-          PubSub.publish('notify', {
-            title: 'Test notification'
-          });
         });
       }
     }

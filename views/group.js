@@ -160,10 +160,32 @@ class ViewGroup extends View {
         const item = this._el.querySelector('.jots__jot-' + id);
         //item.parentNode.parentNode.removeChild(item);
 
-        Jot.remove(id).then(() => {
-          Group.load(group).then(group => {
-            this.renderJotList(group);
+        Jot.load(id).then(jot => {
+          Jot.remove(id).then(() => {
+            Group.load(group).then(group => {
+              this.renderJotList(group);
+            });
+          }).then(() => {
+            PubSub.publish('notify', {
+              title: 'Deleted',
+              action: {
+                name: 'undo',
+                fn: () => {
+                  return Promise.resolve().then(() => {
+                    jot.rev = null;
+                    jot.save().then(() => {
+                      return Group.load(group).then(group => {
+                        this.renderJotList(group);
+                        return true;
+                      });
+                    });
+                  });
+                },
+                msg: 'Undeleted'
+              }
+            });
           });
+
         });
       });
     }

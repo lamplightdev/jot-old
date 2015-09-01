@@ -7782,9 +7782,30 @@ var ViewGroup = (function (_View) {
             var item = _this4._el.querySelector('.jots__jot-' + id);
             //item.parentNode.parentNode.removeChild(item);
 
-            Jot.remove(id).then(function () {
-              Group.load(group).then(function (group) {
-                _this4.renderJotList(group);
+            Jot.load(id).then(function (jot) {
+              Jot.remove(id).then(function () {
+                Group.load(group).then(function (group) {
+                  _this4.renderJotList(group);
+                });
+              }).then(function () {
+                PubSub.publish('notify', {
+                  title: 'Deleted',
+                  action: {
+                    name: 'undo',
+                    fn: function fn() {
+                      return Promise.resolve().then(function () {
+                        jot.rev = null;
+                        jot.save().then(function () {
+                          return Group.load(group).then(function (group) {
+                            _this4.renderJotList(group);
+                            return true;
+                          });
+                        });
+                      });
+                    },
+                    msg: 'Undeleted'
+                  }
+                });
               });
             });
           });
@@ -8395,10 +8416,6 @@ var ListOrder = (function (_Widget) {
 
               link.classList.remove('current');
               nextLink.classList.add('current');
-
-              PubSub.publish('notify', {
-                title: 'Test notification'
-              });
             });
           };
 
@@ -8497,34 +8514,28 @@ var NotificationManagerView = (function (_View) {
   _inherits(NotificationManagerView, _View);
 
   function NotificationManagerView(container) {
-    var _this = this;
-
     _classCallCheck(this, NotificationManagerView);
 
     _get(Object.getPrototypeOf(NotificationManagerView.prototype), 'constructor', this).call(this, container);
 
     this._timer = null;
-
-    PubSub.subscribe('notify', function (topic, args) {
-      return _this.showSyncNotification(args);
-    });
   }
 
   _createClass(NotificationManagerView, [{
     key: 'render',
     value: function render(preRendered, params) {
-      var _this2 = this;
+      var _this = this;
 
       _get(Object.getPrototypeOf(NotificationManagerView.prototype), 'render', this).call(this, preRendered, params);
 
       this._subscriptions.push(PubSub.subscribe('notify', function (topic, args) {
-        _this2.showSyncNotification(args);
+        _this.showSyncNotification(args);
       }));
     }
   }, {
     key: 'showSyncNotification',
     value: function showSyncNotification(_ref) {
-      var _this3 = this;
+      var _this2 = this;
 
       var _ref$title = _ref.title;
       var title = _ref$title === undefined ? false : _ref$title;
@@ -8535,36 +8546,51 @@ var NotificationManagerView = (function (_View) {
       var _ref$duration = _ref.duration;
       var duration = _ref$duration === undefined ? 5000 : _ref$duration;
 
-      this.renderPartial('notification', {
-        title: title,
-        actionName: action ? action.name : false
-      });
+      var fn = function fn() {
+        _this2.renderPartial('notification', {
+          title: title,
+          actionName: action ? action.name : false
+        });
 
-      if (action && action.fn) {
-        var actionPrimary = this._el.querySelector('.md-snackbar__action--primary');
-        if (actionPrimary) {
-          actionPrimary.addEventListener('click', function (ev) {
+        if (action && action.fn) {
+          var actionPrimary = _this2._el.querySelector('.md-snackbar__action--primary');
+          if (actionPrimary) {
+            actionPrimary.addEventListener('click', function () {
 
-            if (_this3._timer) {
-              clearTimeout(_this3._timer);
-            }
+              if (_this2._timer) {
+                clearTimeout(_this2._timer);
+              }
 
-            action.fn().then(function (result) {
-              _this3._el.querySelector('.md-snackbar-container').classList.remove('has-notification');
+              action.fn().then(function () {
+                if (action.msg) {
+                  _this2.showSyncNotification({
+                    title: action.msg
+                  });
+                } else {
+                  _this2._el.querySelector('.md-snackbar-container').classList.remove('has-notification');
+                }
+              });
             });
-          });
+          }
         }
+
+        _this2._el.querySelector('.md-snackbar-container').classList.add('has-notification');
+
+        if (_this2._timer) {
+          clearTimeout(_this2._timer);
+        }
+
+        _this2._timer = setTimeout(function () {
+          _this2._el.querySelector('.md-snackbar-container').classList.remove('has-notification');
+        }, duration);
+      };
+
+      if (this._el.querySelector('.md-snackbar-container').classList.contains('has-notification')) {
+        this._el.querySelector('.md-snackbar-container').classList.remove('has-notification');
+        setTimeout(fn, 300);
+      } else {
+        fn();
       }
-
-      this._el.querySelector('.md-snackbar-container').classList.add('has-notification');
-
-      if (this._timer) {
-        clearTimeout(this._timer);
-      }
-
-      this._timer = setTimeout(function () {
-        _this3._el.querySelector('.md-snackbar-container').classList.remove('has-notification');
-      }, duration);
     }
   }]);
 

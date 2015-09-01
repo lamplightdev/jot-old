@@ -7,8 +7,6 @@ class NotificationManagerView extends View {
     super(container);
 
     this._timer = null;
-
-    PubSub.subscribe('notify', (topic, args) => this.showSyncNotification(args));
   }
 
   render(preRendered, params) {
@@ -26,36 +24,51 @@ class NotificationManagerView extends View {
     duration = 5000
   }) {
 
-    this.renderPartial('notification', {
-      title,
-      actionName: action ? action.name : false
-    });
+    var fn = () => {
+      this.renderPartial('notification', {
+        title,
+        actionName: action ? action.name : false
+      });
 
-    if (action && action.fn) {
-      const actionPrimary = this._el.querySelector('.md-snackbar__action--primary');
-      if (actionPrimary) {
-        actionPrimary.addEventListener('click', ev => {
+      if (action && action.fn) {
+        const actionPrimary = this._el.querySelector('.md-snackbar__action--primary');
+        if (actionPrimary) {
+          actionPrimary.addEventListener('click', () => {
 
-          if (this._timer) {
-            clearTimeout(this._timer);
-          }
+            if (this._timer) {
+              clearTimeout(this._timer);
+            }
 
-          action.fn().then(result => {
-            this._el.querySelector('.md-snackbar-container').classList.remove('has-notification');
+            action.fn().then(() => {
+              if (action.msg) {
+                this.showSyncNotification({
+                  title: action.msg
+                });
+              } else {
+                this._el.querySelector('.md-snackbar-container').classList.remove('has-notification');
+              }
+            });
           });
-        });
+        }
       }
-    }
 
-    this._el.querySelector('.md-snackbar-container').classList.add('has-notification');
+      this._el.querySelector('.md-snackbar-container').classList.add('has-notification');
 
-    if (this._timer) {
-      clearTimeout(this._timer);
-    }
+      if (this._timer) {
+        clearTimeout(this._timer);
+      }
 
-    this._timer = setTimeout(() => {
+      this._timer = setTimeout(() => {
+        this._el.querySelector('.md-snackbar-container').classList.remove('has-notification');
+      }, duration);
+    };
+
+    if (this._el.querySelector('.md-snackbar-container').classList.contains('has-notification')) {
       this._el.querySelector('.md-snackbar-container').classList.remove('has-notification');
-    }, duration);
+      setTimeout(fn, 300);
+    } else {
+      fn();
+    }
 
   }
 
