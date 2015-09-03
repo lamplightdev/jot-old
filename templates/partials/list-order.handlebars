@@ -1,8 +1,8 @@
 <div class='partial-list-order' style='text-align: right;'>
-  {{#if order}}
-    {{#each order}}
+  {{#if ordering}}
+    {{#each ordering.orders}}
       <a
-        class='{{#if current}}current{{/if}}'
+        class='{{#ifEqual type ../ordering.current}}current{{/ifEqual}}'
         href='#'
         data-type='{{type}}'
         data-direction='{{direction}}'

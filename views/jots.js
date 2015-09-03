@@ -11,8 +11,6 @@ class ViewJots extends View {
     super.render(preRendered, params);
 
     this._subscriptions.push(PubSub.subscribe('update', (topic, args) => {
-      //console.log(args);
-
       if (args.changes && args.changes.length) {
         Jot.loadAll().then(jots => {
           this.render(false, {

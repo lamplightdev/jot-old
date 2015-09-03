@@ -18,34 +18,47 @@ class GroupClientRoutes {
   registerRoutes() {
     this.routes.registerRoute('all', (ctx, next) => {
       return Promise.resolve().then(() => {
+
+        const page = {
+          name: 'Jot'
+        };
+
+        const ordering = {
+          orders: [{
+            name: 'Alpha',
+            type: 'alpha',
+            direction: 'asc'
+          }, {
+            name: 'Date',
+            type: 'date',
+            direction: 'desc'
+          }],
+          current: 'alpha'
+        };
+
+        const tabs = [{
+          title: 'Home',
+          link: '/'
+        }, {
+          title: 'Jots',
+          link: '/jot'
+        }, {
+          title: 'Lists',
+          link: '/group',
+          current: true
+        }];
+
         return {
-          params: {},
+          params: {
+            order: ordering.current,
+            direction: ordering.orders.find(order => order.type === ordering.current).direction
+          },
 
           preAction: () => {
             PubSub.publish('routeChanged', {
-              name: 'Jot',
-              order: [{
-                name: 'Alpha',
-                type: 'alpha',
-                direction: 'asc',
-                current: true
-              }, {
-                  name: 'Date',
-                  type: 'date',
-                  direction: 'desc',
-                  current: false
-                }],
-              tabs: [{
-                title: 'Home',
-                link: '/'
-              }, {
-                title: 'Jots',
-                link: '/jot'
-              }, {
-                title: 'Lists',
-                link: '/group',
-                current: true
-              }]
+              name: page.name,
+              ordering,
+              tabs
             });
 
             this.loadingGroupsView.render(false, {
@@ -69,29 +82,34 @@ class GroupClientRoutes {
 
     this.routes.registerRoute('view', (ctx, next) => {
       return Promise.resolve().then(() => {
+
+        const ordering = {
+          orders: [{
+            name: 'Alpha',
+            type: 'alpha',
+            direction: 'asc'
+          }, {
+            name: 'Date',
+            type: 'date',
+            direction: 'desc'
+          }, {
+            name: 'Priority',
+            type: 'priority',
+            direction: 'desc'
+          }],
+          current: 'date'
+        };
+
         return {
           params: {
             id: ctx.params.id,
             done: ctx.params.status === 'done',
+            order: ordering.current,
+            direction: ordering.orders.find(order => order.type === ordering.current).direction,
             postLoadGroup: (group) => {
               PubSub.publish('routeChanged', {
                 name: group.fields.name,
-                order: [{
-                  name: 'Alpha',
-                  type: 'alpha',
-                  direction: 'asc',
-                  current: false
-                }, {
-                  name: 'Date',
-                  type: 'date',
-                  direction: 'desc',
-                  current: true
-                }, {
-                  name: 'Priority',
-                  type: 'priority',
-                  direction: 'desc',
-                  current: false
-                }],
+                ordering,
                 tabs: [{
                   link: '/group/' + group.id,
                   title: 'undone',

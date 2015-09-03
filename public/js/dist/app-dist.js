@@ -493,8 +493,8 @@ var Jot = (function (_Model) {
 
       var _this2 = this;
 
-      var order = arguments.length <= 1 || arguments[1] === undefined ? 'date' : arguments[1];
-      var direction = arguments.length <= 2 || arguments[2] === undefined ? 'desc' : arguments[2];
+      var order = arguments.length <= 1 || arguments[1] === undefined ? 'alpha' : arguments[1];
+      var direction = arguments.length <= 2 || arguments[2] === undefined ? 'asc' : arguments[2];
 
       return _get(Object.getPrototypeOf(Jot), 'loadAll', this).call(this).then(function (jots) {
         var Group = require('./group');
@@ -513,8 +513,8 @@ var Jot = (function (_Model) {
   }, {
     key: 'order',
     value: function order(jots) {
-      var sortOrder = arguments.length <= 1 || arguments[1] === undefined ? 'date' : arguments[1];
-      var sortDirection = arguments.length <= 2 || arguments[2] === undefined ? 'desc' : arguments[2];
+      var sortOrder = arguments.length <= 1 || arguments[1] === undefined ? 'alpha' : arguments[1];
+      var sortDirection = arguments.length <= 2 || arguments[2] === undefined ? 'asc' : arguments[2];
 
       switch (sortOrder) {
         case 'date':
@@ -583,8 +583,8 @@ var Jot = (function (_Model) {
     value: function loadForGroup(groupId) {
       var _this3 = this;
 
-      var order = arguments.length <= 1 || arguments[1] === undefined ? 'date' : arguments[1];
-      var direction = arguments.length <= 2 || arguments[2] === undefined ? 'desc' : arguments[2];
+      var order = arguments.length <= 1 || arguments[1] === undefined ? 'alpha' : arguments[1];
+      var direction = arguments.length <= 2 || arguments[2] === undefined ? 'asc' : arguments[2];
 
       return Promise.resolve().then(function () {
         var db = require('../db/db')();
@@ -609,8 +609,8 @@ var Jot = (function (_Model) {
     value: function loadForGroups(groups) {
       var _this4 = this;
 
-      var order = arguments.length <= 1 || arguments[1] === undefined ? 'date' : arguments[1];
-      var direction = arguments.length <= 2 || arguments[2] === undefined ? 'desc' : arguments[2];
+      var order = arguments.length <= 1 || arguments[1] === undefined ? 'alpha' : arguments[1];
+      var direction = arguments.length <= 2 || arguments[2] === undefined ? 'asc' : arguments[2];
 
       return Promise.resolve().then(function () {
         var db = require('../db/db')();
@@ -6626,34 +6626,49 @@ var GroupClientRoutes = (function () {
 
       this.routes.registerRoute('all', function (ctx, next) {
         return Promise.resolve().then(function () {
+
+          var page = {
+            name: 'Jot'
+          };
+
+          var ordering = {
+            orders: [{
+              name: 'Alpha',
+              type: 'alpha',
+              direction: 'asc'
+            }, {
+              name: 'Date',
+              type: 'date',
+              direction: 'desc'
+            }],
+            current: 'alpha'
+          };
+
+          var tabs = [{
+            title: 'Home',
+            link: '/'
+          }, {
+            title: 'Jots',
+            link: '/jot'
+          }, {
+            title: 'Lists',
+            link: '/group',
+            current: true
+          }];
+
           return {
-            params: {},
+            params: {
+              order: ordering.current,
+              direction: ordering.orders.find(function (order) {
+                return order.type === ordering.current;
+              }).direction
+            },
 
             preAction: function preAction() {
               PubSub.publish('routeChanged', {
-                name: 'Jot',
-                order: [{
-                  name: 'Alpha',
-                  type: 'alpha',
-                  direction: 'asc',
-                  current: true
-                }, {
-                  name: 'Date',
-                  type: 'date',
-                  direction: 'desc',
-                  current: false
-                }],
-                tabs: [{
-                  title: 'Home',
-                  link: '/'
-                }, {
-                  title: 'Jots',
-                  link: '/jot'
-                }, {
-                  title: 'Lists',
-                  link: '/group',
-                  current: true
-                }]
+                name: page.name,
+                ordering: ordering,
+                tabs: tabs
               });
 
               _this.loadingGroupsView.render(false, {
@@ -6677,29 +6692,36 @@ var GroupClientRoutes = (function () {
 
       this.routes.registerRoute('view', function (ctx, next) {
         return Promise.resolve().then(function () {
+
+          var ordering = {
+            orders: [{
+              name: 'Alpha',
+              type: 'alpha',
+              direction: 'asc'
+            }, {
+              name: 'Date',
+              type: 'date',
+              direction: 'desc'
+            }, {
+              name: 'Priority',
+              type: 'priority',
+              direction: 'desc'
+            }],
+            current: 'date'
+          };
+
           return {
             params: {
               id: ctx.params.id,
               done: ctx.params.status === 'done',
+              order: ordering.current,
+              direction: ordering.orders.find(function (order) {
+                return order.type === ordering.current;
+              }).direction,
               postLoadGroup: function postLoadGroup(group) {
                 PubSub.publish('routeChanged', {
                   name: group.fields.name,
-                  order: [{
-                    name: 'Alpha',
-                    type: 'alpha',
-                    direction: 'asc',
-                    current: false
-                  }, {
-                    name: 'Date',
-                    type: 'date',
-                    direction: 'desc',
-                    current: true
-                  }, {
-                    name: 'Priority',
-                    type: 'priority',
-                    direction: 'desc',
-                    current: false
-                  }],
+                  ordering: ordering,
                   tabs: [{
                     link: '/group/' + group.id,
                     title: 'undone',
@@ -6843,39 +6865,52 @@ var JotClientRoutes = (function () {
 
       this.routes.registerRoute('all', function (ctx, next) {
         return Promise.resolve().then(function () {
+          var page = {
+            name: 'Jot'
+          };
+
+          var ordering = {
+            orders: [{
+              name: 'Alpha',
+              type: 'alpha',
+              direction: 'asc'
+            }, {
+              name: 'Date',
+              type: 'date',
+              direction: 'desc'
+            }, {
+              name: 'Priority',
+              type: 'priority',
+              direction: 'desc'
+            }],
+            current: 'date'
+          };
+
+          var tabs = [{
+            title: 'Home',
+            link: '/'
+          }, {
+            title: 'Jots',
+            link: '/jot',
+            current: true
+          }, {
+            title: 'Lists',
+            link: '/group'
+          }];
+
           return {
-            params: {},
+            params: {
+              order: ordering.current,
+              direction: ordering.orders.find(function (order) {
+                return order.type === ordering.current;
+              }).direction
+            },
 
             preAction: function preAction() {
               PubSub.publish('routeChanged', {
-                name: 'Jot',
-                order: [{
-                  name: 'Alpha',
-                  type: 'alpha',
-                  direction: 'asc',
-                  current: false
-                }, {
-                  name: 'Date',
-                  type: 'date',
-                  direction: 'desc',
-                  current: true
-                }, {
-                  name: 'Priority',
-                  type: 'priority',
-                  direction: 'desc',
-                  current: false
-                }],
-                tabs: [{
-                  title: 'Home',
-                  link: '/'
-                }, {
-                  title: 'Jots',
-                  link: '/jot',
-                  current: true
-                }, {
-                  title: 'Lists',
-                  link: '/group'
-                }]
+                name: page.name,
+                ordering: ordering,
+                tabs: tabs
               });
 
               _this.loadingView.render(false, {
@@ -6929,8 +6964,8 @@ var GroupRoutes = (function (_Routes) {
     this._routes.all = {
       _path: '/',
       _method: ['get'],
-      _action: function _action() {
-        return Group.loadAll();
+      _action: function _action(params) {
+        return Group.loadAll(true, params.order, params.direction);
       }
     };
 
@@ -6938,7 +6973,7 @@ var GroupRoutes = (function (_Routes) {
       _path: '/:id/:status?',
       _method: ['get'],
       _action: function _action(params) {
-        return Group.load(params.id).then(function (group) {
+        return Group.load(params.id, true, params.order, params.direction).then(function (group) {
           if (params.postLoadGroup) {
             params.postLoadGroup(group);
           }
@@ -7099,8 +7134,8 @@ var JotRoutes = (function (_Routes) {
     this._routes.all = {
       _path: '/',
       _method: ['get'],
-      _action: function _action() {
-        return Jot.loadAll();
+      _action: function _action(params) {
+        return Jot.loadAll(true, params.order, params.direction);
       }
     };
 
@@ -8370,8 +8405,6 @@ var ViewJots = (function (_View) {
       _get(Object.getPrototypeOf(ViewJots.prototype), 'render', this).call(this, preRendered, params);
 
       this._subscriptions.push(PubSub.subscribe('update', function (topic, args) {
-        //console.log(args);
-
         if (args.changes && args.changes.length) {
           Jot.loadAll().then(function (jots) {
             _this.render(false, {
@@ -8672,7 +8705,6 @@ var TitleBarView = (function (_View) {
       _get(Object.getPrototypeOf(TitleBarView.prototype), 'render', this).call(this, preRendered, params);
 
       this._subscriptions.push(PubSub.subscribe('routeChanged', function (topic, args) {
-        //console.log('test');
         _this.renderPartial('titlebar-title', args);
         _this.renderPartial('titlebar-tabs', args);
 

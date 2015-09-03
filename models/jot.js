@@ -90,7 +90,7 @@ class Jot extends Model {
     });
   }
 
-  static loadAll(loadGroups = true, order = 'date', direction = 'desc') {
+  static loadAll(loadGroups = true, order = 'alpha', direction = 'asc') {
     return super.loadAll().then(jots => {
       const Group = require('./group');
 
@@ -106,7 +106,7 @@ class Jot extends Model {
     });
   }
 
-  static order(jots, sortOrder = 'date', sortDirection = 'desc') {
+  static order(jots, sortOrder = 'alpha', sortDirection = 'asc') {
 
     switch (sortOrder) {
       case 'date':
@@ -171,7 +171,7 @@ class Jot extends Model {
     return undoneJots.concat(doneJots);
   }
 
-  static loadForGroup(groupId, order = 'date', direction = 'desc') {
+  static loadForGroup(groupId, order = 'alpha', direction = 'asc') {
     return Promise.resolve().then(() => {
       const db = require('../db/db')();
 
@@ -191,7 +191,7 @@ class Jot extends Model {
     });
   }
 
-  static loadForGroups(groups, order = 'date', direction = 'desc') {
+  static loadForGroups(groups, order = 'alpha', direction = 'asc') {
     return Promise.resolve().then(() => {
       const db = require('../db/db')();
 

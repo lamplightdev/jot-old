@@ -11,8 +11,8 @@ class JotRoutes extends Routes {
     this._routes.all = {
       _path: '/',
       _method: ['get'],
-      _action: () => {
-        return Jot.loadAll();
+      _action: params => {
+        return Jot.loadAll(true, params.order, params.direction);
       }
     };
 

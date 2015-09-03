@@ -11,8 +11,8 @@ class GroupRoutes extends Routes {
     this._routes.all = {
       _path: '/',
       _method: ['get'],
-      _action: () => {
-        return Group.loadAll();
+      _action: params => {
+        return Group.loadAll(true, params.order, params.direction);
       }
     };
 
@@ -20,7 +20,7 @@ class GroupRoutes extends Routes {
       _path: '/:id/:status?',
       _method: ['get'],
       _action: params => {
-        return Group.load(params.id).then(group => {
+        return Group.load(params.id, true, params.order, params.direction).then(group => {
           if (params.postLoadGroup) {
             params.postLoadGroup(group);
           }

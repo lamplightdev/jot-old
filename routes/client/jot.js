@@ -15,39 +15,50 @@ class JotClientRoutes {
 
     this.routes.registerRoute('all', (ctx, next) => {
       return Promise.resolve().then(() => {
+        const page = {
+          name: 'Jot'
+        };
+
+        const ordering = {
+          orders: [{
+            name: 'Alpha',
+            type: 'alpha',
+            direction: 'asc'
+          }, {
+            name: 'Date',
+            type: 'date',
+            direction: 'desc'
+          }, {
+            name: 'Priority',
+            type: 'priority',
+            direction: 'desc'
+          }],
+          current: 'date'
+        };
+
+        const tabs = [{
+          title: 'Home',
+          link: '/'
+        }, {
+          title: 'Jots',
+          link: '/jot',
+          current: true
+        }, {
+          title: 'Lists',
+          link: '/group'
+        }];
+
         return {
-          params: {},
+          params: {
+            order: ordering.current,
+            direction: ordering.orders.find(order => order.type === ordering.current).direction
+          },
 
           preAction: () => {
             PubSub.publish('routeChanged', {
-              name: 'Jot',
-              order: [{
-                name: 'Alpha',
-                type: 'alpha',
-                direction: 'asc',
-                current: false
-              }, {
-                name: 'Date',
-                type: 'date',
-                direction: 'desc',
-                current: true
-              }, {
-                name: 'Priority',
-                type: 'priority',
-                direction: 'desc',
-                current: false
-              }],
-              tabs: [{
-                title: 'Home',
-                link: '/'
-              }, {
-                title: 'Jots',
-                link: '/jot',
-                current: true
-              }, {
-                title: 'Lists',
-                link: '/group'
-              }]
+              name: page.name,
+              ordering,
+              tabs
             });
 
             this.loadingView.render(false, {

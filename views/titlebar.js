@@ -14,7 +14,6 @@ class TitleBarView extends View {
     super.render(preRendered, params);
 
     this._subscriptions.push(PubSub.subscribe('routeChanged', (topic, args) => {
-      //console.log('test');
       this.renderPartial('titlebar-title', args);
       this.renderPartial('titlebar-tabs', args);
 
