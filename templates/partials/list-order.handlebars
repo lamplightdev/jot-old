@@ -2,7 +2,7 @@
   {{#if ordering}}
     {{#each ordering.orders}}
       <a
-        class='{{#ifEqual type ../ordering.current}}current{{/ifEqual}}'
+        class='{{#ifEqual type ../currentOrdering}}current{{/ifEqual}}'
         href='#'
         data-type='{{type}}'
         data-direction='{{direction}}'

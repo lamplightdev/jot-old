@@ -154,7 +154,7 @@ module.exports = function (options) {
   }
 };
 
-},{"../utility/pubsub":26,"pouchdb":6}],2:[function(require,module,exports){
+},{"../utility/pubsub":28,"pouchdb":6}],2:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -867,7 +867,7 @@ var Model = (function () {
 
 module.exports = Model;
 
-},{"../db/db":1,"../utility/date":25}],5:[function(require,module,exports){
+},{"../db/db":1,"../utility/date":27}],5:[function(require,module,exports){
 (function (root, factory) {
   if (typeof define === 'function' && define.amd) {
     // AMD. Register as an anonymous module unless amdModuleId is set
@@ -6348,6 +6348,69 @@ module.exports = Array.isArray || function (arr) {
 },{}],13:[function(require,module,exports){
 'use strict';
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var Preferences = require('./preferences');
+
+var Group = require('../models/group');
+
+var GroupsPreferences = (function (_Preferences) {
+  _inherits(GroupsPreferences, _Preferences);
+
+  function GroupsPreferences() {
+    _classCallCheck(this, GroupsPreferences);
+
+    _get(Object.getPrototypeOf(GroupsPreferences.prototype), 'constructor', this).call(this);
+
+    this._order = {
+      type: 'alpha',
+      direction: 'asc'
+    };
+  }
+
+  _createClass(GroupsPreferences, [{
+    key: 'getOrder',
+    value: function getOrder() {
+      return this._order;
+    }
+  }, {
+    key: 'setOrder',
+    value: function setOrder(type, direction) {
+      this._order.type = type;
+      this._order.direction = direction;
+    }
+  }, {
+    key: 'order',
+    value: function order(groups) {
+      return Group.order(groups, this._order.type, this._order.direction);
+    }
+  }]);
+
+  return GroupsPreferences;
+})(Preferences);
+
+module.exports = GroupsPreferences;
+
+},{"../models/group":2,"./preferences":14}],14:[function(require,module,exports){
+"use strict";
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Preferences = function Preferences() {
+  _classCallCheck(this, Preferences);
+};
+
+module.exports = Preferences;
+
+},{}],15:[function(require,module,exports){
+'use strict';
+
 if (JotApp.user) {
   require('../../db/db')({
     protocol: JotApp.server.protocol,
@@ -6456,7 +6519,7 @@ notificationManager.render(true);
 
 router.activate();
 
-},{"../../db/db":1,"../../routers/path":14,"../../routes/client/auth":16,"../../routes/client/group":17,"../../routes/client/home":18,"../../routes/client/jot":19,"../../templates/helpers":24,"../../views/notification-manager":35,"../../views/titlebar":36,"../../views/view-container":37,"fastclick":8,"handlebars/dist/handlebars.runtime":9}],14:[function(require,module,exports){
+},{"../../db/db":1,"../../routers/path":16,"../../routes/client/auth":18,"../../routes/client/group":19,"../../routes/client/home":20,"../../routes/client/jot":21,"../../templates/helpers":26,"../../views/notification-manager":37,"../../views/titlebar":38,"../../views/view-container":39,"fastclick":8,"handlebars/dist/handlebars.runtime":9}],16:[function(require,module,exports){
 'use strict';
 
 var page = require('page');
@@ -6493,7 +6556,7 @@ module.exports = (function () {
   };
 })();
 
-},{"page":10}],15:[function(require,module,exports){
+},{"page":10}],17:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -6544,7 +6607,7 @@ var AuthRoutes = (function (_Routes) {
 
 module.exports = AuthRoutes;
 
-},{"./routes":23}],16:[function(require,module,exports){
+},{"./routes":25}],18:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6593,7 +6656,7 @@ var AuthRouter = (function () {
 
 module.exports = AuthRouter;
 
-},{"../../db/db":1,"../auth":15}],17:[function(require,module,exports){
+},{"../../db/db":1,"../auth":17}],19:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6606,6 +6669,9 @@ var GroupRoutes = require('../group');
 var GroupsView = require('../../views/groups');
 var GroupView = require('../../views/group');
 var LoadingGroupsView = require('../../views/loadinggroups');
+
+var GroupPreferences = require('../../preferences/groups');
+
 var PubSub = require('../../utility/pubsub');
 
 var GroupClientRoutes = (function () {
@@ -6617,6 +6683,8 @@ var GroupClientRoutes = (function () {
     this.groupsView = new GroupsView(viewContainer);
     this.groupView = new GroupView(viewContainer);
     this.loadingGroupsView = new LoadingGroupsView(viewContainer);
+
+    this._preferences = new GroupPreferences();
   }
 
   _createClass(GroupClientRoutes, [{
@@ -6640,8 +6708,7 @@ var GroupClientRoutes = (function () {
               name: 'Date',
               type: 'date',
               direction: 'desc'
-            }],
-            current: 'alpha'
+            }]
           };
 
           var tabs = [{
@@ -6657,17 +6724,20 @@ var GroupClientRoutes = (function () {
           }];
 
           return {
-            params: {
+            params: _this._preferences.getOrder(),
+
+            /*
+            {
               order: ordering.current,
-              direction: ordering.orders.find(function (order) {
-                return order.type === ordering.current;
-              }).direction
-            },
+              direction: ordering.orders.find(order => order.type === ordering.current).direction
+            }
+            */
 
             preAction: function preAction() {
               PubSub.publish('routeChanged', {
                 name: page.name,
                 ordering: ordering,
+                currentOrdering: _this._preferences.getOrder().type,
                 tabs: tabs
               });
 
@@ -6764,7 +6834,7 @@ var GroupClientRoutes = (function () {
 
 module.exports = GroupClientRoutes;
 
-},{"../../models/group":2,"../../models/jot":3,"../../utility/pubsub":26,"../../views/group":28,"../../views/groups":29,"../../views/loadinggroups":34,"../group":20}],18:[function(require,module,exports){
+},{"../../models/group":2,"../../models/jot":3,"../../preferences/groups":13,"../../utility/pubsub":28,"../../views/group":30,"../../views/groups":31,"../../views/loadinggroups":36,"../group":22}],20:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6836,7 +6906,7 @@ var HomeRouter = (function () {
 
 module.exports = HomeRouter;
 
-},{"../../utility/pubsub":26,"../../views/home":30,"../home":21}],19:[function(require,module,exports){
+},{"../../utility/pubsub":28,"../../views/home":32,"../home":23}],21:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -6938,7 +7008,7 @@ var JotClientRoutes = (function () {
 
 module.exports = JotClientRoutes;
 
-},{"../../utility/pubsub":26,"../../views/jots":31,"../../views/loading":33,"../jot":22}],20:[function(require,module,exports){
+},{"../../utility/pubsub":28,"../../views/jots":33,"../../views/loading":35,"../jot":24}],22:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -6965,7 +7035,7 @@ var GroupRoutes = (function (_Routes) {
       _path: '/',
       _method: ['get'],
       _action: function _action(params) {
-        return Group.loadAll(true, params.order, params.direction);
+        return Group.loadAll(true, params.type, params.direction);
       }
     };
 
@@ -7033,7 +7103,7 @@ var GroupRoutes = (function (_Routes) {
 
 module.exports = GroupRoutes;
 
-},{"../models/group":2,"./routes":23}],21:[function(require,module,exports){
+},{"../models/group":2,"./routes":25}],23:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -7108,7 +7178,7 @@ var HomeRoutes = (function (_Routes) {
 
 module.exports = HomeRoutes;
 
-},{"../models/jot":3,"./routes":23}],22:[function(require,module,exports){
+},{"../models/jot":3,"./routes":25}],24:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -7195,7 +7265,7 @@ var JotRoutes = (function (_Routes) {
 
 module.exports = JotRoutes;
 
-},{"../models/jot":3,"./routes":23}],23:[function(require,module,exports){
+},{"../models/jot":3,"./routes":25}],25:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7247,7 +7317,7 @@ var Routes = (function () {
 
 module.exports = Routes;
 
-},{}],24:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 var Autolinker = require('autolinker');
@@ -7280,7 +7350,7 @@ function autoLink(elem, options) {
   return new Handlebars.SafeString(url);
 }
 
-},{"autolinker":5,"handlebars/dist/handlebars.runtime":9}],25:[function(require,module,exports){
+},{"autolinker":5,"handlebars/dist/handlebars.runtime":9}],27:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7326,7 +7396,7 @@ var DateUtils = (function () {
 
 module.exports = DateUtils;
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7414,7 +7484,7 @@ var PubSub = (function () {
 
 module.exports = new PubSub();
 
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7550,7 +7620,7 @@ var ColourSelector = (function (_Widget) {
 
 module.exports = ColourSelector;
 
-},{"./widget":39}],28:[function(require,module,exports){
+},{"./widget":41}],30:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7960,7 +8030,7 @@ var ViewGroup = (function (_View) {
 
 module.exports = ViewGroup;
 
-},{"../models/group":2,"../models/jot":3,"../utility/pubsub":26,"./colour-selector":27,"./view":38}],29:[function(require,module,exports){
+},{"../models/group":2,"../models/jot":3,"../utility/pubsub":28,"./colour-selector":29,"./view":40}],31:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7975,6 +8045,8 @@ var View = require('./view');
 
 var Group = require('../models/group');
 
+var GroupsPreferences = require('../preferences/groups');
+
 var ColourSelectorWidget = require('./colour-selector');
 
 var PubSub = require('../utility/pubsub');
@@ -7988,6 +8060,8 @@ var ViewGroups = (function (_View) {
     _get(Object.getPrototypeOf(ViewGroups.prototype), 'constructor', this).call(this, container);
 
     this.registerWidget(ColourSelectorWidget);
+
+    this._preferences = new GroupsPreferences();
   }
 
   _createClass(ViewGroups, [{
@@ -8008,8 +8082,9 @@ var ViewGroups = (function (_View) {
       }));
 
       this._subscriptions.push(PubSub.subscribe('orderChanged', function (topic, args) {
+        _this._preferences.setOrder(args.type, args.direction);
+
         var params = _this.lastParams;
-        params.groups = Group.order(params.groups, args.type, args.direction);
         _this.renderPartial('group-list', params);
       }));
 
@@ -8020,6 +8095,12 @@ var ViewGroups = (function (_View) {
   }, {
     key: 'renderPartial',
     value: function renderPartial(name, params) {
+      switch (name) {
+        case 'group-list':
+          params.groups = this._preferences.order(params.groups);
+          break;
+      }
+
       var el = _get(Object.getPrototypeOf(ViewGroups.prototype), 'renderPartial', this).call(this, name, params);
 
       switch (name) {
@@ -8346,7 +8427,7 @@ var ViewGroups = (function (_View) {
 
 module.exports = ViewGroups;
 
-},{"../db/db":1,"../models/group":2,"../utility/pubsub":26,"./colour-selector":27,"./view":38}],30:[function(require,module,exports){
+},{"../db/db":1,"../models/group":2,"../preferences/groups":13,"../utility/pubsub":28,"./colour-selector":29,"./view":40}],32:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -8371,7 +8452,7 @@ var ViewHome = (function (_View) {
 
 module.exports = ViewHome;
 
-},{"./view":38}],31:[function(require,module,exports){
+},{"./view":40}],33:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8427,7 +8508,7 @@ var ViewJots = (function (_View) {
 
 module.exports = ViewJots;
 
-},{"../models/jot":3,"../utility/pubsub":26,"./view":38}],32:[function(require,module,exports){
+},{"../models/jot":3,"../utility/pubsub":28,"./view":40}],34:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8516,7 +8597,7 @@ var ListOrder = (function (_Widget) {
 
 module.exports = ListOrder;
 
-},{"../utility/pubsub":26,"./widget":39}],33:[function(require,module,exports){
+},{"../utility/pubsub":28,"./widget":41}],35:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -8541,7 +8622,7 @@ var ViewLoading = (function (_View) {
 
 module.exports = ViewLoading;
 
-},{"./view":38}],34:[function(require,module,exports){
+},{"./view":40}],36:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -8566,7 +8647,7 @@ var ViewLoadingGroups = (function (_LoadingView) {
 
 module.exports = ViewLoadingGroups;
 
-},{"./loading.js":33}],35:[function(require,module,exports){
+},{"./loading.js":35}],37:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8670,7 +8751,7 @@ var NotificationManagerView = (function (_View) {
 
 module.exports = NotificationManagerView;
 
-},{"../utility/pubsub":26,"./view":38}],36:[function(require,module,exports){
+},{"../utility/pubsub":28,"./view":40}],38:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8775,7 +8856,7 @@ var TitleBarView = (function (_View) {
 
 module.exports = TitleBarView;
 
-},{"../utility/pubsub":26,"./list-order":32,"./view":38}],37:[function(require,module,exports){
+},{"../utility/pubsub":28,"./list-order":34,"./view":40}],39:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8811,7 +8892,7 @@ var ViewContainer = (function () {
 
 module.exports = ViewContainer;
 
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8958,7 +9039,7 @@ var View = (function () {
 
 module.exports = View;
 
-},{"../utility/pubsub":26,"handlebars/dist/handlebars.runtime":9}],39:[function(require,module,exports){
+},{"../utility/pubsub":28,"handlebars/dist/handlebars.runtime":9}],41:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8983,7 +9064,7 @@ var Widget = (function () {
 
 module.exports = Widget;
 
-},{}]},{},[13])
+},{}]},{},[15])
 
 
 //# sourceMappingURL=app-dist.js.map

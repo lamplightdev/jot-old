@@ -4,6 +4,9 @@ const GroupRoutes = require('../group');
 const GroupsView = require('../../views/groups');
 const GroupView = require('../../views/group');
 const LoadingGroupsView = require('../../views/loadinggroups');
+
+const GroupPreferences = require('../../preferences/groups');
+
 const PubSub = require('../../utility/pubsub');
 
 class GroupClientRoutes {
@@ -13,6 +16,8 @@ class GroupClientRoutes {
     this.groupsView = new GroupsView(viewContainer);
     this.groupView = new GroupView(viewContainer);
     this.loadingGroupsView = new LoadingGroupsView(viewContainer);
+
+    this._preferences = new GroupPreferences();
   }
 
   registerRoutes() {
@@ -32,8 +37,7 @@ class GroupClientRoutes {
             name: 'Date',
             type: 'date',
             direction: 'desc'
-          }],
-          current: 'alpha'
+          }]
         };
 
         const tabs = [{
@@ -49,15 +53,20 @@ class GroupClientRoutes {
         }];
 
         return {
-          params: {
+          params: this._preferences.getOrder(),
+
+          /*
+          {
             order: ordering.current,
             direction: ordering.orders.find(order => order.type === ordering.current).direction
-          },
+          }
+          */
 
           preAction: () => {
             PubSub.publish('routeChanged', {
               name: page.name,
               ordering,
+              currentOrdering: this._preferences.getOrder().type,
               tabs
             });
 

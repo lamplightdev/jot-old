@@ -4,6 +4,8 @@ const View = require('./view');
 
 const Group = require('../models/group');
 
+const GroupsPreferences = require('../preferences/groups');
+
 const ColourSelectorWidget = require('./colour-selector');
 
 const PubSub = require('../utility/pubsub');
@@ -14,6 +16,8 @@ class ViewGroups extends View {
     super(container);
 
     this.registerWidget(ColourSelectorWidget);
+
+    this._preferences = new GroupsPreferences();
   }
 
   render(preRendered, params) {
@@ -30,8 +34,9 @@ class ViewGroups extends View {
     }));
 
     this._subscriptions.push(PubSub.subscribe('orderChanged', (topic, args) => {
+      this._preferences.setOrder(args.type, args.direction);
+
       const params = this.lastParams;
-      params.groups = Group.order(params.groups, args.type, args.direction);
       this.renderPartial('group-list', params);
     }));
 
@@ -41,6 +46,12 @@ class ViewGroups extends View {
   }
 
   renderPartial(name, params) {
+    switch (name) {
+      case 'group-list':
+        params.groups = this._preferences.order(params.groups);
+        break;
+    }
+
     const el = super.renderPartial(name, params);
 
     switch (name) {
