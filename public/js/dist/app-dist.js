@@ -6636,20 +6636,24 @@ var GroupPreferences = (function (_Preferences) {
 
     _get(Object.getPrototypeOf(GroupPreferences.prototype), 'constructor', this).call(this);
 
-    this._order = this.getItem('order');
-
-    if (!this._order || !this._order.type || !this._order.direction) {
-      this._order = {
-        type: 'date',
-        direction: 'desc'
-      };
-    }
+    this._order = this.getOrder();
   }
 
   _createClass(GroupPreferences, [{
     key: 'getOrder',
     value: function getOrder() {
-      return this.getItem('order');
+      var order = this.getItem('order');
+
+      if (!order || !order.type || !order.direction) {
+        order = {
+          type: 'date',
+          direction: 'desc'
+        };
+      }
+
+      this._order = order;
+
+      return order;
     }
   }, {
     key: 'setOrder',
@@ -6694,20 +6698,24 @@ var GroupsPreferences = (function (_Preferences) {
 
     _get(Object.getPrototypeOf(GroupsPreferences.prototype), 'constructor', this).call(this);
 
-    this._order = this.getItem('order');
-
-    if (!this._order || !this._order.type || !this._order.direction) {
-      this._order = {
-        type: 'alpha',
-        direction: 'asc'
-      };
-    }
+    this._order = this.getOrder();
   }
 
   _createClass(GroupsPreferences, [{
     key: 'getOrder',
     value: function getOrder() {
-      return this.getItem('order');
+      var order = this.getItem('order');
+
+      if (!order || !order.type || !order.direction) {
+        order = {
+          type: 'date',
+          direction: 'desc'
+        };
+      }
+
+      this._order = order;
+
+      return order;
     }
   }, {
     key: 'setOrder',
@@ -6752,20 +6760,24 @@ var JotsPreferences = (function (_Preferences) {
 
     _get(Object.getPrototypeOf(JotsPreferences.prototype), 'constructor', this).call(this);
 
-    this._order = this.getItem('order');
-
-    if (!this._order || !this._order.type || !this._order.direction) {
-      this._order = {
-        type: 'date',
-        direction: 'desc'
-      };
-    }
+    this._order = this.getOrder();
   }
 
   _createClass(JotsPreferences, [{
     key: 'getOrder',
     value: function getOrder() {
-      return this.getItem('order');
+      var order = this.getItem('order');
+
+      if (!order || !order.type || !order.direction) {
+        order = {
+          type: 'date',
+          direction: 'desc'
+        };
+      }
+
+      this._order = order;
+
+      return order;
     }
   }, {
     key: 'setOrder',

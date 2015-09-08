@@ -22,7 +22,6 @@ class GroupsPreferences extends Preferences {
     this._order = order;
 
     return order;
-
   }
 
   setOrder(type, direction) {
