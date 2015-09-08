@@ -6636,22 +6636,28 @@ var GroupPreferences = (function (_Preferences) {
 
     _get(Object.getPrototypeOf(GroupPreferences.prototype), 'constructor', this).call(this);
 
-    this._order = {
-      type: 'date',
-      direction: 'desc'
-    };
+    this._order = this.getItem('order');
+
+    if (!this._order || !this._order.type || !this._order.direction) {
+      this._order = {
+        type: 'date',
+        direction: 'desc'
+      };
+    }
   }
 
   _createClass(GroupPreferences, [{
     key: 'getOrder',
     value: function getOrder() {
-      return this._order;
+      return this.getItem('order');
     }
   }, {
     key: 'setOrder',
     value: function setOrder(type, direction) {
       this._order.type = type;
       this._order.direction = direction;
+
+      this.setItem('order', this._order);
     }
   }, {
     key: 'order',
@@ -6688,22 +6694,28 @@ var GroupsPreferences = (function (_Preferences) {
 
     _get(Object.getPrototypeOf(GroupsPreferences.prototype), 'constructor', this).call(this);
 
-    this._order = {
-      type: 'alpha',
-      direction: 'asc'
-    };
+    this._order = this.getItem('order');
+
+    if (!this._order || !this._order.type || !this._order.direction) {
+      this._order = {
+        type: 'alpha',
+        direction: 'asc'
+      };
+    }
   }
 
   _createClass(GroupsPreferences, [{
     key: 'getOrder',
     value: function getOrder() {
-      return this._order;
+      return this.getItem('order');
     }
   }, {
     key: 'setOrder',
     value: function setOrder(type, direction) {
       this._order.type = type;
       this._order.direction = direction;
+
+      this.setItem('order', this._order);
     }
   }, {
     key: 'order',
@@ -6740,22 +6752,28 @@ var JotsPreferences = (function (_Preferences) {
 
     _get(Object.getPrototypeOf(JotsPreferences.prototype), 'constructor', this).call(this);
 
-    this._order = {
-      type: 'date',
-      direction: 'desc'
-    };
+    this._order = this.getItem('order');
+
+    if (!this._order || !this._order.type || !this._order.direction) {
+      this._order = {
+        type: 'date',
+        direction: 'desc'
+      };
+    }
   }
 
   _createClass(JotsPreferences, [{
     key: 'getOrder',
     value: function getOrder() {
-      return this._order;
+      return this.getItem('order');
     }
   }, {
     key: 'setOrder',
     value: function setOrder(type, direction) {
       this._order.type = type;
       this._order.direction = direction;
+
+      this.setItem('order', this._order);
     }
   }, {
     key: 'order',
@@ -6772,11 +6790,65 @@ module.exports = JotsPreferences;
 },{"../models/Jot":2,"./preferences":17}],17:[function(require,module,exports){
 "use strict";
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Preferences = function Preferences() {
-  _classCallCheck(this, Preferences);
-};
+var Preferences = (function () {
+  function Preferences() {
+    _classCallCheck(this, Preferences);
+
+    if (localStorage) {
+      this._storage = localStorage;
+    } else {
+      this._storage = {
+        fields: {},
+
+        getItem: function getItem(name) {
+          return this.fields[name];
+        },
+
+        setItem: function setItem(name, item) {
+          this.fields[name] = item;
+        }
+      };
+    }
+
+    this._key = this.constructor.name.toLowerCase();
+  }
+
+  _createClass(Preferences, [{
+    key: "getItem",
+    value: function getItem(name) {
+      var prefs = this._storage.getItem(this._key);
+
+      if (prefs) {
+        prefs = JSON.parse(prefs);
+      } else {
+        prefs = {};
+      }
+
+      return prefs.name;
+    }
+  }, {
+    key: "setItem",
+    value: function setItem(name, item) {
+      var prefs = this._storage.getItem(this._key);
+
+      if (prefs) {
+        prefs = JSON.parse(prefs);
+      } else {
+        prefs = {};
+      }
+
+      prefs.name = item;
+
+      this._storage.setItem(this._key, JSON.stringify(prefs));
+    }
+  }]);
+
+  return Preferences;
+})();
 
 module.exports = Preferences;
 
