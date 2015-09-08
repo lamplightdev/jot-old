@@ -6,18 +6,22 @@ class JotsPreferences extends Preferences {
   constructor() {
     super();
 
-    this._order = this.getItem('order');
+    this._order = this.getOrder();
+  }
 
-    if (!this._order || !this._order.type || !this._order.direction) {
-      this._order = {
+  getOrder() {
+    let order = this.getItem('order');
+
+    if (!order || !order.type || !order.direction) {
+      order = {
         type: 'date',
         direction: 'desc'
       };
     }
-  }
 
-  getOrder() {
-    return this.getItem('order');
+    this._order = order;
+
+    return order;
   }
 
   setOrder(type, direction) {

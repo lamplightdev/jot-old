@@ -6,18 +6,22 @@ class GroupsPreferences extends Preferences {
   constructor() {
     super();
 
-    this._order = this.getItem('order');
-
-    if (!this._order || !this._order.type || !this._order.direction) {
-      this._order = {
-        type: 'alpha',
-        direction: 'asc'
-      };
-    }
+    this._order = this.getOrder();
   }
 
   getOrder() {
-    return this.getItem('order');
+    let order = this.getItem('order');
+
+    if (!order || !order.type || !order.direction) {
+      order = {
+        type: 'date',
+        direction: 'desc'
+      };
+    }
+
+    this._order = order;
+
+    return order;
   }
 
   setOrder(type, direction) {
