@@ -5,6 +5,8 @@ const View = require('./view');
 const Jot = require('../models/jot');
 const Group = require('../models/group');
 
+const GroupPreferences = require('../preferences/group');
+
 const ColourSelectorWidget = require('./colour-selector');
 
 const PubSub = require('../utility/pubsub');
@@ -16,6 +18,8 @@ class ViewGroup extends View {
     this.registerWidget(ColourSelectorWidget);
 
     this._showDone = false;
+
+    this._preferences = new GroupPreferences();
   }
 
   setShowDone(done) {
@@ -28,15 +32,18 @@ class ViewGroup extends View {
     this._subscriptions.push(PubSub.subscribe('update', (topic, args) => {
       if (args.changes && args.changes.length) {
         Group.load(params.group.id).then(group => {
-          this.renderJotList(group);
+          this.renderPartial('jot-list', {
+            group
+          });
         });
       }
     }));
 
     this._subscriptions.push(PubSub.subscribe('orderChanged', (topic, args) => {
+      this._preferences.setOrder(args.type, args.direction);
+
       const params = this.lastParams;
-      params.group.jots = Jot.order(params.group.jots, args.type, args.direction);
-      this.renderJotList(params.group);
+      this.renderPartial('jot-list', params);
     }));
 
     this._addDocumentListener('unselectAll', 'click', () => {
@@ -45,6 +52,13 @@ class ViewGroup extends View {
   }
 
   renderPartial(name, params) {
+    switch (name) {
+      case 'jot-list':
+        params.jots = params.group.getJots(this._showDone);
+        params.jots = this._preferences.order(params.jots);
+        break;
+    }
+
     const el = super.renderPartial(name, params);
 
     switch (name) {
@@ -55,13 +69,6 @@ class ViewGroup extends View {
         this.initWidgets(el);
         break;
     }
-  }
-
-  renderJotList(group) {
-    this.renderPartial('jot-list', {
-      group,
-      jots: group.getJots(this._showDone)
-    });
   }
 
   initEvents() {
@@ -96,7 +103,9 @@ class ViewGroup extends View {
         contentField.value = '';
         contentField.focus();
         Group.load(group).then(group => {
-          this.renderJotList(group);
+          this.renderPartial('jot-list', {
+            group
+          });
         });
       });
     });
@@ -163,7 +172,9 @@ class ViewGroup extends View {
         Jot.load(id).then(jot => {
           Jot.remove(id).then(() => {
             Group.load(group).then(group => {
-              this.renderJotList(group);
+              this.renderPartial('jot-list', {
+                group
+              });
             });
           }).then(() => {
             PubSub.publish('notify', {
@@ -175,7 +186,9 @@ class ViewGroup extends View {
                     jot.rev = null;
                     jot.save().then(() => {
                       return Group.load(group).then(group => {
-                        this.renderJotList(group);
+                        this.renderPartial('jot-list', {
+                          group
+                        });
                         return true;
                       });
                     });
@@ -244,7 +257,9 @@ class ViewGroup extends View {
 
           jot.save().then(() => {
             Group.load(group).then(group => {
-              this.renderJotList(group);
+              this.renderPartial('jot-list', {
+                group
+              });
             });
           });
         });

@@ -3,12 +3,16 @@ const JotsView = require('../../views/jots');
 const LoadingView = require('../../views/loading');
 const PubSub = require('../../utility/pubsub');
 
+const JotsPreferences = require('../../preferences/jots');
+
 class JotClientRoutes {
   constructor(router, prefix, viewContainer) {
     this.routes = new JotRoutes(router, prefix);
 
     this.jotsView = new JotsView(viewContainer);
     this.loadingView = new LoadingView(viewContainer);
+
+    this._jotsPreferences = new JotsPreferences();
   }
 
   registerRoutes() {
@@ -32,8 +36,7 @@ class JotClientRoutes {
             name: 'Priority',
             type: 'priority',
             direction: 'desc'
-          }],
-          current: 'date'
+          }]
         };
 
         const tabs = [{
@@ -50,14 +53,15 @@ class JotClientRoutes {
 
         return {
           params: {
-            order: ordering.current,
-            direction: ordering.orders.find(order => order.type === ordering.current).direction
+            orderType: this._jotsPreferences.getOrder().type,
+            orderDirection: this._jotsPreferences.getOrder().direction
           },
 
           preAction: () => {
             PubSub.publish('routeChanged', {
               name: page.name,
               ordering,
+              currentOrdering: this._jotsPreferences.getOrder().type,
               tabs
             });
 

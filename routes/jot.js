@@ -12,7 +12,7 @@ class JotRoutes extends Routes {
       _path: '/',
       _method: ['get'],
       _action: params => {
-        return Jot.loadAll(true, params.order, params.direction);
+        return Jot.loadAll(true, params.orderType, params.orderDirection);
       }
     };
 

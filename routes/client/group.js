@@ -5,7 +5,8 @@ const GroupsView = require('../../views/groups');
 const GroupView = require('../../views/group');
 const LoadingGroupsView = require('../../views/loadinggroups');
 
-const GroupPreferences = require('../../preferences/groups');
+const GroupsPreferences = require('../../preferences/groups');
+const GroupPreference = require('../../preferences/group');
 
 const PubSub = require('../../utility/pubsub');
 
@@ -17,7 +18,8 @@ class GroupClientRoutes {
     this.groupView = new GroupView(viewContainer);
     this.loadingGroupsView = new LoadingGroupsView(viewContainer);
 
-    this._preferences = new GroupPreferences();
+    this._groupsPreferences = new GroupsPreferences();
+    this._groupPreferences = new GroupPreference();
   }
 
   registerRoutes() {
@@ -53,20 +55,16 @@ class GroupClientRoutes {
         }];
 
         return {
-          params: this._preferences.getOrder(),
-
-          /*
-          {
-            order: ordering.current,
-            direction: ordering.orders.find(order => order.type === ordering.current).direction
-          }
-          */
+          params: {
+            orderType: this._groupsPreferences.getOrder().type,
+            orderDirection: this._groupsPreferences.getOrder().direction
+          },
 
           preAction: () => {
             PubSub.publish('routeChanged', {
               name: page.name,
               ordering,
-              currentOrdering: this._preferences.getOrder().type,
+              currentOrdering: this._groupsPreferences.getOrder().type,
               tabs
             });
 
@@ -105,20 +103,21 @@ class GroupClientRoutes {
             name: 'Priority',
             type: 'priority',
             direction: 'desc'
-          }],
-          current: 'date'
+          }]
         };
 
         return {
           params: {
             id: ctx.params.id,
             done: ctx.params.status === 'done',
-            order: ordering.current,
-            direction: ordering.orders.find(order => order.type === ordering.current).direction,
+            orderType: this._groupPreferences.getOrder().type,
+            orderDirection: this._groupPreferences.getOrder().direction,
             postLoadGroup: (group) => {
+
               PubSub.publish('routeChanged', {
                 name: group.fields.name,
                 ordering,
+                currentOrdering: this._groupPreferences.getOrder().type,
                 tabs: [{
                   link: '/group/' + group.id,
                   title: 'undone',
