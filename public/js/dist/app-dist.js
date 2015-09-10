@@ -3996,7 +3996,9 @@ function drainQueue() {
         currentQueue = queue;
         queue = [];
         while (++queueIndex < len) {
-            currentQueue[queueIndex].run();
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
         }
         queueIndex = -1;
         len = queue.length;
@@ -4048,7 +4050,6 @@ process.binding = function (name) {
     throw new Error('process.binding is not supported');
 };
 
-// TODO(shtylman)
 process.cwd = function () { return '/' };
 process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
@@ -7216,7 +7217,6 @@ var GroupClientRoutes = (function () {
 
       this.routes.registerRoute('view', function (ctx, next) {
         return Promise.resolve().then(function () {
-
           var ordering = {
             orders: [{
               name: 'Alpha',
@@ -7239,6 +7239,7 @@ var GroupClientRoutes = (function () {
               done: ctx.params.status === 'done',
               orderType: _this._groupPreferences.getOrder().type,
               orderDirection: _this._groupPreferences.getOrder().direction,
+
               postLoadGroup: function postLoadGroup(group) {
 
                 PubSub.publish('routeChanged', {
@@ -7755,12 +7756,6 @@ var Routes = (function () {
 
               return route._action(result.params).then(result.resolve);
             })['catch'](result.reject);
-
-            /*
-            return route._action(result.params)
-              .then(result.resolve)
-              .catch(result.reject);
-            */
           });
         });
       });
@@ -9410,7 +9405,7 @@ var View = (function () {
   }, {
     key: 'renderPartial',
     value: function renderPartial(name, params) {
-      console.log('render partial');
+      console.log('render partial', name);
 
       var template = Handlebars.template(this._container._partials[name]);
       var view = this._el.querySelector('.partial-' + name);

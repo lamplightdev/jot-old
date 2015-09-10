@@ -37,7 +37,7 @@ class View {
   }
 
   renderPartial(name, params) {
-    console.log('render partial');
+    console.log('render partial', name);
 
     var template = Handlebars.template(this._container._partials[name]);
     const view = this._el.querySelector('.partial-' + name);

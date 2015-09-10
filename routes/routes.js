@@ -20,12 +20,6 @@ class Routes {
             return route._action(result.params)
             .then(result.resolve);
           }).catch(result.reject);
-
-          /*
-          return route._action(result.params)
-            .then(result.resolve)
-            .catch(result.reject);
-          */
         });
       });
     });

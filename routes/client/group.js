@@ -89,7 +89,6 @@ class GroupClientRoutes {
 
     this.routes.registerRoute('view', (ctx, next) => {
       return Promise.resolve().then(() => {
-
         const ordering = {
           orders: [{
             name: 'Alpha',
@@ -112,6 +111,7 @@ class GroupClientRoutes {
             done: ctx.params.status === 'done',
             orderType: this._groupPreferences.getOrder().type,
             orderDirection: this._groupPreferences.getOrder().direction,
+
             postLoadGroup: (group) => {
 
               PubSub.publish('routeChanged', {
