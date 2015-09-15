@@ -74,17 +74,41 @@
 
   line-height: 3.5rem;
 
-  a {
-    display: block;
+  a, span {
+    display: flex;
+    align-items: center;
+
     padding: 0 1.1rem;
 
     font-size: 1.1rem;
     text-decoration: none;
     color: inherit;
 
+    &.small {
+      font-size: 0.9rem;
+    }
+
+    .image {
+      height: 2.5rem;
+      width: 2.5rem;
+      margin-right: 1rem;
+
+      &.image--avatar {
+        border-radius: 2.5rem;
+      }
+    }
+  }
+
+  a {
     &:hover {
       background-color: $clr-grey-300;
     }
+  }
+
+  .sub-section {
+    padding-top: 0.6rem;
+    margin-top: 0.6rem;
+    border-top: 1px solid $clr-grey-200;
   }
 }
 

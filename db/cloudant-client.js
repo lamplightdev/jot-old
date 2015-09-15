@@ -42,15 +42,15 @@ class CloudantClient {
     return promise;
   }
 
-  createUser(service, id, email, name) {
-    return this.insertUser(service, id, email, name).then((userDoc) => {
+  createUser(service, id, email, name, photo) {
+    return this.insertUser(service, id, email, name, photo).then((userDoc) => {
       return this.createUserDB(userDoc).then((userDoc) => {
         return userDoc;
       });
     });
   }
 
-  insertUser(service, id, email, name) {
+  insertUser(service, id, email, name, photo) {
     const promise = new Promise((resolve, reject) => {
 
       const userParams = {
@@ -58,7 +58,8 @@ class CloudantClient {
         service,
         serviceId: id,
         email,
-        name
+        name,
+        photo
       };
 
       this.getUser(service, id).then(userDoc => {

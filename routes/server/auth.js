@@ -48,7 +48,13 @@ class AuthRouter {
                 return res.redirect('/');
               }
 
-              cloudantClient.createUser('google', user.id, user.emails[0].value, user.displayName).then(userDoc => {
+              let photo = null;
+              if (user.photos[0].value) {
+                photo = user.photos[0].value.replace(/sz=\d+$/, 'sz=100');
+              }
+              console.log(photo);
+
+              cloudantClient.createUser('google', user.id, user.emails[0].value, user.displayName, photo).then(userDoc => {
                 req.logIn(userDoc, (err) => {
                   if (err) {
                     return next(err);
