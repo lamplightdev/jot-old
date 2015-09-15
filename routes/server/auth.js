@@ -13,6 +13,19 @@ class AuthRouter {
   }
 
   registerRoutes() {
+    const routeParams = {
+      tabs: [{
+        title: 'Home',
+        link: '/'
+      }, {
+        title: 'Jots',
+        link: '/jot'
+      }, {
+        title: 'Lists',
+        link: '/group'
+      }]
+    };
+
     this.routes.registerRoute('authGoogle', (req, res, next) => {
       return Promise.resolve().then(() => {
         return {
@@ -52,7 +65,6 @@ class AuthRouter {
               if (user.photos[0].value) {
                 photo = user.photos[0].value.replace(/sz=\d+$/, 'sz=100');
               }
-              console.log(photo);
 
               cloudantClient.createUser('google', user.id, user.emails[0].value, user.displayName, photo).then(userDoc => {
                 req.logIn(userDoc, (err) => {
@@ -79,6 +91,22 @@ class AuthRouter {
           resolve: () => {
             req.logOut();
             res.redirect('/');
+          },
+
+          reject: next
+        };
+      });
+    });
+
+    this.routes.registerRoute('import', (req, res, next) => {
+      return Promise.resolve().then(() => {
+        return {
+          params: {},
+
+          resolve: () => {
+            res.render('app', Object.assign(routeParams, {
+              content: 'import'
+            }));
           },
 
           reject: next

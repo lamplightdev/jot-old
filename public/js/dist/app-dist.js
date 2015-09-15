@@ -415,6 +415,31 @@ var Jot = (function (_Model) {
         });
       });
     }
+  }, {
+    key: 'importFromLocal',
+    value: function importFromLocal() {
+      console.log('import me please');
+
+      Promise.resolve().then(function () {
+        if (typeof PouchDB === 'undefined') {
+          //server
+          return false;
+        }
+
+        var db = new PouchDB('jot-local', {
+          auto_compaction: true
+        });
+
+        return db.allDocs({
+          endkey: 'jot-',
+          startkey: 'jot-￿',
+          include_docs: true,
+          descending: true
+        }).then(function (result) {
+          console.log(result);
+        });
+      });
+    }
   }]);
 
   return Jot;
@@ -905,6 +930,31 @@ var Jot = (function (_Model) {
           groups.forEach(function (group) {
             group._jots = groupJots[group.id];
           });
+        });
+      });
+    }
+  }, {
+    key: 'importFromLocal',
+    value: function importFromLocal() {
+      console.log('import me please');
+
+      Promise.resolve().then(function () {
+        if (typeof PouchDB === 'undefined') {
+          //server
+          return false;
+        }
+
+        var db = new PouchDB('jot-local', {
+          auto_compaction: true
+        });
+
+        return db.allDocs({
+          endkey: 'jot-',
+          startkey: 'jot-￿',
+          include_docs: true,
+          descending: true
+        }).then(function (result) {
+          console.log(result);
         });
       });
     }
@@ -6936,14 +6986,15 @@ var containerMain = new ViewContainer('view', {
   groups: JotApp.templates.groups,
   jots: JotApp.templates.jots,
   loading: JotApp.templates.loading,
-  loadinggroups: JotApp.templates.loadinggroups
+  loadinggroups: JotApp.templates.loadinggroups,
+  'import': JotApp.templates['import']
 }, {
   'group-list': JotApp.templates['group-list'],
   'jot-list': JotApp.templates['jot-list']
 });
 
 var routesHome = new RoutesHome(router, '/', containerMain);
-var routesAuth = new RoutesAuth(router, '/auth');
+var routesAuth = new RoutesAuth(router, '/auth', containerMain);
 var routesJot = new RoutesJot(router, '/jot', containerMain);
 var routesGroup = new RoutesGroup(router, '/group', containerMain);
 
@@ -6976,7 +7027,7 @@ notificationManager.render(true);
 
 router.activate();
 
-},{"../../db/db":1,"../../routers/path":19,"../../routes/client/auth":21,"../../routes/client/group":22,"../../routes/client/home":23,"../../routes/client/jot":24,"../../templates/helpers":29,"../../views/notification-manager":40,"../../views/titlebar":41,"../../views/view-container":42,"fastclick":9,"handlebars/dist/handlebars.runtime":10}],19:[function(require,module,exports){
+},{"../../db/db":1,"../../routers/path":19,"../../routes/client/auth":21,"../../routes/client/group":22,"../../routes/client/home":23,"../../routes/client/jot":24,"../../templates/helpers":29,"../../views/notification-manager":41,"../../views/titlebar":42,"../../views/view-container":43,"fastclick":9,"handlebars/dist/handlebars.runtime":10}],19:[function(require,module,exports){
 'use strict';
 
 var page = require('page');
@@ -7050,6 +7101,14 @@ var AuthRoutes = (function (_Routes) {
       }
     };
 
+    this._routes['import'] = {
+      _path: '/import',
+      _method: ['get'],
+      _action: function _action() {
+        return Promise.resolve();
+      }
+    };
+
     this._routes.signout = {
       _path: '/signout',
       _method: ['get'],
@@ -7072,15 +7131,20 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var AuthRoutes = require('../auth');
+var ImportView = require('../../views/import');
+
+var PubSub = require('../../utility/pubsub');
 
 var AuthRouter = (function () {
-  function AuthRouter(router, prefix) {
+  function AuthRouter(router, prefix, viewContainer) {
     _classCallCheck(this, AuthRouter);
 
     this._db = require('../../db/db')();
 
     this._router = router;
     this.routes = new AuthRoutes(router, prefix);
+
+    this.importView = new ImportView(viewContainer);
   }
 
   _createClass(AuthRouter, [{
@@ -7105,6 +7169,39 @@ var AuthRouter = (function () {
           };
         });
       });
+
+      this.routes.registerRoute('import', function (ctx, next) {
+        return Promise.resolve().then(function () {
+          return {
+            params: {},
+
+            preAction: function preAction() {
+              PubSub.publish('routeChanged', {
+                name: 'Jot',
+                order: [],
+                tabs: [{
+                  title: 'Home',
+                  link: '/'
+                }, {
+                  title: 'Jots',
+                  link: '/jot'
+                }, {
+                  title: 'Lists',
+                  link: '/group'
+                }]
+              });
+            },
+
+            resolve: function resolve() {
+              _this.importView.render(false, {});
+            },
+
+            reject: function reject(err) {
+              throw new Error(err);
+            }
+          };
+        });
+      });
     }
   }]);
 
@@ -7113,7 +7210,7 @@ var AuthRouter = (function () {
 
 module.exports = AuthRouter;
 
-},{"../../db/db":1,"../auth":20}],22:[function(require,module,exports){
+},{"../../db/db":1,"../../utility/pubsub":31,"../../views/import":36,"../auth":20}],22:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7288,7 +7385,7 @@ var GroupClientRoutes = (function () {
 
 module.exports = GroupClientRoutes;
 
-},{"../../models/group":3,"../../models/jot":4,"../../preferences/group":14,"../../preferences/groups":15,"../../utility/pubsub":31,"../../views/group":33,"../../views/groups":34,"../../views/loadinggroups":39,"../group":25}],23:[function(require,module,exports){
+},{"../../models/group":3,"../../models/jot":4,"../../preferences/group":14,"../../preferences/groups":15,"../../utility/pubsub":31,"../../views/group":33,"../../views/groups":34,"../../views/loadinggroups":40,"../group":25}],23:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7464,7 +7561,7 @@ var JotClientRoutes = (function () {
 
 module.exports = JotClientRoutes;
 
-},{"../../preferences/jots":16,"../../utility/pubsub":31,"../../views/jots":36,"../../views/loading":38,"../jot":27}],25:[function(require,module,exports){
+},{"../../preferences/jots":16,"../../utility/pubsub":31,"../../views/jots":37,"../../views/loading":39,"../jot":27}],25:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x2, _x3, _x4) { var _again = true; _function: while (_again) { var object = _x2, property = _x3, receiver = _x4; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x2 = parent; _x3 = property; _x4 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -8070,7 +8167,7 @@ var ColourSelector = (function (_Widget) {
 
 module.exports = ColourSelector;
 
-},{"./widget":44}],33:[function(require,module,exports){
+},{"./widget":45}],33:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8494,7 +8591,7 @@ var ViewGroup = (function (_View) {
 
 module.exports = ViewGroup;
 
-},{"../models/group":3,"../models/jot":4,"../preferences/group":14,"../utility/pubsub":31,"./colour-selector":32,"./view":43}],34:[function(require,module,exports){
+},{"../models/group":3,"../models/jot":4,"../preferences/group":14,"../utility/pubsub":31,"./colour-selector":32,"./view":44}],34:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8891,7 +8988,7 @@ var ViewGroups = (function (_View) {
 
 module.exports = ViewGroups;
 
-},{"../db/db":1,"../models/group":3,"../preferences/groups":15,"../utility/pubsub":31,"./colour-selector":32,"./view":43}],35:[function(require,module,exports){
+},{"../db/db":1,"../models/group":3,"../preferences/groups":15,"../utility/pubsub":31,"./colour-selector":32,"./view":44}],35:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -8916,7 +9013,57 @@ var ViewHome = (function (_View) {
 
 module.exports = ViewHome;
 
-},{"./view":43}],36:[function(require,module,exports){
+},{"./view":44}],36:[function(require,module,exports){
+'use strict';
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var View = require('./view');
+
+var Jot = require('../models/jot');
+
+var ViewImport = (function (_View) {
+  _inherits(ViewImport, _View);
+
+  function ViewImport() {
+    _classCallCheck(this, ViewImport);
+
+    _get(Object.getPrototypeOf(ViewImport.prototype), 'constructor', this).apply(this, arguments);
+  }
+
+  _createClass(ViewImport, [{
+    key: 'initEvents',
+    value: function initEvents() {
+      _get(Object.getPrototypeOf(ViewImport.prototype), 'initEvents', this).call(this);
+
+      this.initImportForm();
+    }
+  }, {
+    key: 'initImportForm',
+    value: function initImportForm() {
+      var db = require('../db/db')();
+
+      var form = this._el.querySelector('.form-import');
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        Jot.importFromLocal();
+      });
+    }
+  }]);
+
+  return ViewImport;
+})(View);
+
+module.exports = ViewImport;
+
+},{"../db/db":1,"../models/jot":4,"./view":44}],37:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -8979,7 +9126,7 @@ var ViewJots = (function (_View) {
 
 module.exports = ViewJots;
 
-},{"../models/jot":4,"../preferences/jots":16,"../utility/pubsub":31,"./view":43}],37:[function(require,module,exports){
+},{"../models/jot":4,"../preferences/jots":16,"../utility/pubsub":31,"./view":44}],38:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -9068,7 +9215,7 @@ var ListOrder = (function (_Widget) {
 
 module.exports = ListOrder;
 
-},{"../utility/pubsub":31,"./widget":44}],38:[function(require,module,exports){
+},{"../utility/pubsub":31,"./widget":45}],39:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -9093,7 +9240,7 @@ var ViewLoading = (function (_View) {
 
 module.exports = ViewLoading;
 
-},{"./view":43}],39:[function(require,module,exports){
+},{"./view":44}],40:[function(require,module,exports){
 'use strict';
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -9118,7 +9265,7 @@ var ViewLoadingGroups = (function (_LoadingView) {
 
 module.exports = ViewLoadingGroups;
 
-},{"./loading.js":38}],40:[function(require,module,exports){
+},{"./loading.js":39}],41:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -9222,7 +9369,7 @@ var NotificationManagerView = (function (_View) {
 
 module.exports = NotificationManagerView;
 
-},{"../utility/pubsub":31,"./view":43}],41:[function(require,module,exports){
+},{"../utility/pubsub":31,"./view":44}],42:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -9327,7 +9474,7 @@ var TitleBarView = (function (_View) {
 
 module.exports = TitleBarView;
 
-},{"../utility/pubsub":31,"./list-order":37,"./view":43}],42:[function(require,module,exports){
+},{"../utility/pubsub":31,"./list-order":38,"./view":44}],43:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -9363,7 +9510,7 @@ var ViewContainer = (function () {
 
 module.exports = ViewContainer;
 
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -9510,7 +9657,7 @@ var View = (function () {
 
 module.exports = View;
 
-},{"../utility/pubsub":31,"handlebars/dist/handlebars.runtime":10}],44:[function(require,module,exports){
+},{"../utility/pubsub":31,"handlebars/dist/handlebars.runtime":10}],45:[function(require,module,exports){
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();

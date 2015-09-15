@@ -218,6 +218,30 @@ class Jot extends Model {
       });
     });
   }
+
+  static importFromLocal() {
+    console.log('import me please');
+
+    Promise.resolve().then(() => {
+      if (typeof PouchDB === 'undefined') { //server
+        return false;
+      }
+
+      const db = new PouchDB('jot-local', {
+        auto_compaction: true
+      });
+
+      return db.allDocs({
+        endkey:  'jot-',
+        startkey: 'jot-\uffff',
+        include_docs: true,
+        descending: true
+      }).then(result => {
+        console.log(result);
+      });
+    });
+
+  }
 }
 
 module.exports = Jot;

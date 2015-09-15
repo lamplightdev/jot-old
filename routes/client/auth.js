@@ -1,11 +1,16 @@
 const AuthRoutes = require('../auth');
+const ImportView = require('../../views/import');
+
+const PubSub = require('../../utility/pubsub');
 
 class AuthRouter {
-  constructor(router, prefix) {
+  constructor(router, prefix, viewContainer) {
     this._db = require('../../db/db')();
 
     this._router = router;
     this.routes = new AuthRoutes(router, prefix);
+
+    this.importView = new ImportView(viewContainer);
   }
 
   registerRoutes() {
@@ -26,6 +31,41 @@ class AuthRouter {
         };
       });
     });
+
+    this.routes.registerRoute('import', (ctx, next) => {
+      return Promise.resolve().then(() => {
+        return {
+          params: {},
+
+          preAction: () => {
+            PubSub.publish('routeChanged', {
+              name: 'Jot',
+              order: [],
+              tabs: [{
+                title: 'Home',
+                link: '/'
+              }, {
+                title: 'Jots',
+                link: '/jot'
+              }, {
+                title: 'Lists',
+                link: '/group'
+              }]
+            });
+          },
+
+          resolve: () => {
+            this.importView.render(false, {
+            });
+          },
+
+          reject: (err) => {
+            throw new Error(err);
+          }
+        };
+      });
+    });
+
   }
 }
 

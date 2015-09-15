@@ -22,6 +22,14 @@ class AuthRoutes extends Routes {
       }
     };
 
+    this._routes.import = {
+      _path: '/import',
+      _method: ['get'],
+      _action: () => {
+        return Promise.resolve();
+      }
+    };
+
     this._routes.signout = {
       _path: '/signout',
       _method: ['get'],

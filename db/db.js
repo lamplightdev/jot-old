@@ -126,7 +126,6 @@ class DB {
       this._db = new PouchDB(this._remoteCouch);
     }
   }
-
 }
 
 const db = new DB();

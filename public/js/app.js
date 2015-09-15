@@ -47,14 +47,15 @@ const containerMain = new ViewContainer('view', {
   groups: JotApp.templates.groups,
   jots: JotApp.templates.jots,
   loading: JotApp.templates.loading,
-  loadinggroups: JotApp.templates.loadinggroups
+  loadinggroups: JotApp.templates.loadinggroups,
+  import: JotApp.templates.import
 }, {
   'group-list': JotApp.templates['group-list'],
   'jot-list': JotApp.templates['jot-list']
 });
 
 const routesHome = new RoutesHome(router, '/', containerMain);
-const routesAuth = new RoutesAuth(router, '/auth');
+const routesAuth = new RoutesAuth(router, '/auth', containerMain);
 const routesJot = new RoutesJot(router, '/jot', containerMain);
 const routesGroup = new RoutesGroup(router, '/group', containerMain);
 
