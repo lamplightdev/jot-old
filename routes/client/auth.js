@@ -54,8 +54,9 @@ class AuthRouter {
             });
           },
 
-          resolve: () => {
+          resolve: (groups) => {
             this.importView.render(false, {
+              groups
             });
           },
 

@@ -173,9 +173,8 @@ class Jot extends Model {
 
   static loadForGroup(groupId, order = 'alpha', direction = 'asc') {
     return Promise.resolve().then(() => {
-      const db = require('../db/db')();
 
-      return db.query('index/group', {
+      return this.db.query('index/group', {
         descending: true,
         key: groupId,
         include_docs: true
@@ -193,12 +192,10 @@ class Jot extends Model {
 
   static loadForGroups(groups, order = 'alpha', direction = 'asc') {
     return Promise.resolve().then(() => {
-      const db = require('../db/db')();
 
       const groupIds = groups.map(group => group.id);
 
-      //console.log('l4g');
-      return db.query('index/group', {
+      return this.db.query('index/group', {
         keys: groupIds,
         include_docs: true
       }).then(result => {
@@ -217,30 +214,6 @@ class Jot extends Model {
         });
       });
     });
-  }
-
-  static importFromLocal() {
-    console.log('import me please');
-
-    Promise.resolve().then(() => {
-      if (typeof PouchDB === 'undefined') { //server
-        return false;
-      }
-
-      const db = new PouchDB('jot-local', {
-        auto_compaction: true
-      });
-
-      return db.allDocs({
-        endkey:  'jot-',
-        startkey: 'jot-\uffff',
-        include_docs: true,
-        descending: true
-      }).then(result => {
-        console.log(result);
-      });
-    });
-
   }
 }
 

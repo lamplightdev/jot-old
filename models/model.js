@@ -3,8 +3,6 @@ const DateUtils = require('../utility/date');
 class Model {
 
   constructor(members, allowedFields) {
-    this._db = require('../db/db')();
-
     this._id = members._id || null;
     this._rev = members._rev || null;
 
@@ -13,6 +11,10 @@ class Model {
     this._fields = members.fields || {};
 
     this._allowedFields = allowedFields;
+  }
+
+  static get db() {
+    return require('../db/db')();
   }
 
   static getRefName() {
@@ -86,7 +88,7 @@ class Model {
 
         const padding = 5; //the length of the number, e.g. '5' will start at 00000, 00001, etc.
 
-        return this._db.allDocs({
+        return this.constructor.db.allDocs({
           startkey: slug + '\uffff',
           endkey: slug,
           descending: true,
@@ -121,7 +123,7 @@ class Model {
         params.dateAdded = new Date().toISOString();
       }
 
-      return this._db.put(params).then(response => {
+      return this.constructor.db.put(params).then(response => {
         if (response.ok) {
           this.id = response.id;
           this.rev = response.rev;
@@ -137,9 +139,8 @@ class Model {
 
   static loadAll() {
     return Promise.resolve().then(() => {
-      const db = require('../db/db')();
 
-      return db.allDocs({
+      return this.db.allDocs({
         endkey: this.getRefName() + '-',
         startkey: this.getRefName() + '-\uffff',
         include_docs: true,
@@ -159,9 +160,8 @@ class Model {
   static load(id) {
     return Promise.resolve().then(() => {
       if (typeof id !== 'undefined') {
-        const db = require('../db/db')();
 
-        return db.get(id).then(doc => {
+        return this.db.get(id).then(doc => {
           return new this(doc);
         }).catch(err => {
           return false;
@@ -174,10 +174,9 @@ class Model {
 
   static remove(id) {
     return Promise.resolve().then(() => {
-      const db = require('../db/db')();
 
-      return db.get(id).then(doc => {
-        return db.remove(doc);
+      return this.db.get(id).then(doc => {
+        return this.db.remove(doc);
       });
     });
   }

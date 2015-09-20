@@ -142,16 +142,27 @@ var DB = (function () {
   return DB;
 })();
 
-var db = new DB();
+var dbs = {
+  'main': new DB()
+};
+var currentDB = 'main';
 
 module.exports = function (options) {
-  if (options) {
+  var id = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 
-    db.init(options);
-    return db.db;
-  } else {
-    return db.db;
+  if (id !== false) {
+    currentDB = id;
   }
+
+  if (options) {
+    if (!dbs[currentDB]) {
+      dbs[currentDB] = new DB();
+    }
+
+    dbs[currentDB].init(options);
+  }
+
+  return dbs[currentDB].db;
 };
 
 },{"../utility/pubsub":31,"pouchdb":7}],2:[function(require,module,exports){
@@ -362,9 +373,8 @@ var Jot = (function (_Model) {
       var direction = arguments.length <= 2 || arguments[2] === undefined ? 'asc' : arguments[2];
 
       return Promise.resolve().then(function () {
-        var db = require('../db/db')();
 
-        return db.query('index/group', {
+        return _this3.db.query('index/group', {
           descending: true,
           key: groupId,
           include_docs: true
@@ -388,14 +398,12 @@ var Jot = (function (_Model) {
       var direction = arguments.length <= 2 || arguments[2] === undefined ? 'asc' : arguments[2];
 
       return Promise.resolve().then(function () {
-        var db = require('../db/db')();
 
         var groupIds = groups.map(function (group) {
           return group.id;
         });
 
-        //console.log('l4g');
-        return db.query('index/group', {
+        return _this4.db.query('index/group', {
           keys: groupIds,
           include_docs: true
         }).then(function (result) {
@@ -415,31 +423,6 @@ var Jot = (function (_Model) {
         });
       });
     }
-  }, {
-    key: 'importFromLocal',
-    value: function importFromLocal() {
-      console.log('import me please');
-
-      Promise.resolve().then(function () {
-        if (typeof PouchDB === 'undefined') {
-          //server
-          return false;
-        }
-
-        var db = new PouchDB('jot-local', {
-          auto_compaction: true
-        });
-
-        return db.allDocs({
-          endkey: 'jot-',
-          startkey: 'jot-￿',
-          include_docs: true,
-          descending: true
-        }).then(function (result) {
-          console.log(result);
-        });
-      });
-    }
   }]);
 
   return Jot;
@@ -447,7 +430,7 @@ var Jot = (function (_Model) {
 
 module.exports = Jot;
 
-},{"../db/db":1,"./group":3,"./model":5}],3:[function(require,module,exports){
+},{"./group":3,"./model":5}],3:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -577,13 +560,12 @@ var Group = (function (_Model) {
       var _this3 = this;
 
       return Promise.resolve().then(function () {
-        var db = require('../db/db')();
 
         var groupIds = jots.map(function (jot) {
           return jot.fields.group;
         });
 
-        return db.allDocs({
+        return _this3.db.allDocs({
           descending: true,
           keys: groupIds,
           include_docs: true
@@ -647,8 +629,9 @@ var Group = (function (_Model) {
   }, {
     key: 'remove',
     value: function remove(id) {
+      var _this4 = this;
+
       return _get(Object.getPrototypeOf(Group), 'remove', this).call(this, id).then(function () {
-        var db = require('../db/db')();
 
         return Jot.loadForGroup(id).then(function (jots) {
           var docs = jots.map(function (jot) {
@@ -659,9 +642,33 @@ var Group = (function (_Model) {
             };
           });
 
-          return db.bulkDocs(docs).then(function () {
+          return _this4.db.bulkDocs(docs).then(function () {
             return true;
           });
+        });
+      });
+    }
+  }, {
+    key: 'importFromLocal',
+    value: function importFromLocal() {
+      var _this5 = this;
+
+      return Promise.resolve().then(function () {
+        if (typeof PouchDB === 'undefined') {
+          //server
+          return false;
+        }
+
+        //load local db
+        require('../db/db')({
+          dbName: 'jot-local'
+        }, 'local');
+
+        return _this5.loadAll().then(function (groups) {
+          //restore main db
+          require('../db/db')(null, 'main');
+
+          return groups;
         });
       });
     }
@@ -880,9 +887,8 @@ var Jot = (function (_Model) {
       var direction = arguments.length <= 2 || arguments[2] === undefined ? 'asc' : arguments[2];
 
       return Promise.resolve().then(function () {
-        var db = require('../db/db')();
 
-        return db.query('index/group', {
+        return _this3.db.query('index/group', {
           descending: true,
           key: groupId,
           include_docs: true
@@ -906,14 +912,12 @@ var Jot = (function (_Model) {
       var direction = arguments.length <= 2 || arguments[2] === undefined ? 'asc' : arguments[2];
 
       return Promise.resolve().then(function () {
-        var db = require('../db/db')();
 
         var groupIds = groups.map(function (group) {
           return group.id;
         });
 
-        //console.log('l4g');
-        return db.query('index/group', {
+        return _this4.db.query('index/group', {
           keys: groupIds,
           include_docs: true
         }).then(function (result) {
@@ -933,31 +937,6 @@ var Jot = (function (_Model) {
         });
       });
     }
-  }, {
-    key: 'importFromLocal',
-    value: function importFromLocal() {
-      console.log('import me please');
-
-      Promise.resolve().then(function () {
-        if (typeof PouchDB === 'undefined') {
-          //server
-          return false;
-        }
-
-        var db = new PouchDB('jot-local', {
-          auto_compaction: true
-        });
-
-        return db.allDocs({
-          endkey: 'jot-',
-          startkey: 'jot-￿',
-          include_docs: true,
-          descending: true
-        }).then(function (result) {
-          console.log(result);
-        });
-      });
-    }
   }]);
 
   return Jot;
@@ -965,7 +944,7 @@ var Jot = (function (_Model) {
 
 module.exports = Jot;
 
-},{"../db/db":1,"./group":3,"./model":5}],5:[function(require,module,exports){
+},{"./group":3,"./model":5}],5:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -977,8 +956,6 @@ var DateUtils = require('../utility/date');
 var Model = (function () {
   function Model(members, allowedFields) {
     _classCallCheck(this, Model);
-
-    this._db = require('../db/db')();
 
     this._id = members._id || null;
     this._rev = members._rev || null;
@@ -1010,7 +987,7 @@ var Model = (function () {
             var padding = 5; //the length of the number, e.g. '5' will start at 00000, 00001, etc.
 
             return {
-              v: _this._db.allDocs({
+              v: _this.constructor.db.allDocs({
                 startkey: slug + '￿',
                 endkey: slug,
                 descending: true,
@@ -1052,7 +1029,7 @@ var Model = (function () {
           params.dateAdded = new Date().toISOString();
         }
 
-        return _this2._db.put(params).then(function (response) {
+        return _this2.constructor.db.put(params).then(function (response) {
           if (response.ok) {
             _this2.id = response.id;
             _this2.rev = response.rev;
@@ -1130,9 +1107,8 @@ var Model = (function () {
       var _this3 = this;
 
       return Promise.resolve().then(function () {
-        var db = require('../db/db')();
 
-        return db.allDocs({
+        return _this3.db.allDocs({
           endkey: _this3.getRefName() + '-',
           startkey: _this3.getRefName() + '-￿',
           include_docs: true,
@@ -1155,9 +1131,8 @@ var Model = (function () {
 
       return Promise.resolve().then(function () {
         if (typeof id !== 'undefined') {
-          var db = require('../db/db')();
 
-          return db.get(id).then(function (doc) {
+          return _this4.db.get(id).then(function (doc) {
             return new _this4(doc);
           })['catch'](function (err) {
             return false;
@@ -1170,13 +1145,19 @@ var Model = (function () {
   }, {
     key: 'remove',
     value: function remove(id) {
-      return Promise.resolve().then(function () {
-        var db = require('../db/db')();
+      var _this5 = this;
 
-        return db.get(id).then(function (doc) {
-          return db.remove(doc);
+      return Promise.resolve().then(function () {
+
+        return _this5.db.get(id).then(function (doc) {
+          return _this5.db.remove(doc);
         });
       });
+    }
+  }, {
+    key: 'db',
+    get: function get() {
+      return require('../db/db')();
     }
   }]);
 
@@ -7075,6 +7056,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
 
 var Routes = require('./routes');
 
+var Group = require('../models/group');
+
 var AuthRoutes = (function (_Routes) {
   _inherits(AuthRoutes, _Routes);
 
@@ -7105,7 +7088,9 @@ var AuthRoutes = (function (_Routes) {
       _path: '/import',
       _method: ['get'],
       _action: function _action() {
-        return Promise.resolve();
+        return Promise.resolve().then(function () {
+          return Group.importFromLocal();
+        });
       }
     };
 
@@ -7123,7 +7108,7 @@ var AuthRoutes = (function (_Routes) {
 
 module.exports = AuthRoutes;
 
-},{"./routes":28}],21:[function(require,module,exports){
+},{"../models/group":3,"./routes":28}],21:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -7192,8 +7177,10 @@ var AuthRouter = (function () {
               });
             },
 
-            resolve: function resolve() {
-              _this.importView.render(false, {});
+            resolve: function resolve(groups) {
+              _this.importView.render(false, {
+                groups: groups
+              });
             },
 
             reject: function reject(err) {
@@ -9026,7 +9013,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
 
 var View = require('./view');
 
-var Jot = require('../models/jot');
+var Group = require('../models/group');
 
 var ViewImport = (function (_View) {
   _inherits(ViewImport, _View);
@@ -9047,13 +9034,13 @@ var ViewImport = (function (_View) {
   }, {
     key: 'initImportForm',
     value: function initImportForm() {
-      var db = require('../db/db')();
-
       var form = this._el.querySelector('.form-import');
       form.addEventListener('submit', function (event) {
         event.preventDefault();
 
-        Jot.importFromLocal();
+        Group.importFromLocal().then(function (groups) {
+          console.log(groups);
+        });
       });
     }
   }]);
@@ -9063,7 +9050,7 @@ var ViewImport = (function (_View) {
 
 module.exports = ViewImport;
 
-},{"../db/db":1,"../models/jot":4,"./view":44}],37:[function(require,module,exports){
+},{"../models/group":3,"./view":44}],37:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();

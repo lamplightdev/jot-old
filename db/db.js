@@ -128,15 +128,23 @@ class DB {
   }
 }
 
-const db = new DB();
+const dbs = {
+  'main': new DB()
+};
+let currentDB = 'main';
 
-module.exports = (options) => {
-  if (options) {
-
-    db.init(options);
-    return db.db;
-
-  } else {
-    return db.db;
+module.exports = (options, id=false) => {
+  if (id !== false) {
+    currentDB = id;
   }
+
+  if (options) {
+    if (!dbs[currentDB]) {
+      dbs[currentDB] = new DB();
+    }
+
+    dbs[currentDB].init(options);
+  }
+
+  return dbs[currentDB].db;
 };

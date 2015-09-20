@@ -2,7 +2,7 @@
 
 const View = require('./view');
 
-const Jot = require('../models/jot');
+const Group = require('../models/group');
 
 class ViewImport extends View {
 
@@ -13,13 +13,13 @@ class ViewImport extends View {
   }
 
   initImportForm() {
-    const db = require('../db/db')();
-
     const form = this._el.querySelector('.form-import');
     form.addEventListener('submit', event => {
       event.preventDefault();
 
-      Jot.importFromLocal();
+      Group.importFromLocal().then(groups => {
+        console.log(groups);
+      });
     });
   }
 }

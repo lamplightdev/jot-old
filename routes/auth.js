@@ -2,6 +2,8 @@
 
 const Routes = require('./routes');
 
+const Group = require('../models/group');
+
 class AuthRoutes extends Routes {
   constructor(router, prefix = '') {
     super(router, prefix);
@@ -26,7 +28,9 @@ class AuthRoutes extends Routes {
       _path: '/import',
       _method: ['get'],
       _action: () => {
-        return Promise.resolve();
+        return Promise.resolve().then(() => {
+          return Group.importFromLocal();
+        });
       }
     };
 

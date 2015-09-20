@@ -88,11 +88,10 @@ class Group extends Model {
 
   static loadForJots(jots) {
     return Promise.resolve().then(() => {
-      const db = require('../db/db')();
 
       const groupIds = jots.map(jot => jot.fields.group);
 
-      return db.allDocs({
+      return this.db.allDocs({
         descending: true,
         keys: groupIds,
         include_docs: true
@@ -152,7 +151,7 @@ class Group extends Model {
 
   static remove(id) {
     return super.remove(id).then(() => {
-      const db = require('../db/db')();
+
 
       return Jot.loadForGroup(id).then(jots => {
         const docs = jots.map(jot => {
@@ -163,9 +162,29 @@ class Group extends Model {
           };
         });
 
-        return db.bulkDocs(docs).then(() => {
+        return this.db.bulkDocs(docs).then(() => {
           return true;
         });
+      });
+    });
+  }
+
+  static importFromLocal() {
+    return Promise.resolve().then(() => {
+      if (typeof PouchDB === 'undefined') { //server
+        return false;
+      }
+
+      //load local db
+      require('../db/db')({
+        dbName: 'jot-local'
+      }, 'local');
+
+      return this.loadAll().then(groups => {
+        //restore main db
+        require('../db/db')(null, 'main');
+
+        return groups;
       });
     });
   }
