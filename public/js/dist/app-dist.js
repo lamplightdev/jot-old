@@ -1025,7 +1025,7 @@ var Model = (function () {
           params._rev = _this2.rev;
         }
 
-        if (_this2.isNew() || !_this2._dateAdded) {
+        if (_this2.isNew() && !_this2._dateAdded) {
           params.dateAdded = new Date().toISOString();
         }
 
@@ -1034,7 +1034,7 @@ var Model = (function () {
             _this2.id = response.id;
             _this2.rev = response.rev;
 
-            return true;
+            return _this2;
           } else {
             return false;
           }
@@ -1153,6 +1153,12 @@ var Model = (function () {
           return _this5.db.remove(doc);
         });
       });
+    }
+  }, {
+    key: 'insert',
+    value: function insert(members) {
+      var model = new this(members);
+      return model.save();
     }
   }, {
     key: 'db',
@@ -9013,6 +9019,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== 'function' 
 
 var View = require('./view');
 
+var Jot = require('../models/jot');
 var Group = require('../models/group');
 
 var ViewImport = (function (_View) {
@@ -9039,7 +9046,50 @@ var ViewImport = (function (_View) {
         event.preventDefault();
 
         Group.importFromLocal().then(function (groups) {
-          console.log(groups);
+          var groupPromises = [];
+
+          groups.forEach(function (group) {
+            groupPromises.push(function (newGroups) {
+              return Group.insert({
+                fields: group.fields,
+                dateAdded: group._dateAdded
+              }).then(function (newGroup) {
+                newGroups.push(newGroup);
+                return newGroups;
+              });
+            });
+          });
+
+          var groupPromiseChain = Promise.resolve([]);
+          groupPromises.forEach(function (groupPromise) {
+            groupPromiseChain = groupPromiseChain.then(groupPromise);
+          });
+
+          return groupPromiseChain.then(function (newGroups) {
+            var jotPromises = [];
+
+            groups.forEach(function (group, index) {
+              group.jots.forEach(function (jot) {
+                var newFields = jot.fields;
+                newFields.group = newGroups[index].id;
+                jotPromises.push(function () {
+                  return Jot.insert({
+                    fields: newFields,
+                    dateAdded: jot._dateAdded
+                  });
+                });
+              });
+            });
+
+            var jotPromiseChain = Promise.resolve();
+            jotPromises.forEach(function (jotPromise) {
+              jotPromiseChain = jotPromiseChain.then(jotPromise);
+            });
+
+            return jotPromiseChain;
+          });
+        }).then(function (jots) {
+          console.log('done!!!', jots);
         });
       });
     }
@@ -9050,7 +9100,7 @@ var ViewImport = (function (_View) {
 
 module.exports = ViewImport;
 
-},{"../models/group":3,"./view":44}],37:[function(require,module,exports){
+},{"../models/group":3,"../models/jot":4,"./view":44}],37:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();

@@ -119,7 +119,7 @@ class Model {
         params._rev = this.rev;
       }
 
-      if (this.isNew() || !this._dateAdded) {
+      if (this.isNew() && !this._dateAdded) {
         params.dateAdded = new Date().toISOString();
       }
 
@@ -128,7 +128,7 @@ class Model {
           this.id = response.id;
           this.rev = response.rev;
 
-          return true;
+          return this;
         } else {
           return false;
         }
@@ -179,6 +179,11 @@ class Model {
         return this.db.remove(doc);
       });
     });
+  }
+
+  static insert(members) {
+    const model = new this(members);
+    return model.save();
   }
 }
 
