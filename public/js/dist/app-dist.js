@@ -672,6 +672,37 @@ var Group = (function (_Model) {
         });
       });
     }
+  }, {
+    key: 'removeFromLocal',
+    value: function removeFromLocal() {
+      var _this6 = this;
+
+      return Promise.resolve().then(function () {
+        if (typeof PouchDB === 'undefined') {
+          //server
+          return false;
+        }
+
+        //load local db
+        require('../db/db')({
+          dbName: 'jot-local'
+        }, 'local');
+
+        return _this6.loadAll().then(function (groups) {
+          var promises = [];
+          groups.forEach(function (group) {
+            promises.push(Group.remove(group.id));
+          });
+
+          return Promise.all(promises);
+        }).then(function () {
+          //restore main db
+          require('../db/db')(null, 'main');
+
+          return true;
+        });
+      });
+    }
   }]);
 
   return Group;
@@ -9042,56 +9073,59 @@ var ViewImport = (function (_View) {
     key: 'initImportForm',
     value: function initImportForm() {
       var form = this._el.querySelector('.form-import');
-      form.addEventListener('submit', function (event) {
-        event.preventDefault();
 
-        Group.importFromLocal().then(function (groups) {
-          var groupPromises = [];
+      if (form) {
+        form.addEventListener('submit', function (event) {
+          event.preventDefault();
 
-          groups.forEach(function (group) {
-            groupPromises.push(function (newGroups) {
-              return Group.insert({
-                fields: group.fields,
-                dateAdded: group._dateAdded
-              }).then(function (newGroup) {
-                newGroups.push(newGroup);
-                return newGroups;
-              });
-            });
-          });
+          Group.importFromLocal().then(function (groups) {
+            var groupPromises = [];
 
-          var groupPromiseChain = Promise.resolve([]);
-          groupPromises.forEach(function (groupPromise) {
-            groupPromiseChain = groupPromiseChain.then(groupPromise);
-          });
-
-          return groupPromiseChain.then(function (newGroups) {
-            var jotPromises = [];
-
-            groups.forEach(function (group, index) {
-              group.jots.forEach(function (jot) {
-                var newFields = jot.fields;
-                newFields.group = newGroups[index].id;
-                jotPromises.push(function () {
-                  return Jot.insert({
-                    fields: newFields,
-                    dateAdded: jot._dateAdded
-                  });
+            groups.forEach(function (group) {
+              groupPromises.push(function (newGroups) {
+                return Group.insert({
+                  fields: group.fields,
+                  dateAdded: group._dateAdded
+                }).then(function (newGroup) {
+                  newGroups.push(newGroup);
+                  return newGroups;
                 });
               });
             });
 
-            var jotPromiseChain = Promise.resolve();
-            jotPromises.forEach(function (jotPromise) {
-              jotPromiseChain = jotPromiseChain.then(jotPromise);
+            var groupPromiseChain = Promise.resolve([]);
+            groupPromises.forEach(function (groupPromise) {
+              groupPromiseChain = groupPromiseChain.then(groupPromise);
             });
 
-            return jotPromiseChain;
+            return groupPromiseChain.then(function (newGroups) {
+              var jotPromises = [];
+
+              groups.forEach(function (group, index) {
+                group.jots.forEach(function (jot) {
+                  var newFields = jot.fields;
+                  newFields.group = newGroups[index].id;
+                  jotPromises.push(function () {
+                    return Jot.insert({
+                      fields: newFields,
+                      dateAdded: jot._dateAdded
+                    });
+                  });
+                });
+              });
+
+              var jotPromiseChain = Promise.resolve();
+              jotPromises.forEach(function (jotPromise) {
+                jotPromiseChain = jotPromiseChain.then(jotPromise);
+              });
+
+              return jotPromiseChain;
+            });
+          }).then(function () {
+            return Group.removeFromLocal();
           });
-        }).then(function (jots) {
-          console.log('done!!!', jots);
         });
-      });
+      }
     }
   }]);
 

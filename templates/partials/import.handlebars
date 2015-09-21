@@ -1,10 +1,12 @@
-
-{{#each groups}}
-<div class='import__item'>
-  {{fields.name}} ({{jots.length}})
-</div>
-{{/each}}
-
-<form class='form-import'>
-  <button class='md-form-btn' type='submit'>Import</button>
-</form>
+{{#if groups}}
+  {{#each groups}}
+  <div class='import__item'>
+    {{fields.name}} ({{jots.length}})
+  </div>
+  {{/each}}
+  <form class='form-import'>
+    <button class='md-form-btn' type='submit'>Import</button>
+  </form>
+{{else}}
+  No groups to import
+{{/if}}

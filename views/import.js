@@ -15,56 +15,59 @@ class ViewImport extends View {
 
   initImportForm() {
     const form = this._el.querySelector('.form-import');
-    form.addEventListener('submit', event => {
-      event.preventDefault();
 
-      Group.importFromLocal().then(groups => {
-        const groupPromises = [];
+    if (form) {
+      form.addEventListener('submit', event => {
+        event.preventDefault();
 
-        groups.forEach(group => {
-          groupPromises.push((newGroups) => {
-            return Group.insert({
-              fields: group.fields,
-              dateAdded: group._dateAdded
-            }).then(newGroup => {
-              newGroups.push(newGroup);
-              return newGroups;
-            });
-          });
-        });
+        Group.importFromLocal().then(groups => {
+          const groupPromises = [];
 
-        let groupPromiseChain = Promise.resolve([]);
-        groupPromises.forEach(groupPromise => {
-          groupPromiseChain = groupPromiseChain.then(groupPromise);
-        });
-
-        return groupPromiseChain.then(newGroups => {
-          const jotPromises = [];
-
-          groups.forEach((group, index) => {
-            group.jots.forEach(jot => {
-              const newFields = jot.fields;
-              newFields.group = newGroups[index].id;
-              jotPromises.push(() => {
-                return Jot.insert({
-                  fields: newFields,
-                  dateAdded: jot._dateAdded
-                });
+          groups.forEach(group => {
+            groupPromises.push((newGroups) => {
+              return Group.insert({
+                fields: group.fields,
+                dateAdded: group._dateAdded
+              }).then(newGroup => {
+                newGroups.push(newGroup);
+                return newGroups;
               });
             });
           });
 
-          let jotPromiseChain = Promise.resolve();
-          jotPromises.forEach(jotPromise => {
-            jotPromiseChain = jotPromiseChain.then(jotPromise);
+          let groupPromiseChain = Promise.resolve([]);
+          groupPromises.forEach(groupPromise => {
+            groupPromiseChain = groupPromiseChain.then(groupPromise);
           });
 
-          return jotPromiseChain;
+          return groupPromiseChain.then(newGroups => {
+            const jotPromises = [];
+
+            groups.forEach((group, index) => {
+              group.jots.forEach(jot => {
+                const newFields = jot.fields;
+                newFields.group = newGroups[index].id;
+                jotPromises.push(() => {
+                  return Jot.insert({
+                    fields: newFields,
+                    dateAdded: jot._dateAdded
+                  });
+                });
+              });
+            });
+
+            let jotPromiseChain = Promise.resolve();
+            jotPromises.forEach(jotPromise => {
+              jotPromiseChain = jotPromiseChain.then(jotPromise);
+            });
+
+            return jotPromiseChain;
+          });
+        }).then(() => {
+          return Group.removeFromLocal();
         });
-      }).then(jots => {
-        console.log('done!!!', jots);
       });
-    });
+    }
   }
 }
 

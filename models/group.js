@@ -152,7 +152,6 @@ class Group extends Model {
   static remove(id) {
     return super.remove(id).then(() => {
 
-
       return Jot.loadForGroup(id).then(jots => {
         const docs = jots.map(jot => {
           return {
@@ -185,6 +184,33 @@ class Group extends Model {
         require('../db/db')(null, 'main');
 
         return groups;
+      });
+    });
+  }
+
+  static removeFromLocal() {
+    return Promise.resolve().then(() => {
+      if (typeof PouchDB === 'undefined') { //server
+        return false;
+      }
+
+      //load local db
+      require('../db/db')({
+        dbName: 'jot-local'
+      }, 'local');
+
+      return this.loadAll().then(groups => {
+        const promises = [];
+        groups.forEach(group => {
+          promises.push(Group.remove(group.id));
+        });
+
+        return Promise.all(promises);
+      }).then(() => {
+        //restore main db
+        require('../db/db')(null, 'main');
+
+        return true;
       });
     });
   }
