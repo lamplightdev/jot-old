@@ -5,6 +5,10 @@ const View = require('./view');
 const Jot = require('../models/jot');
 const Group = require('../models/group');
 
+const PubSub = require('../utility/pubsub');
+
+const router = require('../routers/path');
+
 class ViewImport extends View {
 
   initEvents() {
@@ -63,8 +67,16 @@ class ViewImport extends View {
 
             return jotPromiseChain;
           });
-        }).then(() => {
+        })
+        .then(() => {
           return Group.removeFromLocal();
+        })
+        .then(() => {
+          PubSub.publish('notify', {
+            title: 'Jots imported'
+          });
+          router.go('/group');
+          return true;
         });
       });
     }

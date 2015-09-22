@@ -13,11 +13,11 @@ class NotificationManagerView extends View {
     super.render(preRendered, params);
 
     this._subscriptions.push(PubSub.subscribe('notify', (topic, args) => {
-      this.showSyncNotification(args);
+      this.showNotification(args);
     }));
   }
 
-  showSyncNotification({
+  showNotification({
     title = false,
     body = false,
     action = false,
@@ -41,7 +41,7 @@ class NotificationManagerView extends View {
 
             action.fn().then(() => {
               if (action.msg) {
-                this.showSyncNotification({
+                this.showNotification({
                   title: action.msg
                 });
               } else {

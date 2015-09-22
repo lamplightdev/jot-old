@@ -9053,6 +9053,10 @@ var View = require('./view');
 var Jot = require('../models/jot');
 var Group = require('../models/group');
 
+var PubSub = require('../utility/pubsub');
+
+var router = require('../routers/path');
+
 var ViewImport = (function (_View) {
   _inherits(ViewImport, _View);
 
@@ -9123,6 +9127,12 @@ var ViewImport = (function (_View) {
             });
           }).then(function () {
             return Group.removeFromLocal();
+          }).then(function () {
+            PubSub.publish('notify', {
+              title: 'Jots imported'
+            });
+            router.go('/group');
+            return true;
           });
         });
       }
@@ -9134,7 +9144,7 @@ var ViewImport = (function (_View) {
 
 module.exports = ViewImport;
 
-},{"../models/group":3,"../models/jot":4,"./view":44}],37:[function(require,module,exports){
+},{"../models/group":3,"../models/jot":4,"../routers/path":19,"../utility/pubsub":31,"./view":44}],37:[function(require,module,exports){
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -9370,12 +9380,12 @@ var NotificationManagerView = (function (_View) {
       _get(Object.getPrototypeOf(NotificationManagerView.prototype), 'render', this).call(this, preRendered, params);
 
       this._subscriptions.push(PubSub.subscribe('notify', function (topic, args) {
-        _this.showSyncNotification(args);
+        _this.showNotification(args);
       }));
     }
   }, {
-    key: 'showSyncNotification',
-    value: function showSyncNotification(_ref) {
+    key: 'showNotification',
+    value: function showNotification(_ref) {
       var _this2 = this;
 
       var _ref$title = _ref.title;
@@ -9404,7 +9414,7 @@ var NotificationManagerView = (function (_View) {
 
               action.fn().then(function () {
                 if (action.msg) {
-                  _this2.showSyncNotification({
+                  _this2.showNotification({
                     title: action.msg
                   });
                 } else {
