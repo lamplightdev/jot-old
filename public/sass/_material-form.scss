@@ -25,30 +25,33 @@ input, textarea, button, select {
   border: 0;
   padding: 0.5rem 0;
   margin: 0 0.6rem;
+  text-transform: uppercase;
 
-  > span {
-    display: inline-block;
+  &.md-form-btn--raised {
+    > span {
+      display: inline-block;
 
-    font-size: 1rem;
-    line-height: 2.6;
-    text-transform: uppercase;
+      font-size: 1rem;
+      line-height: 2.6;
+      text-transform: uppercase;
 
-    border-radius: 3px;
-    padding: 0 0.6rem;
-    margin: 0;
-    min-width: 4.6rem;
-    border: 0;
-    background: $clr-blue;
-    color: white;
+      border-radius: 3px;
+      padding: 0 0.6rem;
+      margin: 0;
+      min-width: 4.6rem;
+      border: 0;
+      background: $clr-blue;
+      color: white;
 
-    @include drop-shadow(1);
+      @include drop-shadow(1);
+    }
   }
 
 
   &.md-form-btn--flat {
     > span {
       background: transparent;
-      color: black;
+      color: $clr-blue;
       @include drop-shadow(0);
     }
   }

@@ -26,17 +26,17 @@
             <input type='hidden' name='action' value='update'>
             <input type='hidden' name='done-status' value=''>
             {{>colour-selector name='priority' rootColour=@root.group.fields.colour colours=priorities current=fields.priority}}
-            <button class='md-form-btn' type='submit'>save</button>
+            <button class='md-form-btn md-form-btn--raised' type='submit'><span>save</span></button>
             {{#if fields.done}}
-            <button class='md-form-btn' type='submit' name='undone'>undone</button>
+            <button class='md-form-btn md-form-btn--raised' type='submit' name='undone'><span>undone</span></button>
             {{else}}
-            <button class='md-form-btn' type='submit' name='done'>done</button>
+            <button class='md-form-btn md-form-btn--raised' type='submit' name='done'><span>done</span></button>
             {{/if}}
           </form>
 
           <form class='form-jot-delete form-jot-delete-{{id}}' data-id='{{id}}' data-group-id='{{fields.group}}' method='post' action='/jot/{{id}}'>
             <input type='hidden' name='action' value='delete'>
-            <button class='md-form-btn' type='submit'>delete</button>
+            <button class='md-form-btn md-form-btn--flat md-form-btn--danger' type='submit'><span>delete</span></button>
           </form>
         </div>
       </div>
