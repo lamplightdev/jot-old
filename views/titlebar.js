@@ -3,11 +3,19 @@ const View = require('./view');
 const ListOrder = require('./list-order');
 const PubSub = require('../utility/pubsub');
 
+const Touch = require('../utility/touch');
+
 class TitleBarView extends View {
   constructor(container) {
     super(container);
 
     this.registerWidget(ListOrder);
+
+    this._touchHandler = new Touch();
+    this._touchHandler.register('left', (this._closeNav).bind(this));
+    this._touchHandler.register('right', (this._openNav).bind(this));
+    //this._touchHandler.register('up', () => console.log('up'));
+    //this._touchHandler.register('down', () => console.log('down'));
   }
 
   render(preRendered, params) {
@@ -19,6 +27,8 @@ class TitleBarView extends View {
 
       this.updateSorting(args);
     }));
+
+    this._touchHandler.setElement(this._el);
   }
 
   renderPartial(name, params) {
@@ -53,6 +63,12 @@ class TitleBarView extends View {
     for (let i = 0; i < this._links.length; i++) {
       this._links[i].addEventListener('click', () => this._closeNav());
     }
+  }
+
+  cleanup() {
+    super.cleanup();
+
+    this._touchHandler.destroy();
   }
 
   _openNav() {
