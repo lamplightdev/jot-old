@@ -14,8 +14,6 @@ class TitleBarView extends View {
     this._touchHandler = new Touch();
     this._touchHandler.register('left', (this._closeNav).bind(this));
     this._touchHandler.register('right', (this._openNav).bind(this));
-    //this._touchHandler.register('up', () => console.log('up'));
-    //this._touchHandler.register('down', () => console.log('down'));
   }
 
   render(preRendered, params) {

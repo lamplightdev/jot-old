@@ -100,8 +100,12 @@
   }
 
   a {
-    &:hover {
-      background-color: $clr-grey-300;
+    &:hover, &:focus {
+      background: $clr-grey-100;
+    }
+
+    &:active {
+      background: $clr-grey-200;
     }
   }
 
@@ -174,6 +178,11 @@
       &.current {
         display: inline-block;
       }
+
+      &:focus, &:active {
+        background: $clr-blue-700;
+        border-radius: $width + 2.5rem;
+      }
     }
   }
 
@@ -231,6 +240,11 @@
 
   width: $width + 2.5rem;
 
+  &:focus, &:active {
+    background: $clr-blue-700;
+    border-radius: $width + 2.5rem;
+  }
+
   span {
     display: block;
     height: 2px;
@@ -245,6 +259,11 @@
 
   &.close {
     margin-left: 0;
+
+    &:focus, &:active {
+      background: $clr-grey-300;
+    }
+
     span {
       background-color: $clr-grey-900;
     }

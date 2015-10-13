@@ -38,12 +38,12 @@
   padding: 0;
   border-bottom: 1px solid $clr-grey-200;
 
-  &:hover {
+  &:hover, &:focus {
     background: $clr-grey-100;
   }
 
-  &:active, &:focus {
-    background: $clr-grey-200;
+  &:active {
+    //background: $clr-grey-200;
   }
 
   &:last-child {
@@ -120,10 +120,9 @@
     border: 0;
     background: transparent;
 
-    img {
-      display: block;
-      width: 1.6rem;
-      margin: 0.5rem;
-      height: auto;
+    &:focus, &:active {
+      svg.icon {
+        fill: $clr-grey-900;
+      }
     }
   }

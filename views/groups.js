@@ -155,7 +155,7 @@ class ViewGroups extends View {
         const id = form.dataset.id;
 
         const item = this._el.querySelector('.groups__group-' + id);
-        //item.parentNode.parentNode.removeChild(item);
+        item.parentNode.removeChild(item);
 
         Group.load(id).then(group => {
           Group.remove(id).then(() => {

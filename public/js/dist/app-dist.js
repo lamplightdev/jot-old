@@ -8567,7 +8567,7 @@ var ViewGroup = (function (_View) {
             var group = form.dataset.groupId;
 
             var item = _this4._el.querySelector('.jots__jot-' + id);
-            //item.parentNode.parentNode.removeChild(item);
+            item.parentNode.removeChild(item);
 
             Jot.load(id).then(function (jot) {
               Jot.remove(id).then(function () {
@@ -8977,7 +8977,7 @@ var ViewGroups = (function (_View) {
             var id = form.dataset.id;
 
             var item = _this4._el.querySelector('.groups__group-' + id);
-            //item.parentNode.parentNode.removeChild(item);
+            item.parentNode.removeChild(item);
 
             Group.load(id).then(function (group) {
               Group.remove(id).then(function () {
@@ -9584,8 +9584,6 @@ var TitleBarView = (function (_View) {
     this._touchHandler = new Touch();
     this._touchHandler.register('left', this._closeNav.bind(this));
     this._touchHandler.register('right', this._openNav.bind(this));
-    //this._touchHandler.register('up', () => console.log('up'));
-    //this._touchHandler.register('down', () => console.log('down'));
   }
 
   _createClass(TitleBarView, [{

@@ -44,21 +44,58 @@ input, textarea, button, select {
       color: white;
 
       @include drop-shadow(1);
+
+      &:hover, &:focus {
+        background-color: $clr-blue-600;
+      }
+
+      &:active {
+        background-color: $clr-blue-700;
+        @include drop-shadow(2);
+      }
     }
   }
 
 
   &.md-form-btn--flat {
     > span {
+      display: inline-block;
+
+      font-size: 1rem;
+      line-height: 2.6;
+      text-transform: uppercase;
+
+      border-radius: 3px;
+      padding: 0 0.6rem;
+      margin: 0;
+      min-width: 4.6rem;
+      border: 0;
+
       background: transparent;
       color: $clr-blue;
       @include drop-shadow(0);
+
+      &:hover, &:focus {
+        background-color: $clr-blue-50;
+      }
+
+      &:active {
+        background-color: $clr-blue-100;
+      }
     }
   }
 
   &.md-form-btn--danger {
     > span {
       color: $clr-red;
+
+      &:hover, &:focus {
+        background-color: $clr-red-50;
+      }
+
+      &:active {
+        background-color: $clr-red-100;
+      }
     }
   }
 }

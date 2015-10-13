@@ -167,7 +167,7 @@ class ViewGroup extends View {
         const group = form.dataset.groupId;
 
         const item = this._el.querySelector('.jots__jot-' + id);
-        //item.parentNode.parentNode.removeChild(item);
+        item.parentNode.removeChild(item);
 
         Jot.load(id).then(jot => {
           Jot.remove(id).then(() => {
