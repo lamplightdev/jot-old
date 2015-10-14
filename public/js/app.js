@@ -1,5 +1,8 @@
 'use strict';
 
+if (window.operamini) {
+  document.body.addClass('operamini');
+}
 //cutting the ol' mustard like a pro
 if (!('visibilityState' in document)) {
   return;

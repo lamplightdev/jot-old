@@ -30,6 +30,12 @@ header {
   }
 }
 
+body.operamini {
+  header {
+    background: black;
+  }
+}
+
 * {
   box-sizing: border-box;
   outline: none;
