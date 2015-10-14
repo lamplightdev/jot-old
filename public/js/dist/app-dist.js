@@ -6936,114 +6936,122 @@ module.exports = Preferences;
 },{}],18:[function(require,module,exports){
 'use strict';
 
-if (JotApp.user) {
-  require('../../db/db')({
-    protocol: JotApp.server.protocol,
-    domain: JotApp.server.domain,
-    username: JotApp.user.credentials.key,
-    password: JotApp.user.credentials.password,
-    dbName: 'jot-' + JotApp.user._id
-  });
-} else {
-  require('../../db/db')({
-    dbName: 'jot-local'
-  });
+if (window.operamini) {
+  document.body.addClass('operamini');
 }
 
-var attachFastClick = require('fastclick');
+//cutting the ol' mustard like a pro
+if ('visibilityState' in document) {
 
-var ViewContainer = require('../../views/view-container');
-
-var router = require('../../routers/path');
-
-var RoutesHome = require('../../routes/client/home');
-var RoutesAuth = require('../../routes/client/auth');
-var RoutesJot = require('../../routes/client/jot');
-var RoutesGroup = require('../../routes/client/group');
-
-var TitleBarView = require('../../views/titlebar');
-var NotificationManagerView = require('../../views/notification-manager');
-
-var Handlebars = require('handlebars/dist/handlebars.runtime');
-var helpers = require('../../templates/helpers');
-
-attachFastClick(document.body);
-
-var _iteratorNormalCompletion = true;
-var _didIteratorError = false;
-var _iteratorError = undefined;
-
-try {
-  for (var _iterator = Object.keys(JotApp.templates)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-    var key = _step.value;
-
-    Handlebars.registerPartial(key, Handlebars.template(JotApp.templates[key]));
+  if (JotApp.user) {
+    require('../../db/db')({
+      protocol: JotApp.server.protocol,
+      domain: JotApp.server.domain,
+      username: JotApp.user.credentials.key,
+      password: JotApp.user.credentials.password,
+      dbName: 'jot-' + JotApp.user._id
+    });
+  } else {
+    require('../../db/db')({
+      dbName: 'jot-local'
+    });
   }
-} catch (err) {
-  _didIteratorError = true;
-  _iteratorError = err;
-} finally {
+
+  var attachFastClick = require('fastclick');
+
+  var ViewContainer = require('../../views/view-container');
+
+  var router = require('../../routers/path');
+
+  var RoutesHome = require('../../routes/client/home');
+  var RoutesAuth = require('../../routes/client/auth');
+  var RoutesJot = require('../../routes/client/jot');
+  var RoutesGroup = require('../../routes/client/group');
+
+  var TitleBarView = require('../../views/titlebar');
+  var NotificationManagerView = require('../../views/notification-manager');
+
+  var Handlebars = require('handlebars/dist/handlebars.runtime');
+  var helpers = require('../../templates/helpers');
+
+  attachFastClick(document.body);
+
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
   try {
-    if (!_iteratorNormalCompletion && _iterator['return']) {
-      _iterator['return']();
+    for (var _iterator = Object.keys(JotApp.templates)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var key = _step.value;
+
+      Handlebars.registerPartial(key, Handlebars.template(JotApp.templates[key]));
     }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
   } finally {
-    if (_didIteratorError) {
-      throw _iteratorError;
+    try {
+      if (!_iteratorNormalCompletion && _iterator['return']) {
+        _iterator['return']();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
     }
   }
+
+  for (var helper in helpers) {
+    Handlebars.registerHelper(helper, helpers[helper]);
+  }
+
+  var containerMain = new ViewContainer('view', {
+    home: JotApp.templates.home,
+    group: JotApp.templates.group,
+    groups: JotApp.templates.groups,
+    jots: JotApp.templates.jots,
+    loading: JotApp.templates.loading,
+    loadinggroups: JotApp.templates.loadinggroups,
+    'import': JotApp.templates['import']
+  }, {
+    'group-list': JotApp.templates['group-list'],
+    'jot-list': JotApp.templates['jot-list']
+  });
+
+  var routesHome = new RoutesHome(router, '/', containerMain);
+  var routesAuth = new RoutesAuth(router, '/auth', containerMain);
+  var routesJot = new RoutesJot(router, '/jot', containerMain);
+  var routesGroup = new RoutesGroup(router, '/group', containerMain);
+
+  routesHome.registerRoutes();
+  routesAuth.registerRoutes();
+  routesJot.registerRoutes();
+  routesGroup.registerRoutes();
+
+  var containerHeader = new ViewContainer('header', {
+    titlebar: JotApp.templates.titlebar
+  }, {
+    'titlebar-title': JotApp.templates['titlebar-title'],
+    'titlebar-tabs': JotApp.templates['titlebar-tabs'],
+    'list-order': JotApp.templates['list-order']
+  });
+
+  var titleBar = new TitleBarView(containerHeader);
+
+  titleBar.render(true);
+
+  var containerNotifications = new ViewContainer('notifications', {
+    notifications: JotApp.templates.notifications
+  }, {
+    notification: JotApp.templates.notification
+  });
+
+  var notificationManager = new NotificationManagerView(containerNotifications);
+
+  notificationManager.render(true);
+
+  router.activate();
 }
-
-for (var helper in helpers) {
-  Handlebars.registerHelper(helper, helpers[helper]);
-}
-
-var containerMain = new ViewContainer('view', {
-  home: JotApp.templates.home,
-  group: JotApp.templates.group,
-  groups: JotApp.templates.groups,
-  jots: JotApp.templates.jots,
-  loading: JotApp.templates.loading,
-  loadinggroups: JotApp.templates.loadinggroups,
-  'import': JotApp.templates['import']
-}, {
-  'group-list': JotApp.templates['group-list'],
-  'jot-list': JotApp.templates['jot-list']
-});
-
-var routesHome = new RoutesHome(router, '/', containerMain);
-var routesAuth = new RoutesAuth(router, '/auth', containerMain);
-var routesJot = new RoutesJot(router, '/jot', containerMain);
-var routesGroup = new RoutesGroup(router, '/group', containerMain);
-
-routesHome.registerRoutes();
-routesAuth.registerRoutes();
-routesJot.registerRoutes();
-routesGroup.registerRoutes();
-
-var containerHeader = new ViewContainer('header', {
-  titlebar: JotApp.templates.titlebar
-}, {
-  'titlebar-title': JotApp.templates['titlebar-title'],
-  'titlebar-tabs': JotApp.templates['titlebar-tabs'],
-  'list-order': JotApp.templates['list-order']
-});
-
-var titleBar = new TitleBarView(containerHeader);
-
-titleBar.render(true);
-
-var containerNotifications = new ViewContainer('notifications', {
-  notifications: JotApp.templates.notifications
-}, {
-  notification: JotApp.templates.notification
-});
-
-var notificationManager = new NotificationManagerView(containerNotifications);
-
-notificationManager.render(true);
-
-router.activate();
 
 },{"../../db/db":1,"../../routers/path":19,"../../routes/client/auth":21,"../../routes/client/group":22,"../../routes/client/home":23,"../../routes/client/jot":24,"../../templates/helpers":29,"../../views/notification-manager":42,"../../views/titlebar":43,"../../views/view-container":44,"fastclick":9,"handlebars/dist/handlebars.runtime":10}],19:[function(require,module,exports){
 'use strict';
