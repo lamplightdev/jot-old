@@ -1,5 +1,10 @@
 'use strict';
 
+//cutting the ol' mustard like a pro
+if (!('visibilityState' in document)) {
+  return;
+}
+
 if (JotApp.user) {
   require('../../db/db')({
     protocol: JotApp.server.protocol,
