@@ -6,6 +6,12 @@ class HomeRouter {
     this.routes = new HomeRoutes(router);
   }
 
+  _commonParams(req) {
+    return {
+      menuOpen: req.query.menu && req.query.menu === 'open'
+    };
+  }
+
   registerRoutes() {
     const routeParams = {
       tabs: [{
@@ -27,7 +33,7 @@ class HomeRouter {
           params: {},
 
           resolve: stats => {
-            res.render('app', Object.assign(routeParams, {
+            res.render('app', Object.assign(this._commonParams(req), routeParams, {
               name: 'Jot',
               content: 'home',
               stats
@@ -36,7 +42,7 @@ class HomeRouter {
 
           reject: err => {
             if (!req.user) {
-              res.render('app', Object.assign(routeParams, {
+              res.render('app', Object.assign(this._commonParams(req), routeParams, {
                 name: 'Jot',
                 content: 'home'
               }));

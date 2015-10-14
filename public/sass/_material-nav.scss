@@ -179,7 +179,7 @@
         display: inline-block;
       }
 
-      &:focus, &:active {
+      &:focus {
         background: $clr-blue-700;
         border-radius: $width + 2.5rem;
       }
@@ -240,7 +240,7 @@
 
   width: $width + 2.5rem;
 
-  &:focus, &:active {
+  &:focus {
     background: $clr-blue-700;
     border-radius: $width + 2.5rem;
   }
@@ -260,7 +260,7 @@
   &.close {
     margin-left: 0;
 
-    &:focus, &:active {
+    &:focus {
       background: $clr-grey-300;
     }
 

@@ -7,6 +7,12 @@ class GroupsServerRoutes {
     this.routes = new GroupRoutes(router);
   }
 
+  _commonParams(req) {
+    return {
+      menuOpen: req.query.menu && req.query.menu === 'open'
+    };
+  }
+
   registerRoutes() {
     const routeParams = {
       tabs: [{
@@ -31,7 +37,7 @@ class GroupsServerRoutes {
           params: {},
 
           resolve: (groups) => {
-            res.render('app', Object.assign(routeParams, {
+            res.render('app', Object.assign(this._commonParams(req), routeParams, {
               name: 'Jot',
               content: 'groups',
               colours: Group.getColours(),
@@ -56,7 +62,7 @@ class GroupsServerRoutes {
           },
 
           resolve: (group) => {
-            res.render('app', {
+            res.render('app', Object.assign(this._commonParams(req), {
               name: group.fields.name,
               content: 'group',
               group,
@@ -70,7 +76,7 @@ class GroupsServerRoutes {
                 title: 'done',
                 current: req.params.status === 'done'
               }]
-            });
+            }));
           },
 
           reject: next

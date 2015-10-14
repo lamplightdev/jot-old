@@ -6,6 +6,12 @@ class JotServerRoutes {
     this.routes = new JotRoutes(router);
   }
 
+  _commonParams(req) {
+    return {
+      menuOpen: req.query.menu && req.query.menu === 'open'
+    };
+  }
+
   registerRoutes() {
     const routeParams = {
       tabs: [{
@@ -29,7 +35,7 @@ class JotServerRoutes {
           params: {},
 
           resolve: (jots) => {
-            res.render('app', Object.assign(routeParams, {
+            res.render('app', Object.assign(this._commonParams(req), routeParams, {
               name: 'Jot',
               content: 'jots',
               jots,
