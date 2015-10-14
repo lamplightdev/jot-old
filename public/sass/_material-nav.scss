@@ -58,6 +58,14 @@
   }
 }
 
+body.operamini {
+  .md-nav {
+    &.show {
+      left: 0;
+    }
+  }
+}
+
 .md-nav-head {
   display: -webkit-flex;
   display: flex;
