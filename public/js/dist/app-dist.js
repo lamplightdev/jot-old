@@ -6937,7 +6937,7 @@ module.exports = Preferences;
 'use strict';
 
 if (window.operamini) {
-  document.body.addClass('operamini');
+  document.body.classList.add('operamini');
 }
 
 //cutting the ol' mustard like a pro
