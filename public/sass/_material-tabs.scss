@@ -1,8 +1,9 @@
 .md-tabs {
+  display: flex;
 }
 
 .md-tab {
-  display: inline-block;
+  //display: inline-block;
 
   text-align: center;
   text-transform: uppercase;
@@ -28,13 +29,15 @@
 
 .md-tabs--3 {
   .md-tab {
-    width: 33.33333%;
+    //width: 33.33333%;
+    flex-grow: 1;
   }
 }
 
 
 .md-tabs--2 {
   .md-tab {
-    width: 50%;
+    //width: 50%;
+    flex-grow: 1;
   }
 }
