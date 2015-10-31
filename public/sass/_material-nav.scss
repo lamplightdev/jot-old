@@ -87,6 +87,7 @@ body.operamini {
   a, span {
     display: flex;
     align-items: center;
+    height: 3.5rem;
 
     padding: 0 1.1rem;
 
@@ -155,6 +156,9 @@ body.operamini {
     flex-basis: 0;
 
     h3 {
+      height: 4rem;
+      display: flex;
+      align-items: center;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
