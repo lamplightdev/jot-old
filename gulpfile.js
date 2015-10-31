@@ -58,7 +58,7 @@ gulp.task('watchify', function () {
 gulp.task('dev', ['watchify'], function () {
   nodemon({
     verbose: true,
-    exec: './node_modules/.bin/babel-node',
+    exec: 'babel-node-debug',
     script: 'server.js',
     ext: 'js scss',  //need to watch js for server side (watchify handles client)
     ignore: ["public/js/dist/", ".git", "node_modules", ".sass-cache"],
