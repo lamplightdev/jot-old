@@ -102,11 +102,11 @@ class DB {
           _id: '_design/index',
           views: {
             group: {
-              map: doc => {
+              map: (doc => {
                 if (doc.fields.group) {
                   emit(doc.fields.group);
                 }
-              }.toString()
+              }).toString()
             }
           }
         };

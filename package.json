@@ -5,7 +5,18 @@
   "main": "server.js",
   "scripts": {
     "start": "./node_modules/.bin/babel-node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo 'Error: no test specified' && exit 1",
+    "env": "env",
+    "clean": "rm -rf public/js/dist/* && rm -rf public/css/dist/*",
+    "prebuild": "npm run clean",
+    "build": "npm run build:scripts -s && npm run build:styles -s",
+    "build:dev": "npm run build:styles -s",
+    "build:scripts": "browserify -d public/js/app.js -i pouchdb -i cloudant -o public/js/dist/app.js && echo '...browserified!'",
+    "build:styles": "sassc -m public/sass/app.scss public/css/app.css && echo '...sassed!'",
+    "watch:scripts": "watchify -v -d public/js/app.js -i pouchdb -i cloudant -o public/js/dist/app.js",
+    "watch:server": "nodemon --exec babel-node server.js",
+    "watch:styles": "onchange 'public/sass/*.scss' -v -- npm run build:styles",
+    "build:watch": "npm run build:dev && parallelshell 'npm run watch:server -s' 'npm run watch:scripts -s' 'npm run watch:styles -s'"
   },
   "repository": {
     "type": "git",
@@ -18,11 +29,11 @@
   },
   "homepage": "https://github.com/lamplightdev/jot#readme",
   "engines": {
-    "node": "4.x"
+    "node": "5.x"
   },
   "dependencies": {
     "autolinker": "*",
-    "babel": "^5.8.23",
+    "babel": "^6.0.14",
     "body-parser": "^1.13.3",
     "cloudant": "^1.3.0",
     "connect-redis": "*",
@@ -41,14 +52,33 @@
     "redis": "^1.0.0"
   },
   "devDependencies": {
-    "babelify": "^6.3.0",
-    "browserify": "^11.0.1",
-    "gulp": "*",
-    "gulp-nodemon": "^2.0.4",
-    "gulp-sass": "^2.0.4",
-    "gulp-sourcemaps": "*",
-    "vinyl-buffer": "*",
-    "vinyl-source-stream": "*",
-    "watchify": "^3.4.0"
+    "babel-preset-es2015": "^6.0.14",
+    "babelify": "^7.0.2",
+    "browserify": "^12.0.1",
+    "minifyify": "^7.1.0",
+    "onchange": "^2.0.0",
+    "parallelshell": "^2.0.0"
+  },
+  "browserify": {
+    "cache": {},
+    "packageCache": {},
+    "plugin": [
+      "watchify"
+    ],
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
   }
 }
