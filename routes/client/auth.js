@@ -20,6 +20,7 @@ class AuthRouter {
           params: {},
 
           resolve: () => {
+            localStorage.setItem('jot-user', false);
             this._db.destroy().then(() => {
               this._router.stop(ctx.canonicalPath);
             });
@@ -27,7 +28,7 @@ class AuthRouter {
 
           reject: (err) => {
             throw new Error(err);
-          }
+          },
         };
       });
     });

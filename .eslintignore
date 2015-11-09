@@ -1,0 +1,6 @@
+node_modules/
+public/js/dist/*.js
+public/js/browser-polyfill.js
+public/js/pouchdb.js
+public/js/serviceworker-cache-polyfill.js
+public/js/webfontloader.js

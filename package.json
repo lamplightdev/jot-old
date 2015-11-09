@@ -12,12 +12,12 @@
     "build": "npm run build:scripts -s && npm run build:styles -s",
     "build:dev": "npm run build:styles -s",
     "build:scripts": "browserify -d public/js/app.js -i pouchdb -i cloudant -o public/js/dist/app.js && echo '...browserified!'",
-    "build:styles": "sassc -m public/sass/app.scss public/css/app.css && echo '...sassed!'",
+    "build:styles": "sassc -m public/sass/app.scss public/css/app.css | postcss --use autoprefixer public/css/app.css --replace && echo '...sassed!'",
     "watch:scripts": "watchify -v -d public/js/app.js -i pouchdb -i cloudant -o public/js/dist/app.js",
     "watch:server": "nodemon --exec babel-node server.js",
     "watch:styles": "onchange 'public/sass/*.scss' -v -- npm run build:styles",
-    "livereload": "live-reload --delay 2000 --port 9091 public/css/ public/js/dist/",
-    "build:watch": "npm run build:dev && parallelshell 'npm run livereload -s' 'npm run watch:server -s' 'npm run watch:scripts -s' 'npm run watch:styles -s'"
+    "lint": "eslint .",
+    "build:watch": "npm run build:dev && parallelshell 'npm run watch:server -s' 'npm run watch:scripts -s' 'npm run watch:styles -s'"
   },
   "repository": {
     "type": "git",
@@ -56,7 +56,6 @@
     "babel-preset-es2015": "^6.0.14",
     "babelify": "^7.0.2",
     "browserify": "^12.0.1",
-    "live-reload": "^1.1.0",
     "minifyify": "^7.1.0",
     "onchange": "^2.0.0",
     "parallelshell": "^2.0.0"

@@ -1,11 +1,18 @@
-'use strict';
-
 if (window.operamini) {
   document.body.classList.add('operamini');
 }
 
-//cutting the ol' mustard like a pro
+// cutting the ol' mustard like a pro
 if ('visibilityState' in document) {
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker.register('/serviceworker.js', {
+      scope: '/',
+    }).then(reg => {
+      console.log('SW register success', reg);
+    }, err => {
+      console.log('SW register fail', err);
+    });
+  }
 
   if (JotApp.user) {
     require('../../db/db')({
@@ -13,12 +20,27 @@ if ('visibilityState' in document) {
       domain: JotApp.server.domain,
       username: JotApp.user.credentials.key,
       password: JotApp.user.credentials.password,
-      dbName: 'jot-' + JotApp.user._id
+      dbName: 'jot-' + JotApp.user._id,
     });
+    localStorage.setItem('jot-user', JSON.stringify(JotApp.user));
   } else {
-    require('../../db/db')({
-      dbName: 'jot-local'
-    });
+    const localUser = localStorage.getItem('jot-user');
+
+    if (localUser) {
+      JotApp.user = JSON.parse(localUser);
+      require('../../db/db')({
+        protocol: JotApp.server.protocol,
+        domain: JotApp.server.domain,
+        username: JotApp.user.credentials.key,
+        password: JotApp.user.credentials.password,
+        dbName: 'jot-' + JotApp.user._id,
+      });
+      // re-render titlebar
+    } else {
+      require('../../db/db')({
+        dbName: 'jot-local',
+      });
+    }
   }
 
   const attachFastClick = require('fastclick');
@@ -40,12 +62,14 @@ if ('visibilityState' in document) {
 
   attachFastClick(document.body);
 
-  for (let key of Object.keys(JotApp.templates)) {
+  for (const key of Object.keys(JotApp.templates)) {
     Handlebars.registerPartial(key, Handlebars.template(JotApp.templates[key]));
   }
 
-  for (let helper in helpers) {
-    Handlebars.registerHelper(helper, helpers[helper]);
+  for (const helper in helpers) {
+    if (helpers.hasOwnProperty(helper)) {
+      Handlebars.registerHelper(helper, helpers[helper]);
+    }
   }
 
   const containerMain = new ViewContainer('view', {
@@ -55,10 +79,10 @@ if ('visibilityState' in document) {
     jots: JotApp.templates.jots,
     loading: JotApp.templates.loading,
     loadinggroups: JotApp.templates.loadinggroups,
-    import: JotApp.templates.import
+    import: JotApp.templates.import,
   }, {
     'group-list': JotApp.templates['group-list'],
-    'jot-list': JotApp.templates['jot-list']
+    'jot-list': JotApp.templates['jot-list'],
   });
 
   const routesHome = new RoutesHome(router, '/', containerMain);
@@ -72,11 +96,11 @@ if ('visibilityState' in document) {
   routesGroup.registerRoutes();
 
   const containerHeader = new ViewContainer('header', {
-    titlebar: JotApp.templates.titlebar
+    titlebar: JotApp.templates.titlebar,
   }, {
     'titlebar-title': JotApp.templates['titlebar-title'],
     'titlebar-tabs': JotApp.templates['titlebar-tabs'],
-    'list-order': JotApp.templates['list-order']
+    'list-order': JotApp.templates['list-order'],
   });
 
   const titleBar = new TitleBarView(containerHeader);
@@ -84,9 +108,9 @@ if ('visibilityState' in document) {
   titleBar.render(true);
 
   const containerNotifications = new ViewContainer('notifications', {
-    notifications: JotApp.templates.notifications
+    notifications: JotApp.templates.notifications,
   }, {
-    notification: JotApp.templates.notification
+    notification: JotApp.templates.notification,
   });
 
   const notificationManager = new NotificationManagerView(containerNotifications);
@@ -94,5 +118,4 @@ if ('visibilityState' in document) {
   notificationManager.render(true);
 
   router.activate();
-
 }
