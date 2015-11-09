@@ -35,6 +35,7 @@
   "dependencies": {
     "autolinker": "*",
     "babel": "^6.0.14",
+    "babel-cli": "^6.1.2",
     "body-parser": "^1.13.3",
     "cloudant": "^1.3.0",
     "connect-redis": "*",
