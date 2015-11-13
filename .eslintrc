@@ -2,5 +2,8 @@
   "extends": "airbnb",
   "globals": {
     "JotApp": false
+  },
+  "rules": {
+
   }
 }

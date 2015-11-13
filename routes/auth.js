@@ -1,5 +1,3 @@
-'use strict';
-
 const Routes = require('./routes');
 
 const Group = require('../models/group');
@@ -13,7 +11,7 @@ class AuthRoutes extends Routes {
       _method: ['get'],
       _action: () => {
         return Promise.resolve();
-      }
+      },
     };
 
     this._routes.callbackGoogle = {
@@ -21,7 +19,7 @@ class AuthRoutes extends Routes {
       _method: ['get'],
       _action: () => {
         return Promise.resolve();
-      }
+      },
     };
 
     this._routes.import = {
@@ -31,7 +29,15 @@ class AuthRoutes extends Routes {
         return Promise.resolve().then(() => {
           return Group.importFromLocal();
         });
-      }
+      },
+    };
+
+    this._routes.user = {
+      _path: '/user',
+      _method: ['get'],
+      _action: () => {
+        return Promise.resolve();
+      },
     };
 
     this._routes.signout = {
@@ -39,7 +45,7 @@ class AuthRoutes extends Routes {
       _method: ['get'],
       _action: () => {
         return Promise.resolve();
-      }
+      },
     };
   }
 }

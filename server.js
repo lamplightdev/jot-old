@@ -1,8 +1,6 @@
-'use strict';
-
 const express = require('express');
 const expressState = require('express-state');
-const exphbs  = require('express-handlebars');
+const exphbs = require('express-handlebars');
 const path = require('path');
 const session = require('express-session');
 const logger = require('morgan');
@@ -29,23 +27,23 @@ app.engine('handlebars', exphbs({
   defaultLayout: 'main',
   layoutsDir: './templates/layouts',
   partialsDir: './templates/partials',
-  helpers: require('./templates/helpers')
+  helpers: require('./templates/helpers'),
 }));
 app.set('view engine', 'handlebars');
 
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   const ExpHbs = exphbs.create();
   ExpHbs.getTemplates(app.get('views') + '/partials', {
-    precompiled: true
+    precompiled: true,
   }).then(templates => {
     const tmpls = {};
-    for (let key of Object.keys(templates)) {
+    for (const key of Object.keys(templates)) {
       let template; eval('template = ' + templates[key]);
       tmpls[key.replace('.handlebars', '')] = template;
     }
 
     app.expose(tmpls, 'templates', {
-      cache: true
+      cache: true,
     });
 
     next();
@@ -71,14 +69,14 @@ redisClient.on('error', (err) => {
 app.use(session({
   store: new RedisStore({
     client: redisClient,
-    pass: process.env.JOT_REDIS_PASSWORD
+    pass: process.env.JOT_REDIS_PASSWORD,
   }),
   secret: 'kl988sd87scoijsanc*^*&%g',
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 1209600 * 1000 //two weeks
-  }
+    maxAge: 1209600 * 1000, // two weeks
+  },
 }));
 
 app.use(passport.initialize());
@@ -87,20 +85,20 @@ auth.serialization();
 auth.Google();
 
 app.use((req, res, next) => {
-  app.expose(req.user, 'user');
+  // app.expose(req.user, 'user');
   app.expose({
-    protocol: 'https', //process.env.JOT_CLOUDANT_HOST_PROTOCOL,
-    domain: 'lamplightdev.cloudant.com' //process.env.JOT_CLOUDANT_HOST_NAME,
+    protocol: 'https', // process.env.JOT_CLOUDANT_HOST_PROTOCOL,
+    domain: 'lamplightdev.cloudant.com', // process.env.JOT_CLOUDANT_HOST_NAME,
   }, 'server');
 
   if (req.user) {
     const db = require('./db/db');
     db({
-      protocol: 'https', //process.env.JOT_CLOUDANT_HOST_PROTOCOL,
-      domain: 'lamplightdev.cloudant.com', //process.env.JOT_CLOUDANT_HOST_NAME,
+      protocol: 'https', // process.env.JOT_CLOUDANT_HOST_PROTOCOL,
+      domain: 'lamplightdev.cloudant.com', // process.env.JOT_CLOUDANT_HOST_NAME,
       username: req.user.credentials.key,
       password: req.user.credentials.password,
-      dbName: 'jot-' + req.user._id
+      dbName: 'jot-' + req.user._id,
     });
   }
 
@@ -122,7 +120,7 @@ const routesAuth = new RoutesAuth(require('express').Router());
 app.use('/auth', routesAuth.registerRoutes());
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   const err = new Error('Not Found');
   err.status = 404;
   next(err);
@@ -131,7 +129,7 @@ app.use(function(req, res, next) {
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
+  app.use((err, req, res, next) => {
     console.log(err);
     const status = err.status || 500;
     res.status(status);
@@ -139,20 +137,20 @@ if (app.get('env') === 'development') {
       content: status,
       message: err.message,
       error: err,
-      stack: err.stack
+      stack: err.stack,
     });
   });
 }
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   const status = err.status || 500;
   res.status(status);
   res.render('app', {
     content: status,
     message: err.message,
-    error: {}
+    error: {},
   });
 });
 

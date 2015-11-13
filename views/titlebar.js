@@ -5,7 +5,7 @@ const PubSub = require('../utility/pubsub');
 
 const Touch = require('../utility/touch');
 
-class TitleBarView extends View {
+class ViewTitleBar extends View {
   constructor(container) {
     super(container);
 
@@ -85,4 +85,4 @@ class TitleBarView extends View {
 
 }
 
-module.exports = TitleBarView;
+module.exports = ViewTitleBar;

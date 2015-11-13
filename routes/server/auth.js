@@ -14,7 +14,7 @@ class AuthRouter {
 
   _commonParams(req) {
     return {
-      menuOpen: req.query.menu && req.query.menu === 'open'
+      menuOpen: req.query.menu && req.query.menu === 'open',
     };
   }
 
@@ -22,14 +22,14 @@ class AuthRouter {
     const routeParams = {
       tabs: [{
         title: 'Home',
-        link: '/'
+        link: '/',
       }, {
         title: 'Jots',
-        link: '/jot'
+        link: '/jot',
       }, {
         title: 'Lists',
-        link: '/group'
-      }]
+        link: '/group',
+      }],
     };
 
     this.routes.registerRoute('authGoogle', (req, res, next) => {
@@ -40,14 +40,14 @@ class AuthRouter {
           resolve: (authenticate) => {
             passport.authenticate('google', {
               scope: [
-                'openid email'
-              ]
+                'openid email',
+              ],
 
-              //loginHint: req.user ? req.user.getEmail() : null
+              // loginHint: req.user ? req.user.getEmail() : null
             })(req, res, next);
           },
 
-          reject: next
+          reject: next,
         };
       });
     });
@@ -76,15 +76,28 @@ class AuthRouter {
                 req.logIn(userDoc, (err) => {
                   if (err) {
                     return next(err);
-                  } else {
-                    return res.redirect('/jot');
                   }
+                  return res.redirect('/jot');
                 });
               }, next);
             })(req, res, next);
           },
 
-          reject: next
+          reject: next,
+        };
+      });
+    });
+
+    this.routes.registerRoute('user', (req, res, next) => {
+      return Promise.resolve().then(() => {
+        return {
+          params: {},
+
+          resolve: () => {
+            res.json(req.user);
+          },
+
+          reject: next,
         };
       });
     });
@@ -99,7 +112,7 @@ class AuthRouter {
             res.redirect('/');
           },
 
-          reject: next
+          reject: next,
         };
       });
     });
@@ -111,11 +124,11 @@ class AuthRouter {
 
           resolve: () => {
             res.render('app', Object.assign(this._commonParams(req), routeParams, {
-              content: 'import'
+              content: 'import',
             }));
           },
 
-          reject: next
+          reject: next,
         };
       });
     });

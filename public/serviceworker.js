@@ -1,7 +1,7 @@
-// v:2
+// v:3
 importScripts('/js/serviceworker-cache-polyfill.js');
 
-var cacheNameStatic = 'jot-static-v1';
+var cacheNameStatic = 'jot-static-v2';
 var cacheNameGoogleAvatar = 'jot-google-avatar-v1';
 
 var currentCacheNames = [
@@ -47,7 +47,7 @@ self.addEventListener('activate', function (event) {
 self.addEventListener('fetch', function (event) {
   var requestURL = new URL(event.request.url);
 
-  if (requestURL.pathname.indexOf('/auth/') === 0) {
+  if (requestURL.pathname.indexOf('/auth/') === 0 && requestURL.pathname !== '/auth/user') {
     return;
   }
 
@@ -67,14 +67,14 @@ self.addEventListener('fetch', function (event) {
             var shouldCache = false;
 
             if (response.type === 'basic' && response.status === 200) {
-              //shouldCache = cacheNameStatic;
+              // shouldCache = cacheNameStatic;
+              console.log(requestURL);
             } else if (response.type === 'opaque') { // if response isn't from our origin / doesn't support CORS
               if (requestURL.hostname.indexOf('.googleusercontent.com') > -1) {
                 shouldCache = cacheNameGoogleAvatar;
               } else {
                 // just let response pass through, don't cache
               }
-
             }
 
             if (shouldCache) {
@@ -88,13 +88,21 @@ self.addEventListener('fetch', function (event) {
             }
 
             return response;
+          }, function(err) {
+            console.log('sw fetch error: ', err);
+            if (requestURL.pathname === '/auth/user') {
+              return new Response(JSON.stringify({
+                serviceworker: true,
+              }, {
+                headers: { 'Content-Type': 'application/json' },
+              }));
+            }
+
+            if (requestURL.origin === location.origin) {
+              return caches.match('/');
+            }
           }
-        ).catch(function (err) {
-          console.log('sw fetch error: ', err);
-          if (requestURL.origin === location.origin) {
-            return caches.match('/');
-          }
-        });
+        );
       })
   );
 });
