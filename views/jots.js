@@ -1,5 +1,3 @@
-'use strict';
-
 const View = require('./view');
 
 const Jot = require('../models/jot');

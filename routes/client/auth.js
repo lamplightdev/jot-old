@@ -44,30 +44,29 @@ class AuthRouter {
               order: [],
               tabs: [{
                 title: 'Home',
-                link: '/'
+                link: '/',
               }, {
                 title: 'Jots',
-                link: '/jot'
+                link: '/jot',
               }, {
                 title: 'Lists',
-                link: '/group'
-              }]
+                link: '/group',
+              }],
             });
           },
 
           resolve: (groups) => {
             this.importView.render(false, {
-              groups
+              groups,
             });
           },
 
           reject: (err) => {
             throw new Error(err);
-          }
+          },
         };
       });
     });
-
   }
 }
 

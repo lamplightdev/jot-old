@@ -86,11 +86,13 @@ class ViewGroups extends View {
       new Group({
         fields: {
           name,
-          colour
-        }
+          colour,
+        },
       }).save().then(() => {
         nameField.value = '';
-        nameField.focus();
+        //nameField.focus();
+        nameField.blur();
+        this.unselectAll();
         Group.loadAll().then(groups => {
           this.renderPartial('group-list', {
             groups

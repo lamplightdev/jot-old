@@ -94,7 +94,7 @@ class AuthRouter {
           params: {},
 
           resolve: () => {
-            res.json(req.user);
+            res.json(req.user || false);
           },
 
           reject: next,

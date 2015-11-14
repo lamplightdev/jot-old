@@ -61,6 +61,9 @@ if ('visibilityState' in document) {
       }
     } else {
       localStorage.setItem('jot-user', JSON.stringify(false));
+      require('../../db/db')({
+        dbName: 'jot-local',
+      });
     }
 
     const attachFastClick = require('fastclick');

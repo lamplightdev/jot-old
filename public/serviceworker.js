@@ -1,8 +1,9 @@
-// v:3
+var v = 10;
+
 importScripts('/js/serviceworker-cache-polyfill.js');
 
-var cacheNameStatic = 'jot-static-v2';
-var cacheNameGoogleAvatar = 'jot-google-avatar-v1';
+var cacheNameStatic = 'jot-static-v' + v;
+var cacheNameGoogleAvatar = 'jot-google-avatar-v' + v;
 
 var currentCacheNames = [
   cacheNameStatic,

@@ -101,7 +101,9 @@ class ViewGroup extends View {
         }
       }).save().then(() => {
         contentField.value = '';
-        contentField.focus();
+        //contentField.focus();
+        contentField.blur();
+        this.unselectAll();
         Group.load(group).then(group => {
           this.renderPartial('jot-list', {
             group
