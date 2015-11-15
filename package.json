@@ -14,10 +14,11 @@
     "build:scripts": "browserify -d public/js/app.js -i pouchdb -i cloudant -o public/js/dist/app.js && echo '...browserified!'",
     "build:styles": "sassc -m public/sass/app.scss public/css/app.css | postcss --use autoprefixer public/css/app.css --replace && echo '...sassed!'",
     "watch:scripts": "watchify -v -d public/js/app.js -i pouchdb -i cloudant -o public/js/dist/app.js",
+    "watch:scriptssw": "watchify -v -d public/serviceworker-es6.js -o public/serviceworker.js",
     "watch:server": "nodemon --exec babel-node server.js",
     "watch:styles": "onchange 'public/sass/*.scss' -v -- npm run build:styles",
     "lint": "eslint .",
-    "build:watch": "npm run build:dev && parallelshell 'npm run watch:server -s' 'npm run watch:scripts -s' 'npm run watch:styles -s'"
+    "build:watch": "npm run build:dev && parallelshell 'npm run watch:server -s' 'npm run watch:scripts -s'  'npm run watch:scriptssw -s' 'npm run watch:styles -s'"
   },
   "repository": {
     "type": "git",
