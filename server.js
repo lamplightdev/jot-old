@@ -19,6 +19,18 @@ const RoutesGroup = require('./routes/server/group');
 const RoutesAuth = require('./routes/server/auth');
 
 const app = express();
+
+const env = process.env.NODE_ENV || 'development';
+
+if (env === 'production') {
+  app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+      return res.redirect(['https://', req.get('Host'), req.url].join(''));
+    }
+    return next();
+  });
+}
+
 expressState.extend(app);
 app.set('state namespace', 'JotApp');
 
