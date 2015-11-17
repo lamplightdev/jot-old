@@ -1147,6 +1147,10 @@ input[type='checkbox'] {
       font-size: 1.5rem;
       font-weight: 100;
       line-height: 1; }
+  .progress:active {
+    color: white; }
+    .progress:active .back-centre {
+      background-color: #2196f3; }
   .progress .seg {
     position: absolute;
     background-color: #2196f3;

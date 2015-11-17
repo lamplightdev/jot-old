@@ -45,6 +45,14 @@
         }
     }
 
+    &:active {
+        color: white;
+
+        .back-centre {
+            background-color: $clr-blue-500;
+        }
+    }
+
     .seg {
         position: absolute;
         background-color: $clr-blue-500;
