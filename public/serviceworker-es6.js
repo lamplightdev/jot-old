@@ -21,8 +21,6 @@ self.addEventListener('install', event => {
           '/js/browser-polyfill.js',
           '/js/pouchdb.js',
           '/js/webfontloader.js',
-          '/favicons/*.ico',
-          '/favicons/*.png',
         ]);
       })
   );
@@ -44,6 +42,7 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  const selfURL = self.location;
   const requestURL = new URL(event.request.url);
 
   if (requestURL.pathname.indexOf('/auth/') === 0 && requestURL.pathname !== '/auth/user') {
@@ -51,7 +50,7 @@ self.addEventListener('fetch', event => {
   }
 
   // if no extension, assume it's a page (not root)
-  if (requestURL.pathname.indexOf('.') === -1 && requestURL.pathname !== '/auth/user') {
+  if (selfURL.host === requestURL.host && requestURL.pathname.indexOf('.') === -1 && requestURL.pathname !== '/auth/user') {
     event.respondWith(caches.match('/').then(cacheResponse => {
       return cacheResponse;
     }, err => {
