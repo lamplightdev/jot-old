@@ -58,7 +58,7 @@ class GroupsServerRoutes {
         return {
           params: {
             id: req.params.id,
-            done: req.params.status === 'done'
+            done: req.params.status === 'done',
           },
 
           resolve: (group) => {
@@ -66,6 +66,7 @@ class GroupsServerRoutes {
               name: group.fields.name,
               content: 'group',
               group,
+              done: req.params.status === 'done',
               editID: req.query.edit,
               tabs: [{
                 link: '/group/' + req.params.id,

@@ -1,5 +1,3 @@
-'use strict';
-
 const Routes = require('./routes');
 
 const Group = require('../models/group');

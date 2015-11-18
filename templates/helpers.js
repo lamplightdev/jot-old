@@ -4,12 +4,16 @@ const Autolinker = require('autolinker');
 
 const Handlebars = require('handlebars/dist/handlebars.runtime');
 
-exports.ifEqual = ifEqual;
-exports.ifIn = ifIn;
-exports.autoLink = autoLink;
-
 function ifEqual(conditional, equalTo, options) {
   if (conditional === equalTo) {
+    return options.fn(this);
+  }
+
+  return options.inverse(this);
+}
+
+function ifNotEqual(conditional, equalTo, options) {
+  if (conditional !== equalTo) {
     return options.fn(this);
   }
 
@@ -29,3 +33,8 @@ function autoLink(elem, options) {
 
   return new Handlebars.SafeString(url);
 }
+
+exports.ifEqual = ifEqual;
+exports.ifNotEqual = ifNotEqual;
+exports.ifIn = ifIn;
+exports.autoLink = autoLink;

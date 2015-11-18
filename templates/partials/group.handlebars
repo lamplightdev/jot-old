@@ -1,4 +1,5 @@
-<form class='form-jot-add' action='/group/{{group.id}}' method='post'>
+{{#unless done}}
+<form class='form-jot-add' action='/jot' method='post'>
   <input type='text' class='md-form-text' name='content' value='' placeholder='Add jot'>
   <div class='show-on-focus'>
     {{>colour-selector name='priority' rootColour=group.fields.colour colours=priorities current=priorities.[0]}}
@@ -6,5 +7,6 @@
     <button class='md-form-btn md-form-btn--raised' type='submit'><span>add</span></button>
   </div>
 </form>
+{{/unless}}
 
-{{>jot-list group=group jots=group.jots}}
+{{>jot-list group=group done=done jots=group.jots}}

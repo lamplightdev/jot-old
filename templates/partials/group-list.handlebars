@@ -34,8 +34,7 @@
 
         </div>
       </div>
-
-      <a class='md-list-item__action groups__group__edit' href='/group?edit={{id}}' data-id='{{id}}'>
+      <a class='md-list-item__action groups__group__edit' href='/group{{#ifNotEqual id @root.editID}}?edit={{id}}{{/ifNotEqual}}' data-id='{{id}}'>
         <svg class="icon edit">
           <use xlink:href="#edit" />
         </svg>

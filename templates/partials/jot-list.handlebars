@@ -5,11 +5,11 @@
     <div class='md-list-item jots__jot jots__jot-{{id}} {{#ifEqual id @root.editID}}edit{{/ifEqual}}'>
       <a name='{{id}}' id='{{id}}'></a>
 
-      <a class='md-list-item__avatar jots__jot__edit' href='/group/{{fields.group}}?edit={{id}}' data-id='{{id}}'>
+      <a class='md-list-item__avatar jots__jot__edit' href='/group/{{fields.group}}{{#if @root.done}}/done{{/if}}?edit={{id}}' data-id='{{id}}'>
         <div class='img colour-{{@root.group.fields.colour}} priority-{{fields.priority}}'></div>
       </a>
 
-      <a class='md-list-item__content jots__jot__edit jots__jot__item {{#if fields.done}}jots__jot__item--done{{/if}}' href='/group/{{fields.group}}?edit={{id}}' data-id='{{id}}'>
+      <a class='md-list-item__content jots__jot__edit jots__jot__item {{#if fields.done}}jots__jot__item--done{{/if}}' href='/group/{{fields.group}}{{#if @root.done}}/done{{/if}}?edit={{id}}' data-id='{{id}}'>
         <div class='md-list-item__primary-content'>
           {{autoLink fields.content}}
         </div>
@@ -36,12 +36,13 @@
 
           <form class='form-jot-delete form-jot-delete-{{id}}' data-id='{{id}}' data-group-id='{{fields.group}}' method='post' action='/jot/{{id}}'>
             <input type='hidden' name='action' value='delete'>
+            <input type='hidden' name='group' value='{{fields.group}}'>
             <button class='md-form-btn md-form-btn--flat md-form-btn--danger' type='submit'><span>delete</span></button>
           </form>
         </div>
       </div>
 
-      <a class='md-list-item__action jots__jot__edit' href='/group/{{fields.group}}?edit={{id}}' data-id='{{id}}'>
+      <a class='md-list-item__action jots__jot__edit' href='/group/{{fields.group}}{{#if @root.done}}/done{{/if}}{{#ifNotEqual id @root.editID}}?edit={{id}}{{/ifNotEqual}}' data-id='{{id}}'>
         <svg class="icon edit">
           <use xlink:href="#edit" />
         </svg>

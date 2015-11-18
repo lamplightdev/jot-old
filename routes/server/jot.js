@@ -60,7 +60,7 @@ class JotServerRoutes {
           params,
 
           resolve: () => {
-            res.redirect('/jot');
+            res.redirect('/group/' + req.body.group);
           },
 
           reject: next
@@ -79,10 +79,10 @@ class JotServerRoutes {
           params,
 
           resolve: () => {
-            res.redirect('/jot');
+            res.redirect('/group/' + req.body.group);
           },
 
-          reject: next
+          reject: next,
         };
       }).catch(next);
     });
@@ -92,7 +92,7 @@ class JotServerRoutes {
         const fields = {
           content: req.body.content,
           group: req.body.group,
-          priority: req.body.priority
+          priority: req.body.priority,
         };
 
         if (typeof req.body.done !== 'undefined') {
@@ -104,17 +104,18 @@ class JotServerRoutes {
         const params = {
           id: req.params.id,
           action: req.body.action,
-          fields
+          fields,
         };
 
         return {
           params,
 
           resolve: () => {
-            res.redirect('/jot');
+            const done = fields.done ? '' : '/done';
+            res.redirect('/group/' + req.body.group + done);
           },
 
-          reject: next
+          reject: next,
         };
       }).catch(next);
     });

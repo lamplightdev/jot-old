@@ -140,6 +140,7 @@ class GroupClientRoutes {
 
             this.groupView.setShowDone(ctx.params.status === 'done');
             this.groupView.render(false, {
+              done: ctx.params.status === 'done',
               group,
               editID: queryObject.edit,
               priorities: Jot.getPriorities()
