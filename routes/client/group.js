@@ -126,9 +126,9 @@ class GroupClientRoutes {
                   link: '/group/' + group.id + '/done',
                   title: 'done',
                   current: ctx.params.status === 'done'
-                }]
+                }],
               });
-            }
+            },
           },
 
           resolve: (group) => {
@@ -143,13 +143,13 @@ class GroupClientRoutes {
               done: ctx.params.status === 'done',
               group,
               editID: queryObject.edit,
-              priorities: Jot.getPriorities()
+              priorities: Jot.getPriorities(),
             });
           },
 
           reject: (err) => {
             throw new Error(err);
-          }
+          },
         };
       });
     });

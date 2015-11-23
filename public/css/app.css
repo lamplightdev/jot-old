@@ -1297,7 +1297,7 @@ main {
 
 .colour-selector {
   padding: 1rem 0; }
-  .colour-selector select {
+  .colour-selector label, .colour-selector select {
     display: none; }
 
 .colour-selector__colour {
@@ -1310,4 +1310,13 @@ main {
     border: 2px solid #424242; }
   .colour-selector__colour:focus {
     border: 2px solid #9e9e9e; }
+
+body.nojs .form-jot-add .show-on-focus, body.nojs .form-group-add .show-on-focus {
+  display: block; }
+
+body.nojs .colour-selector .colour-selector__colour {
+  display: none; }
+
+body.nojs .colour-selector label, body.nojs .colour-selector select {
+  display: block; }
 /*# sourceMappingURL=app.css.map */

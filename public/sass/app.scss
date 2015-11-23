@@ -140,7 +140,7 @@ $colours: (
 .colour-selector {
   padding: 1rem 0;
 
-  select {
+  label, select {
     display: none;
   }
 }
@@ -163,3 +163,22 @@ $colours: (
       border: 2px solid $clr-grey-500;
     }
   }
+
+body.nojs {
+
+  .form-jot-add, .form-group-add {
+    .show-on-focus {
+        display: block;
+    }
+  }
+
+  .colour-selector {
+    .colour-selector__colour {
+      display: none;
+    }
+
+    label, select {
+      display: block;
+    }
+  }
+}

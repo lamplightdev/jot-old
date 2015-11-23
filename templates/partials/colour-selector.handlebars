@@ -3,9 +3,10 @@
     {{#each colours}}
       <div class='colour-selector__colour {{#if ../rootColour}}colour-{{../../rootColour}}{{/if}} {{../name}}-{{this}} {{#ifEqual ../current this}}colour-selector__colour--current{{/ifEqual}}' data-value='{{this}}'></div>
     {{/each}}
-    <select name='{{name}}'>
+    <label for='{{name}}'>{{selectorLabel}}</label>
+    <select id='{{name}}' name='{{name}}'>
     {{#each colours}}
-      <option value='{{this}}' {{#ifEqual ../current this}}selected{{/ifEqual}}>{{this.name}}</option>
+      <option value='{{this}}' {{#ifEqual ../current this}}selected{{/ifEqual}}>{{this}}</option>
     {{/each}}
     </select>
   </div>

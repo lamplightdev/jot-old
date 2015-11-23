@@ -1,5 +1,6 @@
 const Group = require('../../models/group');
 const GroupRoutes = require('../group');
+const Jot = require('../../models/jot');
 
 class GroupsServerRoutes {
   constructor(router) {
@@ -9,7 +10,7 @@ class GroupsServerRoutes {
 
   _commonParams(req) {
     return {
-      menuOpen: req.query.menu && req.query.menu === 'open'
+      menuOpen: req.query.menu && req.query.menu === 'open',
     };
   }
 
@@ -17,19 +18,18 @@ class GroupsServerRoutes {
     const routeParams = {
       tabs: [{
         title: 'Home',
-        link: '/'
+        link: '/',
       }, {
         title: 'Jots',
-        link: '/jot'
+        link: '/jot',
       }, {
         title: 'Lists',
         link: '/group',
-        current: true
-      }]
+        current: true,
+      }],
     };
 
     this.routes.registerRoute('all', (req, res, next) => {
-
       return Promise.resolve().then(() => {
         if (!req.user) return res.redirect('/');
 
@@ -41,12 +41,13 @@ class GroupsServerRoutes {
               name: 'Jot',
               content: 'groups',
               colours: Group.getColours(),
+              selectorlabel: 'Colour',
               groups,
-              editID: req.query.edit
+              editID: req.query.edit,
             }));
           },
 
-          reject: next
+          reject: next,
         };
       }).catch(next);
     });
@@ -68,19 +69,21 @@ class GroupsServerRoutes {
               group,
               done: req.params.status === 'done',
               editID: req.query.edit,
+              priorities: Jot.getPriorities(),
+              selectorlabel: 'Priority',
               tabs: [{
                 link: '/group/' + req.params.id,
                 title: 'undone',
-                current: req.params.status !== 'done'
+                current: req.params.status !== 'done',
               }, {
                 link: '/group/' + req.params.id + '/done',
                 title: 'done',
-                current: req.params.status === 'done'
-              }]
+                current: req.params.status === 'done',
+              }],
             }));
           },
 
-          reject: next
+          reject: next,
         };
       }).catch(next);
     });
@@ -89,7 +92,7 @@ class GroupsServerRoutes {
       return Promise.resolve().then(() => {
         const params = {
           name: req.body.name,
-          colour: req.body.colour
+          colour: req.body.colour,
         };
 
         return {
