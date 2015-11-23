@@ -3,7 +3,7 @@ if (window.operamini) {
 }
 
 // cutting the ol' mustard like a pro
-if ('visibilityState' in document) {
+if ('visibilityState' in document && !window.operamini) {
   document.querySelector('body').classList.remove('nojs');
   if (navigator.serviceWorker) {
     navigator.serviceWorker.register('/serviceworker.js', {
