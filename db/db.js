@@ -59,6 +59,7 @@ class DB {
 
         const opts = {live: true, retry: true};
 
+        /*
         this._db.replicate.to(this._remoteCouch, opts).on('change', info => {
           console.log('browser replicate to change');
         }).on('paused', () => {
@@ -96,6 +97,7 @@ class DB {
         }).on('error', err => {
           console.log('browser replicate from error', err);
         });
+*/
 
       } else {
         const ddoc = {

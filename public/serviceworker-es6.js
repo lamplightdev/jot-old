@@ -1,4 +1,4 @@
-const version = 104;
+const version = 105;
 
 importScripts('/js/serviceworker-cache-polyfill.js');
 
@@ -20,7 +20,7 @@ self.addEventListener('install', event => {
           '/js/dist/app.js',
           '/js/browser-polyfill.js',
           '/js/pouchdb.js',
-          '/js/webfontloader.js',
+          //'/js/webfontloader.js',
         ]);
       })
   );
