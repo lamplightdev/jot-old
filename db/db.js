@@ -52,14 +52,12 @@ class DB {
     if (typeof PouchDB !== 'undefined') { //browser
       PouchDB.debug.disable();
       this._db = new PouchDB(options.dbName, {
-        auto_compaction: true
+        auto_compaction: true,
       });
 
       if (this._remoteCouch) {
-
         const opts = {live: true, retry: true};
 
-        /*
         this._db.replicate.to(this._remoteCouch, opts).on('change', info => {
           console.log('browser replicate to change');
         }).on('paused', () => {
@@ -83,11 +81,10 @@ class DB {
           console.log('browser replicate from paused');
 
           PubSub.publish('update', {
-            changes
+            changes,
           });
 
           changes = [];
-
         }).on('active', () => {
           console.log('browser replicate from active');
         }).on('denied', info => {
@@ -97,8 +94,6 @@ class DB {
         }).on('error', err => {
           console.log('browser replicate from error', err);
         });
-*/
-
       } else {
         const ddoc = {
           _id: '_design/index',
@@ -108,9 +103,9 @@ class DB {
                 if (doc.fields.group) {
                   emit(doc.fields.group);
                 }
-              }).toString()
-            }
-          }
+              }).toString(),
+            },
+          },
         };
 
         this._db.put(ddoc).then(() => {
