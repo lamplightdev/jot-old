@@ -130,26 +130,28 @@ if ('visibilityState' in document && !window.operamini) {
     let user = json;
     let reload = false;
 
-    if (!user) {
-      if (JotApp.user) {
-        user = false;
-        reload = true;
-      } else {
-        // do nothing, we already have no user
-      }
-    } else {
-      if (JotApp.user) {
-        if (user.credentials.key !== JotApp.user.credentials.key) {
+    if (!user.serviceworker) {
+      if (!user) {
+        if (JotApp.user) {
+          user = false;
           reload = true;
+        } else {
+          // do nothing, we already have no user
         }
       } else {
-        reload = true;
+        if (JotApp.user) {
+          if (user.credentials.key !== JotApp.user.credentials.key) {
+            reload = true;
+          }
+        } else {
+          reload = true;
+        }
       }
-    }
 
-    if (reload) {
-      localStorage.setItem('jot-user', JSON.stringify(user));
-      document.location.reload();
+      if (reload) {
+        localStorage.setItem('jot-user', JSON.stringify(user));
+        document.location.reload();
+      }
     }
   }).catch(ex => {
     console.log('something went wrong with auth/user', ex);
