@@ -2,6 +2,8 @@ const Group = require('../../models/group');
 const GroupRoutes = require('../group');
 const Jot = require('../../models/jot');
 
+const browserUtils = require('../../utility/browser.js');
+
 class GroupsServerRoutes {
   constructor(router) {
     this.router = router;
@@ -99,10 +101,14 @@ class GroupsServerRoutes {
           params,
 
           resolve: () => {
-            res.redirect('/group');
+            let cacheBust = '';
+            if (browserUtils.detectOperaMini(req.headers['user-agent'])) {
+              cacheBust = '?om=' + ('' + Date.now()).substr(-5);
+            }
+            res.redirect('/group' + cacheBust);
           },
 
-          reject: next
+          reject: next,
         };
       }).catch(next);
     });
@@ -111,7 +117,7 @@ class GroupsServerRoutes {
       return Promise.resolve().then(() => {
         const params = {
           id: req.params.id,
-          action: req.body.action
+          action: req.body.action,
         };
 
         return {
@@ -121,7 +127,7 @@ class GroupsServerRoutes {
             res.redirect('/group');
           },
 
-          reject: next
+          reject: next,
         };
       }).catch(next);
     });
@@ -130,13 +136,13 @@ class GroupsServerRoutes {
       return Promise.resolve().then(() => {
         const fields = {
           name: req.body.name,
-          colour: req.body.colour
+          colour: req.body.colour,
         };
 
         const params = {
           id: req.params.id,
           action: req.body.action,
-          fields
+          fields,
         };
 
         return {
@@ -146,7 +152,7 @@ class GroupsServerRoutes {
             res.redirect('/group');
           },
 
-          reject: next
+          reject: next,
         };
       }).catch(next);
     });

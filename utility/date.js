@@ -8,7 +8,7 @@ class DateUtils {
       'Wed',
       'Thu',
       'Fri',
-      'Sat'
+      'Sat',
     ];
   }
 
@@ -25,7 +25,7 @@ class DateUtils {
       'Sep',
       'Oct',
       'Nov',
-      'Dec'
+      'Dec',
     ];
   }
 
@@ -40,8 +40,8 @@ class DateUtils {
   }
 
   static _pad(num, size) {
-    const s = '000000000' + num;
-    return s.substr(s.length - size);
+    const string = '000000000' + num;
+    return string.substr(string.length - size);
   }
 }
 

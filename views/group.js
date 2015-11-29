@@ -1,5 +1,3 @@
-'use strict';
-
 const View = require('./view');
 
 const Jot = require('../models/jot');
@@ -33,7 +31,7 @@ class ViewGroup extends View {
       if (args.changes && args.changes.length) {
         Group.load(params.group.id).then(group => {
           this.renderPartial('jot-list', {
-            group
+            group,
           });
         });
       }
@@ -42,8 +40,8 @@ class ViewGroup extends View {
     this._subscriptions.push(PubSub.subscribe('orderChanged', (topic, args) => {
       this._preferences.setOrder(args.type, args.direction);
 
-      const params = this.lastParams;
-      this.renderPartial('jot-list', params);
+      const lastParams = this.lastParams;
+      this.renderPartial('jot-list', lastParams);
     }));
 
     this._addDocumentListener('unselectAll', 'click', () => {
@@ -53,21 +51,25 @@ class ViewGroup extends View {
 
   renderPartial(name, params) {
     switch (name) {
-      case 'jot-list':
-        params.jots = params.group.getJots(this._showDone);
-        params.jots = this._preferences.order(params.jots);
-        break;
+    case 'jot-list':
+      params.jots = params.group.getJots(this._showDone);
+      params.jots = this._preferences.order(params.jots);
+      break;
+    default:
+      break;
     }
 
     const el = super.renderPartial(name, params);
 
     switch (name) {
-      case 'jot-list':
-        this.initEdit();
-        this.initDeleteForms();
-        this.initUpdateForms();
-        this.initWidgets(el);
-        break;
+    case 'jot-list':
+      this.initEdit();
+      this.initDeleteForms();
+      this.initUpdateForms();
+      this.initWidgets(el);
+      break;
+    default:
+      break;
     }
   }
 
@@ -97,16 +99,15 @@ class ViewGroup extends View {
         fields: {
           content,
           group,
-          priority
-        }
+          priority,
+        },
       }).save().then(() => {
         contentField.value = '';
-        //contentField.focus();
         contentField.blur();
         this.unselectAll();
-        Group.load(group).then(group => {
+        Group.load(group).then(updatedGroup => {
           this.renderPartial('jot-list', {
-            group
+            group: updatedGroup,
           });
         });
       });
@@ -123,10 +124,10 @@ class ViewGroup extends View {
 
   initEdit() {
     const links = this._el.querySelectorAll('.jots__jot__edit');
-    for (let link of links) {
+    for (const link of links) {
       link.addEventListener('click', event => {
         event.preventDefault();
-        event.stopPropagation();  //stop document listener from removing 'edit' class
+        event.stopPropagation();  // stop document listener from removing 'edit' class
 
         const id = link.dataset.id;
         const item = this._el.querySelector('.jots__jot-' + id);
@@ -135,10 +136,6 @@ class ViewGroup extends View {
           this.unselectAll();
 
           item.classList.add('edit');
-
-          //const contentField = this._el.querySelector('.form-jot-update-' + id).elements.content;
-          //contentField.focus();
-          //contentField.value = contentField.value; //forces cursor to go to end of text
         } else {
           this.unselectAll();
         }
@@ -147,21 +144,21 @@ class ViewGroup extends View {
   }
 
   unselectAll() {
-    //TODO: have class member to hold reference to common element/element groups to avoid requerying
+    // TODO: have class member to hold reference to common element/element groups to avoid requerying
     const items = this._el.querySelectorAll('.jots__jot');
-    for (let item of items) {
+    for (const item of items) {
       item.classList.remove('edit');
     }
 
     const shows = this._el.querySelectorAll('.show-on-focus');
-    for (let show of shows) {
+    for (const show of shows) {
       show.classList.remove('show');
     }
   }
 
   initDeleteForms() {
     const forms = this._el.querySelectorAll('.form-jot-delete');
-    for (let form of forms) {
+    for (const form of forms) {
       form.addEventListener('submit', event => {
         event.preventDefault();
 
@@ -173,9 +170,9 @@ class ViewGroup extends View {
 
         Jot.load(id).then(jot => {
           Jot.remove(id).then(() => {
-            Group.load(group).then(group => {
+            Group.load(group).then(updatedGroup => {
               this.renderPartial('jot-list', {
-                group
+                group: updatedGroup,
               });
             });
           }).then(() => {
@@ -187,20 +184,19 @@ class ViewGroup extends View {
                   return Promise.resolve().then(() => {
                     jot.rev = null;
                     jot.save().then(() => {
-                      return Group.load(group).then(group => {
+                      return Group.load(group).then(updatedGroup => {
                         this.renderPartial('jot-list', {
-                          group
+                          group: updatedGroup,
                         });
                         return true;
                       });
                     });
                   });
                 },
-                msg: 'Jot undeleted'
-              }
+                msg: 'Jot undeleted',
+              },
             });
           });
-
         });
       });
     }
@@ -209,7 +205,7 @@ class ViewGroup extends View {
   initUpdateForms() {
     const forms = this._el.querySelectorAll('.form-jot-update');
 
-    for (let form of forms) {
+    for (const form of forms) {
       const doneButton = form.elements.done;
       const undoneButton = form.elements.undone;
 
@@ -226,7 +222,7 @@ class ViewGroup extends View {
       }
 
       form.addEventListener('click', event => {
-        event.stopPropagation();  //stop document listener from removing 'edit' class
+        event.stopPropagation();  // stop document listener from removing 'edit' class
       });
 
       form.addEventListener('submit', event => {
@@ -240,13 +236,12 @@ class ViewGroup extends View {
         const priority = form.elements.priority.value;
 
         Jot.load(id).then(jot => {
-
           const currentFields = jot.fields;
 
           jot.fields = {
             content,
             group,
-            priority
+            priority,
           };
 
           if (doneStatus === 'done') {
@@ -258,9 +253,9 @@ class ViewGroup extends View {
           }
 
           jot.save().then(() => {
-            Group.load(group).then(group => {
+            Group.load(group).then(updatedGroup => {
               this.renderPartial('jot-list', {
-                group
+                group: updatedGroup,
               });
             });
           });

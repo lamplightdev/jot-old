@@ -9,7 +9,7 @@ class Touch {
       left: [],
       right: [],
       up: [],
-      down: []
+      down: [],
     };
 
     this.handleTouchStart = this.handleTouchStart.bind(this);
@@ -36,27 +36,27 @@ class Touch {
 
   handleTouchMove(evt) {
     if ( ! this._xDown || ! this._yDown ) {
-        return;
+      return;
     }
 
-    var xUp = evt.touches[0].clientX;
-    var yUp = evt.touches[0].clientY;
+    const xUp = evt.touches[0].clientX;
+    const yUp = evt.touches[0].clientY;
 
-    var xDiff = this._xDown - xUp;
-    var yDiff = this._yDown - yUp;
+    const xDiff = this._xDown - xUp;
+    const yDiff = this._yDown - yUp;
 
-    if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {
-        if ( xDiff > 0 ) {
-            this._registered.left.forEach(fn => fn());
-        } else {
-            this._registered.right.forEach(fn => fn());
-        }
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {
+      if (xDiff > 0) {
+        this._registered.left.forEach(fn => fn());
+      } else {
+        this._registered.right.forEach(fn => fn());
+      }
     } else {
-        if ( yDiff > 0 ) {
-            this._registered.up.forEach(fn => fn());
-        } else {
-            this._registered.down.forEach(fn => fn());
-        }
+      if ( yDiff > 0 ) {
+        this._registered.up.forEach(fn => fn());
+      } else {
+        this._registered.down.forEach(fn => fn());
+      }
     }
 
     this._xDown = null;
