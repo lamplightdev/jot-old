@@ -560,7 +560,7 @@ body.operamini .md-nav.show {
       margin-right: 1rem; }
       .md-nav-body a .image.image--avatar, .md-nav-body span .image.image--avatar {
         border-radius: 2.5rem;
-        display: inline-block; }
+        display: block; }
   .md-nav-body a:hover, .md-nav-body a:focus {
     background: #f5f5f5; }
   .md-nav-body a:active {
