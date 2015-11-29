@@ -8,8 +8,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 
 const passport = require('passport');
-const authUtils = require('./utility/auth');
-const browserUtils = require('./utility/browser');
+const auth = require('./utility/auth');
 
 const redis = require('redis');
 const RedisStore = require('connect-redis')(session);
@@ -63,16 +62,6 @@ app.use((req, res, next) => {
   }, next);
 });
 
-app.use((req, res, next) => {
-  if (browserUtils.detectOperaMini(req.headers['user-agent'])) {
-    res.set({
-      'Cache-Control': 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0',
-    });
-  }
-
-  next();
-});
-
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -104,8 +93,8 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-authUtils.serialization();
-authUtils.Google();
+auth.serialization();
+auth.Google();
 
 app.use((req, res, next) => {
   // app.expose(req.user, 'user');
