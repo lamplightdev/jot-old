@@ -2,8 +2,6 @@ const Group = require('../../models/group');
 const GroupRoutes = require('../group');
 const Jot = require('../../models/jot');
 
-const browserUtils = require('../../utility/browser.js');
-
 class GroupsServerRoutes {
   constructor(router) {
     this.router = router;
@@ -101,11 +99,7 @@ class GroupsServerRoutes {
           params,
 
           resolve: () => {
-            let cacheBust = '';
-            if (browserUtils.detectOperaMini(req.headers['user-agent'])) {
-              cacheBust = '?om=' + ('' + Date.now()).substr(-5);
-            }
-            res.redirect('/group' + cacheBust);
+            res.redirect('/group');
           },
 
           reject: next,
