@@ -1,5 +1,6 @@
 if (window.operamini) {
   document.body.classList.add('operamini');
+  window.operamini.page.maxAge = 0;
 }
 
 // cutting the ol' mustard like a pro
