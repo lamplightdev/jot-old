@@ -531,6 +531,10 @@ p, .text-regular, .md-list-item__secondary-content {
 body.operamini .md-nav.show {
   left: 0; }
 
+body.operamini .md-nav-body > a .image, body.operamini .md-nav-body > span .image, body.operamini .md-nav-body .sub-section > a .image, body.operamini .md-nav-body .sub-section > span .image {
+  width: 35px;
+  height: 35px; }
+
 .md-nav-head {
   display: -webkit-flex;
   display: -webkit-box;

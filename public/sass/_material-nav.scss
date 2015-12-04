@@ -66,6 +66,12 @@ body.operamini {
       left: 0;
     }
   }
+
+  //yuck
+  .md-nav-body > a .image, .md-nav-body > span .image, .md-nav-body .sub-section > a .image, .md-nav-body .sub-section > span .image {
+    width: 35px;
+    height: 35px;
+  }
 }
 
 .md-nav-head {
