@@ -19,3 +19,10 @@
   -ms-animation: $vars;
   animation: $vars;
 }
+
+.ellipsise {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+}

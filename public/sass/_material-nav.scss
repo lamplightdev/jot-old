@@ -84,7 +84,7 @@ body.operamini {
 
   line-height: 3.5rem;
 
-  a, span {
+  >a, >span, .sub-section >a, .sub-section >span {
     display: flex;
     align-items: center;
     height: 3.5rem;
@@ -95,19 +95,23 @@ body.operamini {
     text-decoration: none;
     color: inherit;
 
+    span {
+      @extend .ellipsise;
+    }
+
     &.small {
       font-size: 0.9rem;
     }
-  }
 
-  .image {
-    height: 2.5rem;
-    width: 2.5rem;
-    margin-right: 1rem;
+    .image {
+      height: 2.5rem;
+      width: 2.5rem;
+      margin-right: 1rem;
 
-    &.image--avatar {
-      border-radius: 2.5rem;
-      display: block;
+      &.image--avatar {
+        border-radius: 2.5rem;
+        display: block;
+      }
     }
   }
 

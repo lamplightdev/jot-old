@@ -451,6 +451,12 @@ table {
   .clearfix:after {
     clear: both; }
 
+.ellipsise, .md-nav-body > a span, .md-nav-body > span span, .md-nav-body .sub-section > a span, .md-nav-body .sub-section > span span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block; }
+
 html, body {
   font-family: Roboto, sans-serif; }
 
@@ -538,7 +544,7 @@ body.operamini .md-nav.show {
 .md-nav-body {
   padding: 0.6rem 0 0 0;
   line-height: 3.5rem; }
-  .md-nav-body a, .md-nav-body span {
+  .md-nav-body > a, .md-nav-body > span, .md-nav-body .sub-section > a, .md-nav-body .sub-section > span {
     display: -webkit-box;
     display: -webkit-flex;
     display: -ms-flexbox;
@@ -552,15 +558,15 @@ body.operamini .md-nav.show {
     font-size: 1.1rem;
     text-decoration: none;
     color: inherit; }
-    .md-nav-body a.small, .md-nav-body span.small {
+    .md-nav-body > a.small, .md-nav-body > span.small, .md-nav-body .sub-section > a.small, .md-nav-body .sub-section > span.small {
       font-size: 0.9rem; }
-  .md-nav-body .image {
-    height: 2.5rem;
-    width: 2.5rem;
-    margin-right: 1rem; }
-    .md-nav-body .image.image--avatar {
-      border-radius: 2.5rem;
-      display: block; }
+    .md-nav-body > a .image, .md-nav-body > span .image, .md-nav-body .sub-section > a .image, .md-nav-body .sub-section > span .image {
+      height: 2.5rem;
+      width: 2.5rem;
+      margin-right: 1rem; }
+      .md-nav-body > a .image.image--avatar, .md-nav-body > span .image.image--avatar, .md-nav-body .sub-section > a .image.image--avatar, .md-nav-body .sub-section > span .image.image--avatar {
+        border-radius: 2.5rem;
+        display: block; }
   .md-nav-body a:hover, .md-nav-body a:focus {
     background: #f5f5f5; }
   .md-nav-body a:active {
