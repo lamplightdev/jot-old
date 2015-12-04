@@ -549,7 +549,6 @@ body.operamini .md-nav-body > a .image, body.operamini .md-nav-body > span .imag
   padding: 0.6rem 0 0 0;
   line-height: 3.5rem; }
   .md-nav-body > a, .md-nav-body > span, .md-nav-body .sub-section > a, .md-nav-body .sub-section > span {
-    position: relative;
     display: -webkit-box;
     display: -webkit-flex;
     display: -ms-flexbox;
