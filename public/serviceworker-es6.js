@@ -1,4 +1,4 @@
-const version = 109;
+const version = 110;
 
 importScripts('/js/serviceworker-cache-polyfill.js');
 

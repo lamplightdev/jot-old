@@ -24,8 +24,12 @@ input, textarea, button, select {
   background: transparent;
   border: 0;
   padding: 0.5rem 0;
-  margin: 0 0.6rem;
+  margin: 0 0.6rem 0 0;
   text-transform: uppercase;
+
+  &.last {
+    margin-right: 0;
+  }
 
   &.md-form-btn--raised {
     > span {
