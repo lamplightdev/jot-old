@@ -66,12 +66,6 @@ body.operamini {
       left: 0;
     }
   }
-
-  //yuck
-  .md-nav-body > a .image, .md-nav-body > span .image, .md-nav-body .sub-section > a .image, .md-nav-body .sub-section > span .image {
-    width: 35px;
-    height: 35px;
-  }
 }
 
 .md-nav-head {
@@ -110,8 +104,8 @@ body.operamini {
     }
 
     .image {
-      height: 2.5rem;
-      width: 2.5rem;
+      max-height: 2.5rem;
+      max-width: 2.5rem;
       margin-right: 1rem;
 
       &.image--avatar {

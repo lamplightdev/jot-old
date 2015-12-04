@@ -531,10 +531,6 @@ p, .text-regular, .md-list-item__secondary-content {
 body.operamini .md-nav.show {
   left: 0; }
 
-body.operamini .md-nav-body > a .image, body.operamini .md-nav-body > span .image, body.operamini .md-nav-body .sub-section > a .image, body.operamini .md-nav-body .sub-section > span .image {
-  width: 35px;
-  height: 35px; }
-
 .md-nav-head {
   display: -webkit-flex;
   display: -webkit-box;
@@ -565,8 +561,8 @@ body.operamini .md-nav-body > a .image, body.operamini .md-nav-body > span .imag
     .md-nav-body > a.small, .md-nav-body > span.small, .md-nav-body .sub-section > a.small, .md-nav-body .sub-section > span.small {
       font-size: 0.9rem; }
     .md-nav-body > a .image, .md-nav-body > span .image, .md-nav-body .sub-section > a .image, .md-nav-body .sub-section > span .image {
-      height: 2.5rem;
-      width: 2.5rem;
+      max-height: 2.5rem;
+      max-width: 2.5rem;
       margin-right: 1rem; }
       .md-nav-body > a .image.image--avatar, .md-nav-body > span .image.image--avatar, .md-nav-body .sub-section > a .image.image--avatar, .md-nav-body .sub-section > span .image.image--avatar {
         border-radius: 2.5rem;
