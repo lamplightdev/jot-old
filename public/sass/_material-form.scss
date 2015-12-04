@@ -33,10 +33,12 @@ input, textarea, button, select {
 
   &.md-form-btn--raised {
     > span {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
 
       font-size: 1rem;
-      line-height: 2.6;
+      height: 2.6rem;
       text-transform: uppercase;
 
       border-radius: 3px;

@@ -734,9 +734,20 @@ input, textarea, button, select {
   .md-form-btn.last {
     margin-right: 0; }
   .md-form-btn.md-form-btn--raised > span {
-    display: inline-block;
+    display: -webkit-inline-box;
+    display: -webkit-inline-flex;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+        -ms-flex-pack: center;
+            justify-content: center;
     font-size: 1rem;
-    line-height: 2.6;
+    height: 2.6rem;
     text-transform: uppercase;
     border-radius: 3px;
     padding: 0 0.6rem;
