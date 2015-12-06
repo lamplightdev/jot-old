@@ -18,6 +18,7 @@ self.addEventListener('install', event => {
           '/',
           '/css/app.css',
           '/js/dist/app.js',
+          '/js/dist/app.min.js',
           '/js/browser-polyfill.js',
           '/js/pouchdb.js',
           // '/js/webfontloader.js',
