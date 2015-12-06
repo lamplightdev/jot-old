@@ -1,3 +1,5 @@
+'use strict';
+
 class DateUtils {
 
   static getDays() {

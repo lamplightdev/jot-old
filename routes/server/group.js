@@ -1,3 +1,5 @@
+'use strict';
+
 const Group = require('../../models/group');
 const GroupRoutes = require('../group');
 const Jot = require('../../models/jot');

@@ -1,3 +1,5 @@
+'use strict';
+
 class Routes {
 
   constructor(router, prefix = '') {

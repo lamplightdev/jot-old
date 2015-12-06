@@ -1,3 +1,5 @@
+'use strict';
+
 const AuthRoutes = require('../auth');
 const passport = require('passport');
 

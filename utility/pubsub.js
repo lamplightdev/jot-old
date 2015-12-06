@@ -1,3 +1,5 @@
+'use strict';
+
 class PubSub {
   //based on pubsub implementation at http://addyosmani.com/resources/essentialjsdesignpatterns/book/#observerpatternjavascript
 

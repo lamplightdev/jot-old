@@ -1,3 +1,5 @@
+'use strict';
+
 const DateUtils = require('../utility/date');
 
 class Model {

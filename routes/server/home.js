@@ -1,3 +1,5 @@
+'use strict';
+
 const HomeRoutes = require('../home');
 
 class HomeRouter {

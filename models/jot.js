@@ -1,3 +1,5 @@
+'use strict';
+
 const Model = require('./model');
 
 class Jot extends Model {

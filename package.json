@@ -4,7 +4,7 @@
   "description": "Service Worker and PouchDB example app",
   "main": "server_.js",
   "scripts": {
-    "start": "node server_.js",
+    "start": "node --harmony_rest_parameters --harmony_default_parameters server_.js",
     "test": "echo 'Error: no test specified' && exit 1",
     "env": "env",
     "clean": "rm -rf public/js/dist/* && rm -rf public/css/dist/*",
