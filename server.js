@@ -6,6 +6,7 @@ const session = require('express-session');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const compression = require('compression')
 
 const passport = require('passport');
 const auth = require('./utility/auth');
@@ -19,6 +20,7 @@ const RoutesGroup = require('./routes/server/group');
 const RoutesAuth = require('./routes/server/auth');
 
 const app = express();
+app.use(compression());
 
 const env = process.env.NODE_ENV || 'development';
 

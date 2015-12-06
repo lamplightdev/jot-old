@@ -1,6 +1,5 @@
-'use strict';
-
 const PubSub = require('../utility/pubsub');
+const PouchDB = require('pouchdb');
 
 class DB {
   constructor() {
@@ -12,15 +11,14 @@ class DB {
     return this._db;
   }
 
-  init(options) {
-
-    options = options || {
+  init(passedOptions) {
+    const options = passedOptions || {
       protocol: null,
       domain: null,
       port: null,
       username: null,
       password: null,
-      dbName: null
+      dbName: null,
     };
 
     if (options.domain) {
@@ -49,14 +47,14 @@ class DB {
       this._remoteCouch = null;
     }
 
-    if (typeof PouchDB !== 'undefined') { //browser
+    if (typeof window !== 'undefined') { // browser
       PouchDB.debug.disable();
       this._db = new PouchDB(options.dbName, {
         auto_compaction: true,
       });
 
       if (this._remoteCouch) {
-        const opts = {live: true, retry: true};
+        const opts = {}; // {live: true, retry: true};
 
         this._db.replicate.to(this._remoteCouch, opts).on('change', info => {
           console.log('browser replicate to change');
@@ -112,12 +110,10 @@ class DB {
           // kick off an initial build, return immediately
           return this._db.query('index/group', {stale: 'update_after'});
         }).catch(err => {
-            //conflict occured, i.e. ddoc already existed
+            // conflict occured, i.e. ddoc already existed
         });
       }
-
     } else {
-      const PouchDB = require('pouchdb');
       PouchDB.debug.disable();
 
       this._db = new PouchDB(this._remoteCouch);
@@ -126,11 +122,11 @@ class DB {
 }
 
 const dbs = {
-  'main': new DB()
+  'main': new DB(),
 };
 let currentDB = 'main';
 
-module.exports = (options, id=false) => {
+module.exports = (options, id = false) => {
   if (id !== false) {
     currentDB = id;
   }

@@ -5,6 +5,10 @@ if (window.operamini) {
 
 // cutting the ol' mustard like a pro
 if ('visibilityState' in document && !window.operamini) {
+
+  const swVersion = localStorage.getItem('sw-version');
+  console.log(swVersion);
+
   document.querySelector('body').classList.remove('nojs');
   if (navigator.serviceWorker) {
     navigator.serviceWorker.register('/serviceworker.js', {

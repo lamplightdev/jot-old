@@ -1,5 +1,3 @@
-'use strict';
-
 const View = require('./view');
 
 const Group = require('../models/group');
@@ -27,7 +25,7 @@ class ViewGroups extends View {
       if (args.changes && args.changes.length) {
         Group.loadAll().then(groups => {
           this.renderPartial('group-list', {
-            groups
+            groups,
           });
         });
       }
@@ -36,8 +34,7 @@ class ViewGroups extends View {
     this._subscriptions.push(PubSub.subscribe('orderChanged', (topic, args) => {
       this._preferences.setOrder(args.type, args.direction);
 
-      const params = this.lastParams;
-      this.renderPartial('group-list', params);
+      this.renderPartial('group-list', this.lastParams);
     }));
 
     this._addDocumentListener('unselectAll', 'click', () => {
@@ -47,20 +44,24 @@ class ViewGroups extends View {
 
   renderPartial(name, params) {
     switch (name) {
-      case 'group-list':
-        params.groups = this._preferences.order(params.groups);
-        break;
+    case 'group-list':
+      params.groups = this._preferences.order(params.groups);
+      break;
+    default:
+      break;
     }
 
     const el = super.renderPartial(name, params);
 
     switch (name) {
-      case 'group-list':
-        this.initEdit();
-        this.initDeleteForms();
-        this.initUpdateForms();
-        this.initWidgets(el);
-        break;
+    case 'group-list':
+      this.initEdit();
+      this.initDeleteForms();
+      this.initUpdateForms();
+      this.initWidgets(el);
+      break;
+    default:
+      break;
     }
   }
 
@@ -90,12 +91,12 @@ class ViewGroups extends View {
         },
       }).save().then(() => {
         nameField.value = '';
-        //nameField.focus();
+        // nameField.focus();
         nameField.blur();
         this.unselectAll();
         Group.loadAll().then(groups => {
           this.renderPartial('group-list', {
-            groups
+            groups,
           });
         });
       });
@@ -112,12 +113,12 @@ class ViewGroups extends View {
 
   initEdit() {
     const editLinks = this._el.querySelectorAll('.groups__group__edit');
-    for (let link of editLinks) {
-      link.addEventListener('click', event => {
+    for (let i = 0; i < editLinks.length; i++) {
+      editLinks[i].addEventListener('click', event => {
         event.preventDefault();
-        event.stopPropagation();  //stop document listener from removing 'edit' class
+        event.stopPropagation();  // stop document listener from removing 'edit' class
 
-        const id = link.dataset.id;
+        const id = editLinks[i].dataset.id;
         const item = this._el.querySelector('.groups__group-' + id);
 
         if (!item.classList.contains('edit')) {
@@ -125,9 +126,9 @@ class ViewGroups extends View {
 
           item.classList.add('edit');
 
-          //const nameField = this._el.querySelector('.form-group-update-' + id).elements.name;
-          //nameField.focus();
-          //nameField.value = nameField.value; //forces cursor to go to end of text
+          // const nameField = this._el.querySelector('.form-group-update-' + id).elements.name;
+          // nameField.focus();
+          // nameField.value = nameField.value; //forces cursor to go to end of text
         } else {
           this.unselectAll();
         }
@@ -136,25 +137,25 @@ class ViewGroups extends View {
   }
 
   unselectAll() {
-    //TODO: have class member to hold reference to common element/element groups to avoid requerying
+    // TODO: have class member to hold reference to common element/element groups to avoid requerying
     const items = this._el.querySelectorAll('.groups__group');
-    for (let item of items) {
-      item.classList.remove('edit');
+    for (let i = 0; i < items.length; i++) {
+      items[i].classList.remove('edit');
     }
 
     const shows = this._el.querySelectorAll('.show-on-focus');
-    for (let show of shows) {
-      show.classList.remove('show');
+    for (let i = 0; i < shows.length; i++) {
+      shows[i].classList.remove('show');
     }
   }
 
   initDeleteForms() {
     const forms = this._el.querySelectorAll('.form-group-delete');
-    for (let form of forms) {
-      form.addEventListener('submit', event => {
+    for (let i = 0; i < forms.length; i++) {
+      forms[i].addEventListener('submit', event => {
         event.preventDefault();
 
-        const id = form.dataset.id;
+        const id = forms[i].dataset.id;
 
         const item = this._el.querySelector('.groups__group-' + id);
         item.parentNode.removeChild(item);
@@ -163,7 +164,7 @@ class ViewGroups extends View {
           Group.remove(id).then(() => {
             Group.loadAll().then(groups => {
               this.renderPartial('group-list', {
-                groups
+                groups,
               });
             });
           }).then(() => {
@@ -175,23 +176,20 @@ class ViewGroups extends View {
                   return Promise.resolve().then(() => {
                     group.rev = null;
                     group.save().then(() => {
-
                       const docs = group.jots.map(jot => {
                         return {
                           _rev: null,
                           _id: jot.id,
                           dateAdded: jot._dateAdded,
-                          fields: jot.fields
-                        }
-                        jot.rev = null;
-                        return jot;
+                          fields: jot.fields,
+                        };
                       });
 
                       const db = require('../db/db')();
                       return db.bulkDocs(docs).then(() => {
                         return Group.loadAll().then(groups => {
                           this.renderPartial('group-list', {
-                            groups
+                            groups,
                           });
                           return true;
                         });
@@ -199,8 +197,8 @@ class ViewGroups extends View {
                     });
                   });
                 },
-                msg: 'List undeleted'
-              }
+                msg: 'List undeleted',
+              },
             });
           });
         });
@@ -211,30 +209,29 @@ class ViewGroups extends View {
   initUpdateForms() {
     const forms = this._el.querySelectorAll('.form-group-update');
 
-    for (let form of forms) {
-      form.addEventListener('click', event => {
-        event.stopPropagation();  //stop document listener from removing 'edit' class
+    for (let i = 0; i < forms.length; i++) {
+      forms[i].addEventListener('click', event => {
+        event.stopPropagation();  // stop document listener from removing 'edit' class
       });
 
-      form.addEventListener('submit', event => {
+      forms[i].addEventListener('submit', event => {
         event.preventDefault();
 
-        const id = form.dataset.id;
+        const id = forms[i].dataset.id;
 
-        const name = form.elements.name.value;
-        const colour = form.elements.colour.value;
+        const name = forms[i].elements.name.value;
+        const colour = forms[i].elements.colour.value;
 
         Group.load(id).then(group => {
-
           group.fields = {
             name,
-            colour
+            colour,
           };
 
           group.save().then(() => {
             Group.loadAll().then(groups => {
               this.renderPartial('group-list', {
-                groups
+                groups,
               });
             });
           });

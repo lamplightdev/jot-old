@@ -14,7 +14,7 @@ class View {
     this._lastParams = null;
   }
 
-  //tidy this up?
+  // tidy this up?
   get _el() {
     return this._container._el;
   }
@@ -27,7 +27,7 @@ class View {
     this.cleanup();
 
     if (!preRendered) {
-      var template = Handlebars.template(this._container._templates[this._getTemplate()]);
+      const template = Handlebars.template(this._container._templates[this._getTemplate()]);
       this._container.update(this, template(params));
     }
 
@@ -39,7 +39,7 @@ class View {
   renderPartial(name, params) {
     console.log('render partial', name);
 
-    var template = Handlebars.template(this._container._partials[name]);
+    const template = Handlebars.template(this._container._partials[name]);
     const view = this._el.querySelector('.partial-' + name);
     view.outerHTML = template(params);
 
@@ -56,7 +56,7 @@ class View {
     if (!this._documentListeners[name]) {
       this._documentListeners[name] = {
         type,
-        fn: fn.bind(this)
+        fn: fn.bind(this),
       };
     }
 
@@ -64,13 +64,13 @@ class View {
   }
 
   cleanup() {
-    //console.log('view cleaup', this);
+    // console.log('view cleaup', this);
 
-    for (let sub of this._subscriptions) {
+    for (const sub of this._subscriptions) {
       PubSub.unsubscribe(sub);
     }
 
-    for (let lname in this._documentListeners) {
+    for (const lname in this._documentListeners) {
       const listener = this._documentListeners[lname];
       document.removeEventListener(listener.type, listener.fn);
     }

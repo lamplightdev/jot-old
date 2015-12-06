@@ -32,6 +32,16 @@ class AuthRoutes extends Routes {
       },
     };
 
+    this._routes.continue = {
+      _path: '/continue',
+      _method: ['get'],
+      _action: () => {
+        return Promise.resolve().then(() => {
+          return Promise.resolve();
+        });
+      },
+    };
+
     this._routes.user = {
       _path: '/user',
       _method: ['get'],

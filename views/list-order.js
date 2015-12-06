@@ -13,8 +13,8 @@ class ListOrder extends Widget {
       widgets = el.querySelectorAll('.partial-list-order');
     }
 
-    for (let widget of widgets) {
-      const links = widget.querySelectorAll('a');
+    for (let i = 0; i < widgets.length; i++) {
+      const links = widgets[i].querySelectorAll('a');
 
       for (let index = 0; index < links.length; index++) {
         const link = links[index];
@@ -25,7 +25,7 @@ class ListOrder extends Widget {
 
           PubSub.publish('orderChanged', {
             type: nextLink.dataset.type,
-            direction: nextLink.dataset.direction
+            direction: nextLink.dataset.direction,
           });
 
           link.classList.remove('current');

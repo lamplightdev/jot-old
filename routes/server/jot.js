@@ -29,7 +29,7 @@ class JotServerRoutes {
 
     this.routes.registerRoute('all', (req, res, next) => {
       return Promise.resolve().then(() => {
-        if (!req.user) return res.redirect('/');
+        if (!req.user) return res.redirect('/auth/continue');
 
         return {
           params: {},

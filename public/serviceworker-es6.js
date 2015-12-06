@@ -1,4 +1,4 @@
-const version = 112;
+const version = process.env.npm_package_config_sw_version;
 
 importScripts('/js/serviceworker-cache-polyfill.js');
 
@@ -20,7 +20,7 @@ self.addEventListener('install', event => {
           '/js/dist/app.js',
           '/js/browser-polyfill.js',
           '/js/pouchdb.js',
-          //'/js/webfontloader.js',
+          // '/js/webfontloader.js',
         ]);
       })
   );
@@ -37,6 +37,10 @@ self.addEventListener('activate', event => {
             }
           })
         );
+      })
+      .then(promises => {
+        // localStorage.setItem('sw-version', version);
+        return promises;
       })
   );
 });

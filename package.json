@@ -1,6 +1,6 @@
 {
   "name": "jot",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Service Worker and PouchDB example app",
   "main": "server.js",
   "scripts": {
@@ -11,14 +11,19 @@
     "prebuild": "npm run clean",
     "build": "npm run build:scripts -s && npm run build:styles -s",
     "build:dev": "npm run build:styles -s",
-    "build:scripts": "browserify -d public/js/app.js -i pouchdb -i cloudant -o public/js/dist/app.js && echo '...browserified!'",
+    "build:scripts": "browserify -d public/js/app.js -o public/js/dist/app.js && echo '...browserified!'",
     "build:styles": "sassc -m public/sass/app.scss public/css/app.css | postcss --use autoprefixer public/css/app.css --replace && echo '...sassed!'",
-    "watch:scripts": "watchify -v -d public/js/app.js -i pouchdb -i cloudant -o public/js/dist/app.js",
-    "watch:scriptssw": "watchify -v -d public/serviceworker-es6.js -o public/serviceworker.js",
+    "watch:scripts": "watchify public/js/app.js -v -o public/js/dist/app.js",
+    "swversion": "echo $((`npm config get jot:sw_version` + 1)) | xargs npm config set jot:sw_version && touch public/serviceworker-es6.js",
+    "version:patch": "npm version patch",
+    "build:scriptssw": "browserify -v -d public/serviceworker-es6.js -o public/serviceworker.js",
+    "watch:scriptssw": "onchange public/serviceworker-es6.js -v -- npm run build:scriptssw",
+    "watch:onscriptupdate": "onchange 'public/js/dist/app.js' -v -- npm run swversion",
+    "watch:onstyleupdate": "onchange 'public/css/app.css' -v -- npm run swversion",
     "watch:server": "nodemon --exec babel-node server.js",
     "watch:styles": "onchange 'public/sass/*.scss' -v -- npm run build:styles",
     "lint": "eslint .",
-    "build:watch": "npm run build:dev && parallelshell 'npm run watch:server -s' 'npm run watch:scripts -s'  'npm run watch:scriptssw -s' 'npm run watch:styles -s'"
+    "build:watch": "npm run build:dev && parallelshell 'npm run watch:server -s' 'npm run watch:scripts -s' 'npm run watch:scriptssw -s' 'npm run watch:styles -s' 'npm run watch:onscriptupdate -s' 'npm run watch:onstyleupdate -s'"
   },
   "repository": {
     "type": "git",
@@ -33,6 +38,11 @@
   "engines": {
     "node": "5.x"
   },
+  "nodemon": {
+    "events": {
+      "restart": "npm run version"
+    }
+  },
   "dependencies": {
     "autolinker": "*",
     "babel": "^6.1.18",
@@ -40,6 +50,7 @@
     "babel-preset-es2015": "^6.1.18",
     "body-parser": "^1.13.3",
     "cloudant": "^1.3.0",
+    "compression": "^1.6.0",
     "connect-redis": "*",
     "cookie-parser": "*",
     "express": "^4.13.3",
@@ -57,11 +68,14 @@
     "whatwg-fetch": "^0.10.1"
   },
   "devDependencies": {
+    "babel-plugin-transform-strict-mode": "^6.3.13",
     "babelify": "^7.0.2",
     "browserify": "^12.0.1",
+    "envify": "^3.4.0",
     "minifyify": "^7.1.0",
     "onchange": "^2.0.0",
-    "parallelshell": "^2.0.0"
+    "parallelshell": "^2.0.0",
+    "uglify-js": "^2.6.1"
   },
   "browserify": {
     "cache": {},
@@ -77,12 +91,16 @@
             "es2015"
           ]
         }
-      ]
+      ],
+      "envify"
     ]
   },
   "babel": {
     "presets": [
       "es2015"
+    ],
+    "plugins": [
+      "transform-strict-mode"
     ]
   }
 }

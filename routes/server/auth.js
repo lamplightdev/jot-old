@@ -133,6 +133,22 @@ class AuthRouter {
       });
     });
 
+    this.routes.registerRoute('continue', (req, res, next) => {
+      return Promise.resolve().then(() => {
+        return {
+          params: {},
+
+          resolve: () => {
+            res.render('app', Object.assign(this._commonParams(req), routeParams, {
+              content: 'continue',
+            }));
+          },
+
+          reject: next,
+        };
+      });
+    });
+
     return this.router;
   }
 }

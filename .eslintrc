@@ -5,6 +5,9 @@
     "importScripts": false
   },
   "rules": {
-
+    "id-length": [2, {
+      "min": 2,
+      "exceptions": ["_", "i", "j"]
+    }]
   }
 }

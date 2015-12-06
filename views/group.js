@@ -124,12 +124,12 @@ class ViewGroup extends View {
 
   initEdit() {
     const links = this._el.querySelectorAll('.jots__jot__edit');
-    for (const link of links) {
-      link.addEventListener('click', event => {
+    for (let i = 0; i < links.length; i++) {
+      links[i].addEventListener('click', event => {
         event.preventDefault();
         event.stopPropagation();  // stop document listener from removing 'edit' class
 
-        const id = link.dataset.id;
+        const id = links[i].dataset.id;
         const item = this._el.querySelector('.jots__jot-' + id);
 
         if (!item.classList.contains('edit')) {
@@ -146,24 +146,24 @@ class ViewGroup extends View {
   unselectAll() {
     // TODO: have class member to hold reference to common element/element groups to avoid requerying
     const items = this._el.querySelectorAll('.jots__jot');
-    for (const item of items) {
-      item.classList.remove('edit');
+    for (let i = 0; i < items.length; i++) {
+      items[i].classList.remove('edit');
     }
 
     const shows = this._el.querySelectorAll('.show-on-focus');
-    for (const show of shows) {
-      show.classList.remove('show');
+    for (let i = 0; i < shows.length; i++) {
+      shows[i].classList.remove('show');
     }
   }
 
   initDeleteForms() {
     const forms = this._el.querySelectorAll('.form-jot-delete');
-    for (const form of forms) {
-      form.addEventListener('submit', event => {
+    for (let i = 0; i < forms.length; i++) {
+      forms[i].addEventListener('submit', event => {
         event.preventDefault();
 
-        const id = form.dataset.id;
-        const group = form.dataset.groupId;
+        const id = forms[i].dataset.id;
+        const group = forms[i].dataset.groupId;
 
         const item = this._el.querySelector('.jots__jot-' + id);
         item.parentNode.removeChild(item);
@@ -205,35 +205,35 @@ class ViewGroup extends View {
   initUpdateForms() {
     const forms = this._el.querySelectorAll('.form-jot-update');
 
-    for (const form of forms) {
-      const doneButton = form.elements.done;
-      const undoneButton = form.elements.undone;
+    for (let i = 0; i < forms.length; i++) {
+      const doneButton = forms[i].elements.done;
+      const undoneButton = forms[i].elements.undone;
 
       if (doneButton) {
         doneButton.addEventListener('click', () => {
-          form.elements['done-status'].value = 'done';
+          forms[i].elements['done-status'].value = 'done';
         });
       }
 
       if (undoneButton) {
         undoneButton.addEventListener('click', () => {
-          form.elements['done-status'].value = 'undone';
+          forms[i].elements['done-status'].value = 'undone';
         });
       }
 
-      form.addEventListener('click', event => {
+      forms[i].addEventListener('click', event => {
         event.stopPropagation();  // stop document listener from removing 'edit' class
       });
 
-      form.addEventListener('submit', event => {
+      forms[i].addEventListener('submit', event => {
         event.preventDefault();
 
-        const id = form.dataset.id;
+        const id = forms[i].dataset.id;
 
-        const content = form.elements.content.value;
-        const group = form.elements.group.value;
-        const doneStatus = form.elements['done-status'].value;
-        const priority = form.elements.priority.value;
+        const content = forms[i].elements.content.value;
+        const group = forms[i].elements.group.value;
+        const doneStatus = forms[i].elements['done-status'].value;
+        const priority = forms[i].elements.priority.value;
 
         Jot.load(id).then(jot => {
           const currentFields = jot.fields;
