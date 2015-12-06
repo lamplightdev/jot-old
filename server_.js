@@ -1,5 +1,7 @@
 'use strict';
 
+require("babel/register");
+
 var express = require('express');
 var expressState = require('express-state');
 var exphbs = require('express-handlebars');

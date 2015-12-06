@@ -1,3 +1,5 @@
+require("babel/register");
+
 const express = require('express');
 const expressState = require('express-state');
 const exphbs = require('express-handlebars');
