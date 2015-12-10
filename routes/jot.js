@@ -12,8 +12,9 @@ class JotRoutes extends Routes {
       _path: '/',
       _method: ['get'],
       _action: params => {
-        return Jot.loadAll(true, params.orderType, params.orderDirection);
-      }
+        console.log(params.user);
+        return Jot.loadAll(params.user, true, params.orderType, params.orderDirection);
+      },
     };
 
     this._routes.add = {
@@ -24,10 +25,10 @@ class JotRoutes extends Routes {
           fields: {
             content: params.content,
             group: params.group,
-            priority: params.priority
-          }
-        }).save();
-      }
+            priority: params.priority,
+          },
+        }).save(params.user);
+      },
     };
 
     this._routes.delete = {
@@ -35,13 +36,12 @@ class JotRoutes extends Routes {
       _method: ['post'],
       _action: params => {
         if (params.action !== 'delete') {
-          return Promise.reject();  //will cascade down to update etc.
-        } else {
-          return Jot.remove(params.id).then(result => {
-            return true;
-          });
+          return Promise.reject();  // will cascade down to update etc.
         }
-      }
+        return Jot.remove(params.user, params.id).then(result => {
+          return true;
+        });
+      },
     };
 
     this._routes.update = {
@@ -50,20 +50,19 @@ class JotRoutes extends Routes {
       _action: params => {
         if (params.action !== 'update') {
           return Promise.reject();
-        } else {
-          return Jot.load(params.id).then(jot => {
-            const currentFields = jot.fields;
-
-            jot.fields = params.fields;
-
-            if (typeof params.fields.done === 'undefined') {
-              jot.fields.done = currentFields.done;
-            }
-
-            return jot.save();
-          });
         }
-      }
+        return Jot.load(params.user, params.id).then(jot => {
+          const currentFields = jot.fields;
+
+          jot.fields = params.fields;
+
+          if (typeof params.fields.done === 'undefined') {
+            jot.fields.done = currentFields.done;
+          }
+
+          return jot.save(params.user);
+        });
+      },
     };
   }
 }

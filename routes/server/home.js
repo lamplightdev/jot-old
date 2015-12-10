@@ -10,7 +10,7 @@ class HomeRouter {
 
   _commonParams(req) {
     return {
-      menuOpen: req.query.menu && req.query.menu === 'open'
+      menuOpen: req.query.menu && req.query.menu === 'open',
     };
   }
 
@@ -19,26 +19,28 @@ class HomeRouter {
       tabs: [{
         title: 'Home',
         link: '/',
-        current: true
+        current: true,
       }, {
         title: 'Jots',
-        link: '/jot'
+        link: '/jot',
       }, {
         title: 'Lists',
-        link: '/group'
-      }]
+        link: '/group',
+      }],
     };
 
     this.routes.registerRoute('home', (req, res, next) => {
       return Promise.resolve().then(() => {
         return {
-          params: {},
+          params: {
+            user: req.dbUser,
+          },
 
           resolve: stats => {
             res.render('app', Object.assign(this._commonParams(req), routeParams, {
               name: 'Jot',
               content: 'home',
-              stats
+              stats,
             }));
           },
 
@@ -46,12 +48,12 @@ class HomeRouter {
             if (!req.user) {
               res.render('app', Object.assign(this._commonParams(req), routeParams, {
                 name: 'Jot',
-                content: 'home'
+                content: 'home',
               }));
             } else {
               next(err);
             }
-          }
+          },
         };
       });
     });

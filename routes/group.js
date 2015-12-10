@@ -12,15 +12,15 @@ class GroupRoutes extends Routes {
       _path: '/',
       _method: ['get'],
       _action: params => {
-        return Group.loadAll(true, params.orderType, params.orderDirection);
-      }
+        return Group.loadAll(params.user, true, params.orderType, params.orderDirection);
+      },
     };
 
     this._routes.view = {
       _path: '/:id/:status?',
       _method: ['get'],
       _action: params => {
-        return Group.load(params.id, true, params.orderType, params.orderDirection).then(group => {
+        return Group.load(params.user, params.id, true, params.orderType, params.orderDirection).then(group => {
           if (params.postLoadGroup) {
             params.postLoadGroup(group);
           }
@@ -28,7 +28,7 @@ class GroupRoutes extends Routes {
           group._jots = group.getJots(params.done);
           return group;
         });
-      }
+      },
     };
 
     this._routes.add = {
@@ -38,10 +38,10 @@ class GroupRoutes extends Routes {
         return new Group({
           fields: {
             name: params.name,
-            colour: params.colour
-          }
-        }).save();
-      }
+            colour: params.colour,
+          },
+        }).save(params.user);
+      },
     };
 
     this._routes.delete = {
@@ -49,13 +49,12 @@ class GroupRoutes extends Routes {
       _method: ['post'],
       _action: params => {
         if (params.action !== 'delete') {
-          return Promise.reject();  //will cascade down to update etc.
-        } else {
-          return Group.remove(params.id).then(result => {
-            return true;
-          });
+          return Promise.reject();  // will cascade down to update etc.
         }
-      }
+        return Group.remove(params.user, params.id).then(result => {
+          return true;
+        });
+      },
     };
 
     this._routes.update = {
@@ -64,14 +63,13 @@ class GroupRoutes extends Routes {
       _action: params => {
         if (params.action !== 'update') {
           return Promise.reject();
-        } else {
-          return Group.load(params.id).then(group => {
-            group.fields = params.fields;
-
-            return group.save();
-          });
         }
-      }
+        return Group.load(params.user, params.id).then(group => {
+          group.fields = params.fields;
+
+          return group.save(params.user);
+        });
+      },
     };
   }
 }

@@ -9,7 +9,7 @@ class Jot extends Model {
       'content',
       'group',
       'done',
-      'priority'
+      'priority',
     ]);
 
     this._group = null;
@@ -19,7 +19,7 @@ class Jot extends Model {
     return [
       '2',
       '1',
-      '0'
+      '0',
     ];
   }
 
@@ -34,28 +34,27 @@ class Jot extends Model {
   get groupName() {
     if (this._group) {
       return this._group.fields.name;
-    } else {
-      return '-';
     }
+    return '-';
   }
 
   isDone() {
     return this.fields.done;
   }
 
-  loadGroup() {
+  loadGroup(user) {
     return Promise.resolve().then(() => {
       const Group = require('./group');
 
-      return Group.load(this.fields.group, false).then(group => {
+      return Group.load(user, this.fields.group, false).then(group => {
         this._group = group;
         return this;
       });
     });
   }
 
-  static getPercentageDone() {
-    return this.loadAll(false).then(jots => {
+  static getPercentageDone(user) {
+    return this.loadAll(user, false).then(jots => {
       let numDone = jots.reduce((prevVal, jot) => {
         if (jot.isDone()) {
           return prevVal + 1;
@@ -72,7 +71,7 @@ class Jot extends Model {
     .then(stats => {
       const Group = require('./group');
 
-      return Group.loadAll(false).then(groups => {
+      return Group.loadAll(user, false).then(groups => {
         stats.numGroups = groups.length;
 
         return stats;
@@ -80,10 +79,10 @@ class Jot extends Model {
     });
   }
 
-  static load(id, loadGroup = true) {
-    return super.load(id).then(jot => {
+  static load(user, id, loadGroup = true) {
+    return super.load(user, id).then(jot => {
       if (loadGroup) {
-        return jot.loadGroup().then(() => {
+        return jot.loadGroup(user).then(() => {
           return jot;
         });
       } else {
@@ -92,14 +91,14 @@ class Jot extends Model {
     });
   }
 
-  static loadAll(loadGroups = true, order = 'alpha', direction = 'asc') {
-    return super.loadAll().then(jots => {
+  static loadAll(user, loadGroups = true, order = 'alpha', direction = 'asc') {
+    return super.loadAll(user).then(jots => {
       const Group = require('./group');
 
       const promises = [];
 
       if (loadGroups) {
-        promises.push(Group.loadForJots(jots));
+        promises.push(Group.loadForJots(user, jots));
       }
 
       return Promise.all(promises).then(() => {
@@ -173,13 +172,12 @@ class Jot extends Model {
     return undoneJots.concat(doneJots);
   }
 
-  static loadForGroup(groupId, order = 'alpha', direction = 'asc') {
+  static loadForGroup(user, groupId, order = 'alpha', direction = 'asc') {
     return Promise.resolve().then(() => {
-
-      return this.db.query('index/group', {
+      return user.db.query('index/group', {
         descending: true,
         key: groupId,
-        include_docs: true
+        include_docs: true,
       }).then(result => {
         const jots = [];
 
@@ -192,14 +190,13 @@ class Jot extends Model {
     });
   }
 
-  static loadForGroups(groups, order = 'alpha', direction = 'asc') {
+  static loadForGroups(user, groups, order = 'alpha', direction = 'asc') {
     return Promise.resolve().then(() => {
-
       const groupIds = groups.map(group => group.id);
 
-      return this.db.query('index/group', {
+      return user.db.query('index/group', {
         keys: groupIds,
-        include_docs: true
+        include_docs: true,
       }).then(result => {
         const groupJots = {};
 

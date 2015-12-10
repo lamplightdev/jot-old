@@ -10,7 +10,7 @@ class JotServerRoutes {
 
   _commonParams(req) {
     return {
-      menuOpen: req.query.menu && req.query.menu === 'open'
+      menuOpen: req.query.menu && req.query.menu === 'open',
     };
   }
 
@@ -18,15 +18,15 @@ class JotServerRoutes {
     const routeParams = {
       tabs: [{
         title: 'Home',
-        link: '/'
+        link: '/',
       }, {
         title: 'Jots',
         link: '/jot',
-        current: true
+        current: true,
       }, {
         title: 'Lists',
-        link: '/group'
-      }]
+        link: '/group',
+      }],
     };
 
     this.routes.registerRoute('all', (req, res, next) => {
@@ -34,18 +34,20 @@ class JotServerRoutes {
         if (!req.user) return res.redirect('/auth/continue');
 
         return {
-          params: {},
+          params: {
+            user: req.dbUser,
+          },
 
           resolve: (jots) => {
             res.render('app', Object.assign(this._commonParams(req), routeParams, {
               name: 'Jot',
               content: 'jots',
               jots,
-              editID: req.query.edit
+              editID: req.query.edit,
             }));
           },
 
-          reject: next
+          reject: next,
         };
       }).catch(next);
     });
@@ -53,9 +55,10 @@ class JotServerRoutes {
     this.routes.registerRoute('add', (req, res, next) => {
       return Promise.resolve().then(() => {
         const params = {
+          user: req.dbUser,
           content: req.body.content,
           group: req.body.group,
-          priority: req.body.priority
+          priority: req.body.priority,
         };
 
         return {
@@ -65,7 +68,7 @@ class JotServerRoutes {
             res.redirect('/group/' + req.body.group);
           },
 
-          reject: next
+          reject: next,
         };
       }).catch(next);
     });
@@ -73,8 +76,9 @@ class JotServerRoutes {
     this.routes.registerRoute('delete', (req, res, next) => {
       return Promise.resolve().then(() => {
         const params = {
+          user: req.dbUser,
           id: req.params.id,
-          action: req.body.action
+          action: req.body.action,
         };
 
         return {
@@ -104,6 +108,7 @@ class JotServerRoutes {
         }
 
         const params = {
+          user: req.dbUser,
           id: req.params.id,
           action: req.body.action,
           fields,

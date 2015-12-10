@@ -84,42 +84,44 @@ class ViewGroup extends View {
 
   initAddForm() {
     const form = this._el.querySelector('.form-jot-add');
-    form.addEventListener('submit', event => {
-      event.preventDefault();
+    if (form) {
+      form.addEventListener('submit', event => {
+        event.preventDefault();
 
-      const contentField = form.elements.content;
-      const content = contentField.value;
+        const contentField = form.elements.content;
+        const content = contentField.value;
 
-      const groupField = form.elements.group;
-      const group = groupField.value;
+        const groupField = form.elements.group;
+        const group = groupField.value;
 
-      const priority = form.elements.priority.value;
+        const priority = form.elements.priority.value;
 
-      new Jot({
-        fields: {
-          content,
-          group,
-          priority,
-        },
-      }).save().then(() => {
-        contentField.value = '';
-        contentField.blur();
-        this.unselectAll();
-        Group.load(group).then(updatedGroup => {
-          this.renderPartial('jot-list', {
-            group: updatedGroup,
+        new Jot({
+          fields: {
+            content,
+            group,
+            priority,
+          },
+        }).save().then(() => {
+          contentField.value = '';
+          contentField.blur();
+          this.unselectAll();
+          Group.load(group).then(updatedGroup => {
+            this.renderPartial('jot-list', {
+              group: updatedGroup,
+            });
           });
         });
       });
-    });
 
-    const toShow = form.querySelector('.show-on-focus');
+      const toShow = form.querySelector('.show-on-focus');
 
-    form.addEventListener('click', event => {
-      event.stopPropagation();
-      this.unselectAll();
-      toShow.classList.add('show');
-    });
+      form.addEventListener('click', event => {
+        event.stopPropagation();
+        this.unselectAll();
+        toShow.classList.add('show');
+      });
+    }
   }
 
   initEdit() {

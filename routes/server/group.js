@@ -36,7 +36,9 @@ class GroupsServerRoutes {
         if (!req.user) return res.redirect('/auth/continue');
 
         return {
-          params: {},
+          params: {
+            user: req.dbUser,
+          },
 
           resolve: (groups) => {
             res.render('app', Object.assign(this._commonParams(req), routeParams, {
@@ -60,6 +62,7 @@ class GroupsServerRoutes {
 
         return {
           params: {
+            user: req.dbUser,
             id: req.params.id,
             done: req.params.status === 'done',
           },
@@ -93,6 +96,7 @@ class GroupsServerRoutes {
     this.routes.registerRoute('add', (req, res, next) => {
       return Promise.resolve().then(() => {
         const params = {
+          user: req.dbUser,
           name: req.body.name,
           colour: req.body.colour,
         };
@@ -112,6 +116,7 @@ class GroupsServerRoutes {
     this.routes.registerRoute('delete', (req, res, next) => {
       return Promise.resolve().then(() => {
         const params = {
+          user: req.dbUser,
           id: req.params.id,
           action: req.body.action,
         };
@@ -136,6 +141,7 @@ class GroupsServerRoutes {
         };
 
         const params = {
+          user: req.dbUser,
           id: req.params.id,
           action: req.body.action,
           fields,

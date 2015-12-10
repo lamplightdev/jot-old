@@ -16,6 +16,8 @@ const auth = require('./utility/auth');
 const redis = require('redis');
 const RedisStore = require('connect-redis')(session);
 
+const User = require('./models/user');
+
 const RoutesHome = require('./routes/server/home');
 const RoutesJot = require('./routes/server/jot');
 const RoutesGroup = require('./routes/server/group');
@@ -87,7 +89,7 @@ app.use(session({
     client: redisClient,
     pass: process.env.JOT_REDIS_PASSWORD,
   }),
-  secret: 'kl988sd87scoijsanc*^*&%g',
+  secret: 'kl988sd87scoijsanc*^*&%g', // process.env.JOT_SESSION_SECRET
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -108,14 +110,9 @@ app.use((req, res, next) => {
   }, 'server');
 
   if (req.user) {
-    const db = require('./db/db');
-    db({
-      protocol: 'https', // process.env.JOT_CLOUDANT_HOST_PROTOCOL,
-      domain: 'lamplightdev.cloudant.com', // process.env.JOT_CLOUDANT_HOST_NAME,
-      username: req.user.credentials.key,
-      password: req.user.credentials.password,
-      dbName: 'jot-' + req.user._id,
-    });
+    req.dbUser = new User(req.user);
+  } else {
+    req.dbUser = new User();
   }
 
   next();
@@ -146,7 +143,7 @@ app.use((req, res, next) => {
 // will print stacktrace
 if (app.get('env') === 'development') {
   app.use((err, req, res, next) => {
-    console.log(err);
+    console.log(err, err.stack);
     const status = err.status || 500;
     res.status(status);
     res.render('app', {

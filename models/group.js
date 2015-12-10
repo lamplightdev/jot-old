@@ -8,7 +8,7 @@ class Group extends Model {
   constructor(members) {
     super(members, [
       'name',
-      'colour'
+      'colour',
     ]);
 
     this._jots = [];
@@ -21,7 +21,7 @@ class Group extends Model {
       'teal',
       'yellow',
       'orange',
-      'brown'
+      'brown',
     ];
   }
 
@@ -42,9 +42,8 @@ class Group extends Model {
       return this.jots;
     } else if (done) {
       return this.jots.filter(jot => !!jot.fields.done);
-    } else {
-      return this.jots.filter(jot => !jot.fields.done);
     }
+    return this.jots.filter(jot => !jot.fields.done);
   }
 
   get jotCount() {
@@ -55,31 +54,30 @@ class Group extends Model {
     return this._jots.filter(jot => !!jot.fields.done).length;
   }
 
-  loadJots(order = 'alpha', direction = 'asc') {
-    return Jot.loadForGroup(this.id, order, direction).then(jots => {
+  loadJots(user, order = 'alpha', direction = 'asc') {
+    return Jot.loadForGroup(user, this.id, order, direction).then(jots => {
       this._jots = jots;
       return this;
     });
   }
 
-  static load(id, loadJots = true, jotOrder = 'alpha', jotDirection = 'asc') {
-    return super.load(id).then(group => {
+  static load(user, id, loadJots = true, jotOrder = 'alpha', jotDirection = 'asc') {
+    return super.load(user, id).then(group => {
       if (loadJots) {
-        return group.loadJots(jotOrder, jotDirection).then(() => {
+        return group.loadJots(user, jotOrder, jotDirection).then(() => {
           return group;
         });
-      } else {
-        return group;
       }
+      return group;
     });
   }
 
-  static loadAll(loadJots = true, order = 'alpha', direction = 'asc') {
-    return super.loadAll().then(groups => {
+  static loadAll(user, loadJots = true, order = 'alpha', direction = 'asc') {
+    return super.loadAll(user).then(groups => {
       const promises = [];
 
       if (loadJots) {
-        promises.push(Jot.loadForGroups(groups));
+        promises.push(Jot.loadForGroups(user, groups));
       }
 
       return Promise.all(promises).then(() => {
@@ -88,15 +86,13 @@ class Group extends Model {
     });
   }
 
-  static loadForJots(jots) {
+  static loadForJots(user, jots) {
     return Promise.resolve().then(() => {
-
       const groupIds = jots.map(jot => jot.fields.group);
-
-      return this.db.allDocs({
+      return user.db.allDocs({
         descending: true,
         keys: groupIds,
-        include_docs: true
+        include_docs: true,
       }).then(result => {
         const jotGroups = {};
 
@@ -151,26 +147,25 @@ class Group extends Model {
     return groups;
   }
 
-  static remove(id) {
-    return super.remove(id).then(() => {
-
-      return Jot.loadForGroup(id).then(jots => {
+  static remove(user, id) {
+    return super.remove(user, id).then(() => {
+      return Jot.loadForGroup(user, id).then(jots => {
         const docs = jots.map(jot => {
           return {
             _id: jot.id,
             _rev: jot.rev,
-            _deleted: true
+            _deleted: true,
           };
         });
 
-        return this.db.bulkDocs(docs).then(() => {
+        return user.db.bulkDocs(docs).then(() => {
           return true;
         });
       });
     });
   }
 
-  static importFromLocal() {
+  static importFromLocal(user) {
     return Promise.resolve().then(() => {
       if (typeof PouchDB === 'undefined') { //server
         return false;
@@ -178,7 +173,7 @@ class Group extends Model {
 
       //load local db
       require('../db/db')({
-        dbName: 'jot-local'
+        dbName: 'jot-local',
       }, 'local');
 
       return this.loadAll().then(groups => {

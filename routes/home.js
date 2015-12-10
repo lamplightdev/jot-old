@@ -11,13 +11,13 @@ class HomeRoutes extends Routes {
     this._routes.home = {
       _path: '/',
       _method: ['get'],
-      _action: () => {
-        return Jot.getPercentageDone().then(stats => {
+      _action: params => {
+        return params.user.getPercentageDone().then(stats => {
           const segments = {
             one: 90,
             two: 90,
             three: 90,
-            four: 90
+            four: 90,
           };
 
           if (stats.percent <= 25) {
@@ -51,7 +51,7 @@ class HomeRoutes extends Routes {
 
           return stats;
         });
-      }
+      },
     };
   }
 }

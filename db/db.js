@@ -121,12 +121,15 @@ class DB {
   }
 }
 
+module.exports = DB;
+/*
 const dbs = {
   'main': new DB(),
 };
 let currentDB = 'main';
 
 module.exports = (options, id = false) => {
+  console.log(dbs, options, id, currentDB);
   if (id !== false) {
     currentDB = id;
   }
@@ -141,3 +144,4 @@ module.exports = (options, id = false) => {
 
   return dbs[currentDB].db;
 };
+*/

@@ -15,9 +15,11 @@ class Model {
     this._allowedFields = allowedFields;
   }
 
+  /*
   static get db() {
     return require('../db/db')();
   }
+  */
 
   static getRefName() {
     return this.name.toLowerCase();
@@ -81,7 +83,7 @@ class Model {
     return !this.id;
   }
 
-  getSlug() {
+  getSlug(user) {
     return Promise.resolve().then(() => {
       if (!this.isNew()) {
         return Promise.resolve(this.id);
@@ -90,7 +92,7 @@ class Model {
 
         const padding = 5; //the length of the number, e.g. '5' will start at 00000, 00001, etc.
 
-        return this.constructor.db.allDocs({
+        return user.db.allDocs({
           startkey: slug + '\uffff',
           endkey: slug,
           descending: true,
@@ -109,12 +111,12 @@ class Model {
     });
   }
 
-  save() {
-    return this.getSlug().then(slug => {
+  save(user) {
+    return this.getSlug(user).then(slug => {
       const params = {
         _id: slug,
         dateAdded: this._dateAdded,
-        fields: this.fields
+        fields: this.fields,
       };
 
       if (!this.isNew()) {
@@ -125,28 +127,32 @@ class Model {
         params.dateAdded = new Date().toISOString();
       }
 
-      return this.constructor.db.put(params).then(response => {
+      return user.db.put(params).then(response => {
         if (response.ok) {
           this.id = response.id;
           this.rev = response.rev;
 
           return this;
-        } else {
-          return false;
         }
-      });
 
+        return false;
+      });
     });
   }
 
-  static loadAll() {
+  static loadAll(user) {
     return Promise.resolve().then(() => {
+      if (!user.db) {
+        return Promise.resolve([]);
+      }
 
-      return this.db.allDocs({
+      console.log(user.db);
+
+      return user.db.allDocs({
         endkey: this.getRefName() + '-',
         startkey: this.getRefName() + '-\uffff',
         include_docs: true,
-        descending: true
+        descending: true,
       }).then(result => {
         const models = [];
 
@@ -159,11 +165,10 @@ class Model {
     });
   }
 
-  static load(id) {
+  static load(user, id) {
     return Promise.resolve().then(() => {
       if (typeof id !== 'undefined') {
-
-        return this.db.get(id).then(doc => {
+        return user.db.get(id).then(doc => {
           return new this(doc);
         }).catch(err => {
           return false;
@@ -174,11 +179,11 @@ class Model {
     });
   }
 
-  static remove(id) {
+  static remove(user, id) {
     return Promise.resolve().then(() => {
 
-      return this.db.get(id).then(doc => {
-        return this.db.remove(doc);
+      return user.db.get(id).then(doc => {
+        return user.db.remove(doc);
       });
     });
   }
