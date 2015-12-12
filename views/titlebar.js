@@ -33,9 +33,11 @@ class ViewTitleBar extends View {
     const el = super.renderPartial(name, params);
 
     switch (name) {
-      case 'list-order':
-        this.initWidgets(el);
-        break;
+    case 'list-order':
+      this.initWidgets(el);
+      break;
+    default:
+      break;
     }
   }
 
@@ -61,6 +63,10 @@ class ViewTitleBar extends View {
     for (let i = 0; i < this._links.length; i++) {
       this._links[i].addEventListener('click', () => this._closeNav());
     }
+
+    this._navOverlay.addEventListener('click', () => {
+      this._closeNav();
+    });
   }
 
   cleanup() {

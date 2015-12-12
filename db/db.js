@@ -12,6 +12,7 @@ class DB {
   }
 
   init(passedOptions) {
+    console.log(passedOptions);
     const options = passedOptions || {
       protocol: null,
       domain: null,
@@ -116,32 +117,38 @@ class DB {
     } else {
       PouchDB.debug.disable();
 
-      this._db = new PouchDB(this._remoteCouch);
+      if (this._remoteCouch) {
+        this._db = new PouchDB(this._remoteCouch, {
+          auto_compaction: true,
+        });
+      } else {
+        this._db = new PouchDB(options.dbName, {
+          db: require('memdown'),
+          auto_compaction: true,
+        });
+
+        const ddoc = {
+          _id: '_design/index',
+          views: {
+            group: {
+              map: (doc => {
+                if (doc.fields.group) {
+                  emit(doc.fields.group);
+                }
+              }).toString(),
+            },
+          },
+        };
+
+        this._db.put(ddoc).then(() => {
+          // kick off an initial build, return immediately
+          return this._db.query('index/group', {stale: 'update_after'});
+        }).catch(err => {
+            // conflict occured, i.e. ddoc already existed
+        });
+      }
     }
   }
 }
 
 module.exports = DB;
-/*
-const dbs = {
-  'main': new DB(),
-};
-let currentDB = 'main';
-
-module.exports = (options, id = false) => {
-  console.log(dbs, options, id, currentDB);
-  if (id !== false) {
-    currentDB = id;
-  }
-
-  if (options) {
-    if (!dbs[currentDB]) {
-      dbs[currentDB] = new DB();
-    }
-
-    dbs[currentDB].init(options);
-  }
-
-  return dbs[currentDB].db;
-};
-*/

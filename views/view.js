@@ -31,7 +31,7 @@ class View {
       this._container.update(this, template(params));
     }
 
-    this.initEvents();
+    this.initEvents(params);
 
     this._lastParams = params;
   }

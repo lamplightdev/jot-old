@@ -5,8 +5,6 @@ const PubSub = require('../../utility/pubsub');
 
 class AuthRouter {
   constructor(router, prefix, viewContainer) {
-    this._db = require('../../db/db')();
-
     this._router = router;
     this.routes = new AuthRoutes(router, prefix);
 
@@ -21,7 +19,7 @@ class AuthRouter {
 
           resolve: () => {
             localStorage.setItem('jot-user', false);
-            this._db.destroy().then(() => {
+            ctx.dbUser.destroy().then(() => {
               this._router.stop(ctx.canonicalPath);
             });
           },
@@ -36,7 +34,9 @@ class AuthRouter {
     this.routes.registerRoute('import', (ctx, next) => {
       return Promise.resolve().then(() => {
         return {
-          params: {},
+          params: {
+            user: ctx.dbUser,
+          },
 
           preAction: () => {
             PubSub.publish('routeChanged', {

@@ -29,9 +29,10 @@ class ViewGroup extends View {
 
     this._subscriptions.push(PubSub.subscribe('update', (topic, args) => {
       if (args.changes && args.changes.length) {
-        Group.load(params.group.id).then(group => {
+        Group.load(params.user, params.group.id).then(group => {
           this.renderPartial('jot-list', {
             group,
+            user: params.user,
           });
         });
       }
@@ -39,9 +40,7 @@ class ViewGroup extends View {
 
     this._subscriptions.push(PubSub.subscribe('orderChanged', (topic, args) => {
       this._preferences.setOrder(args.type, args.direction);
-
-      const lastParams = this.lastParams;
-      this.renderPartial('jot-list', lastParams);
+      this.renderPartial('jot-list', this.lastParams);
     }));
 
     this._addDocumentListener('unselectAll', 'click', () => {
@@ -64,8 +63,8 @@ class ViewGroup extends View {
     switch (name) {
     case 'jot-list':
       this.initEdit();
-      this.initDeleteForms();
-      this.initUpdateForms();
+      this.initDeleteForms(params.user);
+      this.initUpdateForms(params.user);
       this.initWidgets(el);
       break;
     default:
@@ -73,16 +72,16 @@ class ViewGroup extends View {
     }
   }
 
-  initEvents() {
+  initEvents(params) {
     super.initEvents();
 
-    this.initAddForm();
+    this.initAddForm(params.user);
     this.initEdit();
-    this.initDeleteForms();
-    this.initUpdateForms();
+    this.initDeleteForms(params.user);
+    this.initUpdateForms(params.user);
   }
 
-  initAddForm() {
+  initAddForm(user) {
     const form = this._el.querySelector('.form-jot-add');
     if (form) {
       form.addEventListener('submit', event => {
@@ -102,13 +101,14 @@ class ViewGroup extends View {
             group,
             priority,
           },
-        }).save().then(() => {
+        }).save(user).then(() => {
           contentField.value = '';
           contentField.blur();
           this.unselectAll();
-          Group.load(group).then(updatedGroup => {
+          Group.load(user, group).then(updatedGroup => {
             this.renderPartial('jot-list', {
               group: updatedGroup,
+              user,
             });
           });
         });
@@ -158,7 +158,7 @@ class ViewGroup extends View {
     }
   }
 
-  initDeleteForms() {
+  initDeleteForms(user) {
     const forms = this._el.querySelectorAll('.form-jot-delete');
     for (let i = 0; i < forms.length; i++) {
       forms[i].addEventListener('submit', event => {
@@ -170,11 +170,12 @@ class ViewGroup extends View {
         const item = this._el.querySelector('.jots__jot-' + id);
         item.parentNode.removeChild(item);
 
-        Jot.load(id).then(jot => {
-          Jot.remove(id).then(() => {
-            Group.load(group).then(updatedGroup => {
+        Jot.load(user, id).then(jot => {
+          Jot.remove(user, id).then(() => {
+            Group.load(user, group).then(updatedGroup => {
               this.renderPartial('jot-list', {
                 group: updatedGroup,
+                user,
               });
             });
           }).then(() => {
@@ -185,10 +186,11 @@ class ViewGroup extends View {
                 fn: () => {
                   return Promise.resolve().then(() => {
                     jot.rev = null;
-                    jot.save().then(() => {
-                      return Group.load(group).then(updatedGroup => {
+                    jot.save(user).then(() => {
+                      return Group.load(user, group).then(updatedGroup => {
                         this.renderPartial('jot-list', {
                           group: updatedGroup,
+                          user,
                         });
                         return true;
                       });
@@ -204,7 +206,7 @@ class ViewGroup extends View {
     }
   }
 
-  initUpdateForms() {
+  initUpdateForms(user) {
     const forms = this._el.querySelectorAll('.form-jot-update');
 
     for (let i = 0; i < forms.length; i++) {
@@ -237,7 +239,7 @@ class ViewGroup extends View {
         const doneStatus = forms[i].elements['done-status'].value;
         const priority = forms[i].elements.priority.value;
 
-        Jot.load(id).then(jot => {
+        Jot.load(user, id).then(jot => {
           const currentFields = jot.fields;
 
           jot.fields = {
@@ -254,10 +256,11 @@ class ViewGroup extends View {
             jot.fields.done = currentFields.done;
           }
 
-          jot.save().then(() => {
-            Group.load(group).then(updatedGroup => {
+          jot.save(user).then(() => {
+            Group.load(user, group).then(updatedGroup => {
               this.renderPartial('jot-list', {
                 group: updatedGroup,
+                user,
               });
             });
           });

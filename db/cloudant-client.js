@@ -31,7 +31,7 @@ class CloudantClient {
 
       this._usersDB.get(this.formatID(service, id), (err, body) => {
         if (err) {
-          console.log(err);
+          console.log('getUser error:', err);
           resolve(false);
         } else {
           resolve(body);
@@ -59,7 +59,7 @@ class CloudantClient {
         serviceId: id,
         email,
         name,
-        photo
+        photo,
       };
 
       this.getUser(service, id).then(userDoc => {
@@ -223,12 +223,4 @@ class CloudantClient {
   }
 }
 
-const cloudantClient = new CloudantClient();
-
-module.exports = (account, password) => {
-  if (account) {
-    cloudantClient.init(account, password);
-  }
-
-  return cloudantClient;
-};
+module.exports = CloudantClient;

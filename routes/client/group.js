@@ -25,39 +25,39 @@ class GroupClientRoutes {
   registerRoutes() {
     this.routes.registerRoute('all', (ctx, next) => {
       return Promise.resolve().then(() => {
-
         const page = {
-          name: 'Jot'
+          name: 'Jot',
         };
 
         const ordering = {
           orders: [{
             name: 'Alpha',
             type: 'alpha',
-            direction: 'asc'
+            direction: 'asc',
           }, {
             name: 'Date',
             type: 'date',
-            direction: 'desc'
-          }]
+            direction: 'desc',
+          }],
         };
 
         const tabs = [{
           title: 'Home',
-          link: '/'
+          link: '/',
         }, {
           title: 'Jots',
-          link: '/jot'
+          link: '/jot',
         }, {
           title: 'Lists',
           link: '/group',
-          current: true
+          current: true,
         }];
 
         return {
           params: {
+            user: ctx.dbUser,
             orderType: this._groupsPreferences.getOrder().type,
-            orderDirection: this._groupsPreferences.getOrder().direction
+            orderDirection: this._groupsPreferences.getOrder().direction,
           },
 
           preAction: () => {
@@ -65,24 +65,26 @@ class GroupClientRoutes {
               name: page.name,
               ordering,
               currentOrdering: this._groupsPreferences.getOrder().type,
-              tabs
+              tabs,
             });
 
             this.loadingGroupsView.render(false, {
-              items: [0, 0, 0, 0, 0, 0, 0]
+              items: [0, 0, 0, 0, 0, 0, 0],
             });
           },
 
           resolve: (groups) => {
             this.groupsView.render(false, {
+              hasUser: true,
+              user: ctx.dbUser,
               colours: Group.getColours(),
-              groups
+              groups,
             });
           },
 
           reject: (err) => {
             throw new Error(err);
-          }
+          },
         };
       });
     });
@@ -93,27 +95,27 @@ class GroupClientRoutes {
           orders: [{
             name: 'Alpha',
             type: 'alpha',
-            direction: 'asc'
+            direction: 'asc',
           }, {
             name: 'Date',
             type: 'date',
-            direction: 'desc'
+            direction: 'desc',
           }, {
             name: 'Priority',
             type: 'priority',
-            direction: 'desc'
-          }]
+            direction: 'desc',
+          }],
         };
 
         return {
           params: {
+            user: ctx.dbUser,
             id: ctx.params.id,
             done: ctx.params.status === 'done',
             orderType: this._groupPreferences.getOrder().type,
             orderDirection: this._groupPreferences.getOrder().direction,
 
             postLoadGroup: (group) => {
-
               PubSub.publish('routeChanged', {
                 name: group.fields.name,
                 ordering,
@@ -121,11 +123,11 @@ class GroupClientRoutes {
                 tabs: [{
                   link: '/group/' + group.id,
                   title: 'undone',
-                  current: ctx.params.status !== 'done'
+                  current: ctx.params.status !== 'done',
                 }, {
                   link: '/group/' + group.id + '/done',
                   title: 'done',
-                  current: ctx.params.status === 'done'
+                  current: ctx.params.status === 'done',
                 }],
               });
             },
@@ -140,6 +142,8 @@ class GroupClientRoutes {
 
             this.groupView.setShowDone(ctx.params.status === 'done');
             this.groupView.render(false, {
+              hasUser: true,
+              user: ctx.dbUser,
               done: ctx.params.status === 'done',
               group,
               editID: queryObject.edit,

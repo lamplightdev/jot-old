@@ -9,11 +9,11 @@ class User {
     if (options) {
       this._db = new DB();
       this._db.init({
-        protocol: 'https', // process.env.JOT_CLOUDANT_HOST_PROTOCOL,
-        domain: 'lamplightdev.cloudant.com', // process.env.JOT_CLOUDANT_HOST_NAME,
-        username: options.credentials.key,
-        password: options.credentials.password,
-        dbName: 'jot-' + options._id,
+        protocol: options.protocol,
+        domain: options.domain,
+        username: options.username,
+        password: options.password,
+        dbName: options.dbName,
       });
     }
   }

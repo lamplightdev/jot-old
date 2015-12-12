@@ -2,11 +2,7 @@
 
 const AuthRoutes = require('../auth');
 const passport = require('passport');
-
-const cloudantClient = require('../../db/cloudant-client')(
-  process.env.JOT_CLOUDANT_ACCOUNT,
-  process.env.JOT_CLOUDANT_PASSWORD
-);
+const CloudantClient = require('../../db/cloudant-client');
 
 class AuthRouter {
   constructor(router) {
@@ -73,6 +69,12 @@ class AuthRouter {
               if (user.photos[0].value) {
                 photo = user.photos[0].value.replace(/sz=\d+$/, 'sz=100');
               }
+
+              const cloudantClient = new CloudantClient();
+              cloudantClient.init(
+                process.env.JOT_CLOUDANT_ACCOUNT,
+                process.env.JOT_CLOUDANT_PASSWORD
+              );
 
               cloudantClient.createUser('google', user.id, user.emails[0].value, user.displayName, photo).then(userDoc => {
                 req.logIn(userDoc, (err) => {

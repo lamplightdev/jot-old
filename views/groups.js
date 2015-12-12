@@ -23,9 +23,10 @@ class ViewGroups extends View {
 
     this._subscriptions.push(PubSub.subscribe('update', (topic, args) => {
       if (args.changes && args.changes.length) {
-        Group.loadAll().then(groups => {
+        Group.loadAll(params.user).then(groups => {
           this.renderPartial('group-list', {
             groups,
+            user: params.user,
           });
         });
       }
@@ -55,9 +56,9 @@ class ViewGroups extends View {
 
     switch (name) {
     case 'group-list':
-      this.initEdit();
-      this.initDeleteForms();
-      this.initUpdateForms();
+      this.initEdit(params.user);
+      this.initDeleteForms(params.user);
+      this.initUpdateForms(params.user);
       this.initWidgets(el);
       break;
     default:
@@ -65,16 +66,16 @@ class ViewGroups extends View {
     }
   }
 
-  initEvents() {
+  initEvents(params) {
     super.initEvents();
 
-    this.initAddForm();
+    this.initAddForm(params.user);
     this.initEdit();
-    this.initDeleteForms();
-    this.initUpdateForms();
+    this.initDeleteForms(params.user);
+    this.initUpdateForms(params.user);
   }
 
-  initAddForm() {
+  initAddForm(user) {
     const form = this._el.querySelector('.form-group-add');
     form.addEventListener('submit', event => {
       event.preventDefault();
@@ -89,14 +90,15 @@ class ViewGroups extends View {
           name,
           colour,
         },
-      }).save().then(() => {
+      }).save(user).then(() => {
         nameField.value = '';
         // nameField.focus();
         nameField.blur();
         this.unselectAll();
-        Group.loadAll().then(groups => {
+        Group.loadAll(user).then(groups => {
           this.renderPartial('group-list', {
             groups,
+            user,
           });
         });
       });
@@ -149,7 +151,7 @@ class ViewGroups extends View {
     }
   }
 
-  initDeleteForms() {
+  initDeleteForms(user) {
     const forms = this._el.querySelectorAll('.form-group-delete');
     for (let i = 0; i < forms.length; i++) {
       forms[i].addEventListener('submit', event => {
@@ -160,11 +162,12 @@ class ViewGroups extends View {
         const item = this._el.querySelector('.groups__group-' + id);
         item.parentNode.removeChild(item);
 
-        Group.load(id).then(group => {
-          Group.remove(id).then(() => {
-            Group.loadAll().then(groups => {
+        Group.load(user, id).then(group => {
+          Group.remove(user, id).then(() => {
+            Group.loadAll(user).then(groups => {
               this.renderPartial('group-list', {
                 groups,
+                user,
               });
             });
           }).then(() => {
@@ -175,7 +178,7 @@ class ViewGroups extends View {
                 fn: () => {
                   return Promise.resolve().then(() => {
                     group.rev = null;
-                    group.save().then(() => {
+                    group.save(user).then(() => {
                       const docs = group.jots.map(jot => {
                         return {
                           _rev: null,
@@ -185,11 +188,11 @@ class ViewGroups extends View {
                         };
                       });
 
-                      const db = require('../db/db')();
-                      return db.bulkDocs(docs).then(() => {
-                        return Group.loadAll().then(groups => {
+                      return user.db.bulkDocs(docs).then(() => {
+                        return Group.loadAll(user).then(groups => {
                           this.renderPartial('group-list', {
                             groups,
+                            user,
                           });
                           return true;
                         });
@@ -206,7 +209,7 @@ class ViewGroups extends View {
     }
   }
 
-  initUpdateForms() {
+  initUpdateForms(user) {
     const forms = this._el.querySelectorAll('.form-group-update');
 
     for (let i = 0; i < forms.length; i++) {
@@ -222,16 +225,17 @@ class ViewGroups extends View {
         const name = forms[i].elements.name.value;
         const colour = forms[i].elements.colour.value;
 
-        Group.load(id).then(group => {
+        Group.load(user, id).then(group => {
           group.fields = {
             name,
             colour,
           };
 
-          group.save().then(() => {
-            Group.loadAll().then(groups => {
+          group.save(user).then(() => {
+            Group.loadAll(user).then(groups => {
               this.renderPartial('group-list', {
                 groups,
+                user,
               });
             });
           });

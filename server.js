@@ -89,7 +89,7 @@ app.use(session({
     client: redisClient,
     pass: process.env.JOT_REDIS_PASSWORD,
   }),
-  secret: 'kl988sd87scoijsanc*^*&%g', // process.env.JOT_SESSION_SECRET
+  secret: process.env.JOT_SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -103,16 +103,24 @@ auth.serialization();
 auth.Google();
 
 app.use((req, res, next) => {
-  // app.expose(req.user, 'user');
   app.expose({
-    protocol: 'https', // process.env.JOT_CLOUDANT_HOST_PROTOCOL,
-    domain: 'lamplightdev.cloudant.com', // process.env.JOT_CLOUDANT_HOST_NAME,
+    protocol: process.env.JOT_CLOUDANT_HOST_PROTOCOL,
+    domain: process.env.JOT_CLOUDANT_HOST_NAME,
   }, 'server');
 
   if (req.user) {
-    req.dbUser = new User(req.user);
+    req.dbUser = new User({
+      protocol: process.env.JOT_CLOUDANT_HOST_PROTOCOL,
+      domain: process.env.JOT_CLOUDANT_HOST_NAME,
+      username: req.user.credentials.key,
+      password: req.user.credentials.password,
+      dbName: req.user._id,
+    });
   } else {
-    req.dbUser = new User();
+    req.session.saveme = true;
+    req.dbUser = new User({
+      dbName: 'jot-server-local-' + req.sessionID,
+    });
   }
 
   next();

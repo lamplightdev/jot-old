@@ -55,16 +55,22 @@ class Jot extends Model {
 
   static getPercentageDone(user) {
     return this.loadAll(user, false).then(jots => {
-      let numDone = jots.reduce((prevVal, jot) => {
+      const numDone = jots.reduce((prevVal, jot) => {
         if (jot.isDone()) {
           return prevVal + 1;
-        } else {
-          return prevVal;
         }
+        return prevVal;
       }, 0);
 
+      let total;
+      if (jots.length) {
+        total = numDone / jots.length;
+      } else {
+        total = 0;
+      }
+
       return {
-        percent: parseInt((numDone / jots.length) * 100, 10)
+        percent: parseInt(total * 100, 10),
       };
     })
 
@@ -85,9 +91,8 @@ class Jot extends Model {
         return jot.loadGroup(user).then(() => {
           return jot;
         });
-      } else {
-        return jot;
       }
+      return jot;
     });
   }
 
@@ -108,50 +113,48 @@ class Jot extends Model {
   }
 
   static order(jots, sortOrder = 'alpha', sortDirection = 'asc') {
-
     switch (sortOrder) {
-      case 'date':
-        jots.sort((a, b) => {
-          if (a._dateAdded > b._dateAdded) {
-            return 1;
-          }
+    case 'date':
+      jots.sort((a, b) => {
+        if (a._dateAdded > b._dateAdded) {
+          return 1;
+        }
 
-          if (a._dateAdded < b._dateAdded) {
-            return -1;
-          }
+        if (a._dateAdded < b._dateAdded) {
+          return -1;
+        }
 
-          return 0;
-        });
+        return 0;
+      });
+      break;
+    case 'alpha':
+      jots.sort((a, b) => {
+        if (a.fields.content.toLowerCase() > b.fields.content.toLowerCase()) {
+          return 1;
+        }
 
-        break;
-      case 'alpha':
-        jots.sort((a, b) => {
-          if (a.fields.content.toLowerCase() > b.fields.content.toLowerCase()) {
-            return 1;
-          }
+        if (a.fields.content.toLowerCase() < b.fields.content.toLowerCase()) {
+          return -1;
+        }
 
-          if (a.fields.content.toLowerCase() < b.fields.content.toLowerCase()) {
-            return -1;
-          }
+        return 0;
+      });
+      break;
+    case 'priority':
+      jots.sort((a, b) => {
+        if (a.fields.priority > b.fields.priority) {
+          return 1;
+        }
 
-          return 0;
-        });
+        if (a.fields.priority < b.fields.priority) {
+          return -1;
+        }
 
-        break;
-      case 'priority':
-        jots.sort((a, b) => {
-          if (a.fields.priority > b.fields.priority) {
-            return 1;
-          }
-
-          if (a.fields.priority < b.fields.priority) {
-            return -1;
-          }
-
-          return 0;
-        });
-
-        break;
+        return 0;
+      });
+      break;
+    default:
+      break;
     }
 
     if (sortDirection === 'desc') {
@@ -193,7 +196,6 @@ class Jot extends Model {
   static loadForGroups(user, groups, order = 'alpha', direction = 'asc') {
     return Promise.resolve().then(() => {
       const groupIds = groups.map(group => group.id);
-
       return user.db.query('index/group', {
         keys: groupIds,
         include_docs: true,

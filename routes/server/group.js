@@ -33,8 +33,6 @@ class GroupsServerRoutes {
 
     this.routes.registerRoute('all', (req, res, next) => {
       return Promise.resolve().then(() => {
-        if (!req.user) return res.redirect('/auth/continue');
-
         return {
           params: {
             user: req.dbUser,
@@ -42,6 +40,7 @@ class GroupsServerRoutes {
 
           resolve: (groups) => {
             res.render('app', Object.assign(this._commonParams(req), routeParams, {
+              hasUser: !!req.user,
               name: 'Jot',
               content: 'groups',
               colours: Group.getColours(),
@@ -58,8 +57,6 @@ class GroupsServerRoutes {
 
     this.routes.registerRoute('view', (req, res, next) => {
       return Promise.resolve().then(() => {
-        if (!req.user) return res.redirect('/auth/continue');
-
         return {
           params: {
             user: req.dbUser,
@@ -69,6 +66,7 @@ class GroupsServerRoutes {
 
           resolve: (group) => {
             res.render('app', Object.assign(this._commonParams(req), {
+              hasUser: !!req.user,
               name: group.fields.name,
               content: 'group',
               group,

@@ -1,4 +1,4 @@
-// Samelessly taken from https://raw.githubusercontent.com/jakearchibald/svgomg/master/src/js/utils/storage.js
+// Shamelessly taken from https://raw.githubusercontent.com/jakearchibald/svgomg/master/src/js/utils/storage.js
 
 var Idb = require('./indexeddouchbag');
 var idb;

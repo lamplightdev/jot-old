@@ -16,45 +16,45 @@ class JotClientRoutes {
   }
 
   registerRoutes() {
-
     this.routes.registerRoute('all', (ctx, next) => {
       return Promise.resolve().then(() => {
         const page = {
-          name: 'Jot'
+          name: 'Jot',
         };
 
         const ordering = {
           orders: [{
             name: 'Alpha',
             type: 'alpha',
-            direction: 'asc'
+            direction: 'asc',
           }, {
             name: 'Date',
             type: 'date',
-            direction: 'desc'
+            direction: 'desc',
           }, {
             name: 'Priority',
             type: 'priority',
-            direction: 'desc'
-          }]
+            direction: 'desc',
+          }],
         };
 
         const tabs = [{
           title: 'Home',
-          link: '/'
+          link: '/',
         }, {
           title: 'Jots',
           link: '/jot',
-          current: true
+          current: true,
         }, {
           title: 'Lists',
-          link: '/group'
+          link: '/group',
         }];
 
         return {
           params: {
+            user: ctx.dbUser,
             orderType: this._jotsPreferences.getOrder().type,
-            orderDirection: this._jotsPreferences.getOrder().direction
+            orderDirection: this._jotsPreferences.getOrder().direction,
           },
 
           preAction: () => {
@@ -62,23 +62,25 @@ class JotClientRoutes {
               name: page.name,
               ordering,
               currentOrdering: this._jotsPreferences.getOrder().type,
-              tabs
+              tabs,
             });
 
             this.loadingView.render(false, {
-              items: [0, 0, 0, 0, 0, 0, 0]
+              items: [0, 0, 0, 0, 0, 0, 0],
             });
           },
 
           resolve: (jots) => {
             this.jotsView.render(false, {
-              jots
+              hasUser: true,
+              user: ctx.dbUser,
+              jots,
             });
           },
 
           reject: (err) => {
             throw new Error(err);
-          }
+          },
         };
       });
     });

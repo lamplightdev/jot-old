@@ -5,12 +5,11 @@ if (window.operamini) {
 
 // cutting the ol' mustard like a pro
 if ('visibilityState' in document && !window.operamini) {
-
   const swVersion = localStorage.getItem('sw-version');
   console.log(swVersion);
 
   document.querySelector('body').classList.remove('nojs');
-  if (navigator.serviceWorker) {
+  if (false && navigator.serviceWorker) {
     navigator.serviceWorker.register('/serviceworker.js', {
       scope: '/',
     }).then(reg => {
@@ -25,26 +24,29 @@ if ('visibilityState' in document && !window.operamini) {
   }
 
   const localUser = localStorage.getItem('jot-user');
+  const User = require('../../models/user');
+
+  let dbUser = false;
 
   if (localUser) {
     JotApp.user = JSON.parse(localUser);
     if (JotApp.user) {
-      require('../../db/db')({
+      dbUser = new User({
         protocol: JotApp.server.protocol,
         domain: JotApp.server.domain,
         username: JotApp.user.credentials.key,
         password: JotApp.user.credentials.password,
-        dbName: 'jot-' + JotApp.user._id,
+        dbName: JotApp.user._id,
       });
     } else {
       JotApp.user = false;
-      require('../../db/db')({
+      dbUser = new User({
         dbName: 'jot-local',
       });
     }
   } else {
     JotApp.user = false;
-    require('../../db/db')({
+    dbUser = new User({
       dbName: 'jot-local',
     });
   }
@@ -96,6 +98,7 @@ if ('visibilityState' in document && !window.operamini) {
   const routesJot = new RoutesJot(router, '/jot', containerMain);
   const routesGroup = new RoutesGroup(router, '/group', containerMain);
 
+  router.setUser(dbUser);
   routesHome.registerRoutes();
   routesAuth.registerRoutes();
   routesJot.registerRoutes();

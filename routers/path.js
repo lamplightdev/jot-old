@@ -2,22 +2,28 @@
 
 const page = require('page');
 
-module.exports = (function() {
-
+module.exports = (() => {
   return {
-    activate: function() {
+    setUser: dbUser => {
+      page('*', (ctx, next) => {
+        ctx.dbUser = dbUser;
+        next();
+      });
+    },
+
+    activate: () => {
       page();
     },
 
-    get: function(path, callback) {
+    get: (path, callback) => {
       page(path, callback);
     },
 
-    go: function(path) {
+    go: (path) => {
       page(path);
     },
 
-    back: function() {
+    back: () => {
       if (window.history.length) {
         window.history.back();
       } else {
@@ -25,12 +31,11 @@ module.exports = (function() {
       }
     },
 
-    stop: function(path) {
+    stop: (path) => {
       page.stop();
       if (path) {
         window.location = path;
       }
-    }
+    },
   };
-
 })();

@@ -31,8 +31,6 @@ class JotServerRoutes {
 
     this.routes.registerRoute('all', (req, res, next) => {
       return Promise.resolve().then(() => {
-        if (!req.user) return res.redirect('/auth/continue');
-
         return {
           params: {
             user: req.dbUser,
@@ -40,6 +38,7 @@ class JotServerRoutes {
 
           resolve: (jots) => {
             res.render('app', Object.assign(this._commonParams(req), routeParams, {
+              hasUser: !!req.user,
               name: 'Jot',
               content: 'jots',
               jots,

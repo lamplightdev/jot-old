@@ -20,9 +20,9 @@ class ViewJots extends View {
 
     this._subscriptions.push(PubSub.subscribe('update', (topic, args) => {
       if (args.changes && args.changes.length) {
-        Jot.loadAll().then(jots => {
+        Jot.loadAll(params.user).then(jots => {
           this.render(false, {
-            jots
+            jots,
           });
         });
       }
@@ -31,8 +31,7 @@ class ViewJots extends View {
     this._subscriptions.push(PubSub.subscribe('orderChanged', (topic, args) => {
       this._preferences.setOrder(args.type, args.direction);
 
-      const params = this.lastParams;
-      this.render(false, params);
+      this.render(false, this.lastParams);
     }));
   }
 

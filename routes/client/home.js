@@ -13,7 +13,9 @@ class HomeRouter {
     this.routes.registerRoute('home', (ctx, next) => {
       return Promise.resolve().then(() => {
         return {
-          params: {},
+          params: {
+            user: ctx.dbUser,
+          },
 
           preAction: () => {
             PubSub.publish('routeChanged', {
@@ -22,30 +24,30 @@ class HomeRouter {
               tabs: [{
                 title: 'Home',
                 link: '/',
-                current: true
+                current: true,
               }, {
                 title: 'Jots',
-                link: '/jot'
+                link: '/jot',
               }, {
                 title: 'Lists',
-                link: '/group'
-              }]
+                link: '/group',
+              }],
             });
 
             this.homeView.render(false, {
-              loading: true
+              loading: true,
             });
           },
 
           resolve: stats => {
             this.homeView.render(false, {
-              stats
+              stats,
             });
           },
 
           reject: (err) => {
             throw new Error(err);
-          }
+          },
         };
       });
     });
