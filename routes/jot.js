@@ -12,7 +12,6 @@ class JotRoutes extends Routes {
       _path: '/',
       _method: ['get'],
       _action: params => {
-        console.log(params.user);
         return Jot.loadAll(params.user, true, params.orderType, params.orderDirection);
       },
     };

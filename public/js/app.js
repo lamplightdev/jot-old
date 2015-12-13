@@ -9,7 +9,7 @@ if ('visibilityState' in document && !window.operamini) {
   console.log(swVersion);
 
   document.querySelector('body').classList.remove('nojs');
-  if (false && navigator.serviceWorker) {
+  if (navigator.serviceWorker) {
     navigator.serviceWorker.register('/serviceworker.js', {
       scope: '/',
     }).then(reg => {
@@ -36,7 +36,7 @@ if ('visibilityState' in document && !window.operamini) {
         domain: JotApp.server.domain,
         username: JotApp.user.credentials.key,
         password: JotApp.user.credentials.password,
-        dbName: JotApp.user._id,
+        dbName: 'jot-' + JotApp.user._id,
       });
     } else {
       JotApp.user = false;

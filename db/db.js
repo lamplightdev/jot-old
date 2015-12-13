@@ -12,7 +12,6 @@ class DB {
   }
 
   init(passedOptions) {
-    console.log(passedOptions);
     const options = passedOptions || {
       protocol: null,
       domain: null,

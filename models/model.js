@@ -146,8 +146,6 @@ class Model {
         return Promise.resolve([]);
       }
 
-      console.log(user.db);
-
       return user.db.allDocs({
         endkey: this.getRefName() + '-',
         startkey: this.getRefName() + '-\uffff',

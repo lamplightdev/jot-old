@@ -114,7 +114,7 @@ app.use((req, res, next) => {
       domain: process.env.JOT_CLOUDANT_HOST_NAME,
       username: req.user.credentials.key,
       password: req.user.credentials.password,
-      dbName: req.user._id,
+      dbName: 'jot-' + req.user._id,
     });
   } else {
     req.session.saveme = true;
