@@ -16,11 +16,16 @@ class Jot extends Model {
   }
 
   static getPriorities() {
-    return [
-      '2',
-      '1',
-      '0',
-    ];
+    return [{
+      value: '2',
+      name: 'High',
+    }, {
+      value: '1',
+      name: 'Medium',
+    }, {
+      value: '0',
+      name: 'Low',
+    }];
   }
 
   get priorities() {

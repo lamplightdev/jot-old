@@ -1,12 +1,12 @@
 <div class='partial-colour-selector'>
   <div class='colour-selector'>
     {{#each colours}}
-      <div class='colour-selector__colour {{#if ../rootColour}}colour-{{../../rootColour}}{{/if}} {{../name}}-{{this}} {{#ifEqual ../current this}}colour-selector__colour--current{{/ifEqual}}' data-value='{{this}}'></div>
+      <div class='colour-selector__colour {{#if ../rootColour}}colour-{{../../rootColour}}{{/if}} {{../name}}-{{this.value}} {{#ifEqual ../current this.value}}colour-selector__colour--current{{/ifEqual}}' data-value='{{this.value}}'></div>
     {{/each}}
     <label for='{{name}}'>{{selectorLabel}}</label>
     <select id='{{name}}' name='{{name}}'>
     {{#each colours}}
-      <option value='{{this}}' {{#ifEqual ../current this}}selected{{/ifEqual}}>{{this}}</option>
+      <option value='{{this.value}}' {{#ifEqual ../current this.value}}selected{{/ifEqual}}>{{this.name}}</option>
     {{/each}}
     </select>
   </div>

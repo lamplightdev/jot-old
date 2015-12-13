@@ -15,12 +15,6 @@ class Model {
     this._allowedFields = allowedFields;
   }
 
-  /*
-  static get db() {
-    return require('../db/db')();
-  }
-  */
-
   static getRefName() {
     return this.name.toLowerCase();
   }

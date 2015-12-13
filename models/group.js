@@ -15,14 +15,25 @@ class Group extends Model {
   }
 
   static getColours() {
-    return [
-      'blue',
-      'red',
-      'teal',
-      'yellow',
-      'orange',
-      'brown',
-    ];
+    return [{
+      value: 'blue',
+      name: 'Blue',
+    }, {
+      value: 'red',
+      name: 'Red',
+    }, {
+      value: 'teal',
+      name: 'Teal',
+    }, {
+      value: 'yellow',
+      name: 'Yellow',
+    }, {
+      value: 'orange',
+      name: 'Orange',
+    }, {
+      value: 'brown',
+      name: 'Brown',
+    }];
   }
 
   get colours() {
