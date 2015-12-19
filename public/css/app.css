@@ -525,8 +525,7 @@ p, .text-regular, .md-list-item__secondary-content {
   transition: transform 0.3s ease-in-out 0s, -webkit-transform 0.3s ease-in-out 0s; }
   .md-nav.show {
     -webkit-transform: translateX(330px);
-    -ms-transform: translateX(330px);
-        transform: translateX(330px); }
+    transform: translateX(330px); }
 
 body.operamini .md-nav.show {
   left: 0; }
@@ -661,8 +660,7 @@ body.operamini .md-nav.show {
     -webkit-transition: opacity 0.3s linear 0s;
     transition: opacity 0.3s linear 0s;
     -webkit-transform: translateX(100%);
-    -ms-transform: translateX(100%);
-        transform: translateX(100%);
+    transform: translateX(100%);
     opacity: 0.65; }
 
 .md-btn-logo {
@@ -953,8 +951,7 @@ input[type='checkbox'] {
   transition: transform 0.3s ease-in-out 0s, -webkit-transform 0.3s ease-in-out 0s; }
   .md-snackbar-container.has-notification {
     -webkit-transform: translateY(-3.4rem);
-    -ms-transform: translateY(-3.4rem);
-        transform: translateY(-3.4rem); }
+    transform: translateY(-3.4rem); }
 
 .md-snackbar {
   background: #323232;
@@ -1180,25 +1177,21 @@ input[type='checkbox'] {
       top: 0;
       left: 0;
       -webkit-transform-origin: bottom right;
-          -ms-transform-origin: bottom right;
               transform-origin: bottom right; }
     .progress .seg.seg-2 {
       top: 50%;
       left: 0;
       -webkit-transform-origin: top right;
-          -ms-transform-origin: top right;
               transform-origin: top right; }
     .progress .seg.seg-3 {
       top: 50%;
       left: 50%;
       -webkit-transform-origin: top left;
-          -ms-transform-origin: top left;
               transform-origin: top left; }
     .progress .seg.seg-4 {
       top: 0;
       left: 50%;
       -webkit-transform-origin: bottom left;
-          -ms-transform-origin: bottom left;
               transform-origin: bottom left; }
 
 html {

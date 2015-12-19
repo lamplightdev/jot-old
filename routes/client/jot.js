@@ -33,7 +33,7 @@ class JotClientRoutes {
             direction: 'desc',
           }, {
             name: 'Priority',
-            type: 'priority',
+            type: 'prio',
             direction: 'desc',
           }],
         };

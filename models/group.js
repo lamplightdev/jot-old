@@ -108,7 +108,9 @@ class Group extends Model {
         const jotGroups = {};
 
         result.rows.forEach(row => {
-          jotGroups[row.doc._id] = new this(row.doc);
+          if (row.doc) {  // .doc won't exist if for some reason this group has been deleted but the jot still exists (how?)
+            jotGroups[row.doc._id] = new this(row.doc);
+          }
         });
 
         jots.forEach(jot => {

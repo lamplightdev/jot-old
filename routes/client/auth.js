@@ -19,7 +19,7 @@ class AuthRouter {
 
           resolve: () => {
             localStorage.setItem('jot-user', false);
-            ctx.dbUser.destroy().then(() => {
+            ctx.dbUser.db.destroy().then(() => {
               this._router.stop(ctx.canonicalPath);
             });
           },
