@@ -42,6 +42,7 @@ class JotServerRoutes {
               name: 'Jot',
               content: 'jots',
               jots,
+              anyjotsundone: jots.some(jot => jot),
               editID: req.query.edit,
             }));
           },

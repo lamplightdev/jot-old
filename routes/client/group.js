@@ -33,10 +33,12 @@ class GroupClientRoutes {
           orders: [{
             name: 'Alpha',
             type: 'alpha',
+            svgname: 'alpha',
             direction: 'asc',
           }, {
             name: 'Date',
             type: 'date',
+            svgname: 'date',
             direction: 'desc',
           }],
         };
@@ -95,14 +97,17 @@ class GroupClientRoutes {
           orders: [{
             name: 'Alpha',
             type: 'alpha',
+            svgname: 'alpha',
             direction: 'asc',
           }, {
             name: 'Date',
             type: 'date',
+            svgname: 'date',
             direction: 'desc',
           }, {
             name: 'Priority',
-            type: 'prio',
+            type: 'priority',
+            svgname: 'prio',
             direction: 'desc',
           }],
         };

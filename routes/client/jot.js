@@ -26,14 +26,17 @@ class JotClientRoutes {
           orders: [{
             name: 'Alpha',
             type: 'alpha',
+            svgname: 'alpha',
             direction: 'asc',
           }, {
             name: 'Date',
             type: 'date',
+            svgname: 'date',
             direction: 'desc',
           }, {
             name: 'Priority',
-            type: 'prio',
+            type: 'priority',
+            svgname: 'prio',
             direction: 'desc',
           }],
         };
@@ -75,6 +78,7 @@ class JotClientRoutes {
               hasUser: true,
               user: ctx.dbUser,
               jots,
+              anyjotsundone: jots.some(jot => !jot.isDone()),
             });
           },
 
