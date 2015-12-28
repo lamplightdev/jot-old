@@ -65,6 +65,7 @@ class ViewGroup extends View {
       this.initEdit();
       this.initDeleteForms(params.user);
       this.initUpdateForms(params.user);
+      this.initAutolinks();
       this.initWidgets(el);
       break;
     default:
@@ -79,6 +80,7 @@ class ViewGroup extends View {
     this.initEdit();
     this.initDeleteForms(params.user);
     this.initUpdateForms(params.user);
+    this.initAutolinks();
   }
 
   initAddForm(user) {
@@ -265,6 +267,19 @@ class ViewGroup extends View {
             });
           });
         });
+      });
+    }
+  }
+
+  initAutolinks() {
+    const spanLinks = this._el.querySelectorAll('.autolinker');
+
+    for (let i = 0; i < spanLinks.length; i++) {
+      spanLinks[i].addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        window.open(spanLinks[i].dataset.href, spanLinks[i].dataset.target);
       });
     }
   }

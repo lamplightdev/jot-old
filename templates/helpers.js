@@ -28,8 +28,23 @@ function ifIn(elem, arr, options) {
   return options.inverse(this);
 }
 
+function customAutolinkerFn(tagName) {
+  return function customAutolinker(autolinker, match) {
+    return new Autolinker.HtmlTag({
+      tagName: tagName,
+      attrs: {
+        'data-href': match.getAnchorHref(),
+        'data-target': '_blank',
+      },
+      innerHtml: match.getAnchorText(),
+    }).addClass('autolinker');
+  };
+}
+
 function autoLink(elem, options) {
-  const url = Autolinker.link(Handlebars.escapeExpression(elem));
+  const url = Autolinker.link(Handlebars.escapeExpression(elem), {
+    replaceFn: customAutolinkerFn('span'),
+  });
 
   return new Handlebars.SafeString(url);
 }

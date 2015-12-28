@@ -33,6 +33,17 @@ class ViewJots extends View {
 
       this.render(false, this.lastParams);
     }));
+
+    const spanLinks = this._el.querySelectorAll('.autolinker');
+
+    for (let i = 0; i < spanLinks.length; i++) {
+      spanLinks[i].addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        window.open(spanLinks[i].dataset.href, spanLinks[i].dataset.target);
+      });
+    }
   }
 
 }

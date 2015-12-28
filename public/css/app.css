@@ -1213,6 +1213,10 @@ header {
   outline: none;
   -webkit-tap-highlight-color: transparent; }
 
+a, .autolinker {
+  color: #2196f3;
+  text-decoration: underline; }
+
 svg.icon {
   width: 24px;
   height: 24px;
