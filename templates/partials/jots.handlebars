@@ -9,7 +9,7 @@
 
     <a class='md-list-item__content md-list-item__content--no-action' href='/group/{{fields.group}}?edit={{id}}#{{id}}'>
       <div class='md-list-item__primary-content {{#if fields.done}}jots__jot__item--done{{/if}}'>
-        {{fields.content}}
+        {{autoLink fields.content}}
       </div>
       <div class='md-list-item__secondary-content'>
         {{groupName}}
